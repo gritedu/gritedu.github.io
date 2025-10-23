@@ -58,9 +58,6 @@
             <p style="color:var(--muted)">${data.subject} · ${data.year}</p>
             ${data.bio ? `<p style="margin-top:12px">${data.bio}</p>` : ``}
             ${data.highlights ? `<ul style="margin-top:10px">${data.highlights.map(h=>`<li>${h}</li>`).join("")}</ul>` : ``}
-            <div style="margin-top:16px;display:flex;gap:8px">
-              <a class="btn" href="/instructors.html">← 강사진 목록</a>
-            </div>
           </div>
         </article>
       `;

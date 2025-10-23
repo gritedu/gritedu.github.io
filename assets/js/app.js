@@ -19,7 +19,7 @@ function renderInstructors(subject="ALL"){
     <a class="card" href="/instructor.html?id=${t.id}">
       <img src="${t.photo}" alt="${t.name}">
       <h3>${t.name} 선생님</h3>
-      <p>${t.subject} · ${t.year}</p>
+      <p>${t.subject}</p>
     </a>
   `).join("");
 }
