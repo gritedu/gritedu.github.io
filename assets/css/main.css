@@ -99,3 +99,22 @@ footer .inner{max-width:1200px;margin:0 auto;padding:16px 20px;text-align:center
   width:100%;
   height:auto;             /* 원본 비율 유지, 좌우 여백 없음 */
 }
+
+/* Lightbox */
+.lightbox{
+  position:fixed; inset:0; background:rgba(0,0,0,.75);
+  display:grid; place-items:center; opacity:0; pointer-events:none; transition:.15s;
+}
+.lightbox[data-open]{opacity:1; pointer-events:auto;}
+.lightbox img{max-width:92vw; max-height:88vh; border-radius:12px; display:block}
+.lb-close{
+  position:fixed; top:14px; right:18px; background:#ffffff; border:1px solid var(--border);
+  border-radius:999px; width:36px; height:36px; font-size:22px; line-height:30px; cursor:pointer;
+}
+
+/* Footer SNS */
+.footer-sns{display:flex;gap:10px;justify-content:center;align-items:center;padding:14px 0}
+.footer-sns a{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);
+  border-radius:999px;padding:8px 12px;background:#fff;text-decoration:none;color:#111}
+.footer-sns a:hover{background:var(--hover)}
+.footer-sns svg{width:18px;height:18px}

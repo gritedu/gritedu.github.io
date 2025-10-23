@@ -1,7 +1,8 @@
 export const INSTRUCTORS = [
   // 수학
   { id:"yhs", name:"유홍석", subject:"수학", year:"2025", photo:"./assets/instructors/math_YHS.png",
-    bio:"수학 전 영역 커리큘럼. 킬러·준킬러 집중.", highlights:["미적/확통/기하 통합 커리","기출-실전 N회독","학교별 내신 대비"] },
+    bio:"수학 전 영역 커리큘럼. 킬러·준킬러 집중.", highlights:["미적/확통/기하 통합 커리","기출-실전 N회독","학교별 내신 대비"],
+    youtube:"https://www.youtube.com/embed/6aPYStft9Xo" },
   { id:"gbh", name:"금보혜", subject:"수학", year:"2025", photo:"./assets/instructors/math_GBH.png",
     bio:"개념→심화 스파이럴 학습.", highlights:["개념원리 정복","유형 총정리","오답 클리닉"] },
   { id:"pnr", name:"박나린", subject:"수학", year:"2025", photo:"./assets/instructors/math_PNR.jpg" },

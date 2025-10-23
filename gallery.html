@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>GRIT EduTech | 갤러리</title>
-  <link rel="icon" type="image/png" href="./assets/grit_icon.png">
+  <title>그릿에듀 | 갤러리</title>
+  <link rel="icon" href="./assets/favicon.jpg" type="image/jpeg">
   <link rel="stylesheet" href="./assets/css/main.css">
   <style>
     .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
@@ -13,12 +13,18 @@
     .album-tabs{display:flex;gap:8px;margin:10px 0 14px;flex-wrap:wrap}
     .album-tabs .tab{padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;font-weight:600}
     .album-tabs .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.75);display:grid;place-items:center;opacity:0;pointer-events:none;transition:.15s}
+    .lightbox[data-open]{opacity:1;pointer-events:auto}
+    .lightbox img{max-width:92vw;max-height:88vh;border-radius:12px;display:block}
+    .lb-close{position:fixed;top:14px;right:18px;background:#fff;border:1px solid var(--border);border-radius:999px;width:36px;height:36px;font-size:22px;line-height:30px;cursor:pointer}
   </style>
 </head>
 <body>
   <header>
     <div class="nav">
-        <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="로고"></a></div>
+      <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="GRIT 로고" style="height:34px"></a></div>
       <div class="center">
         <nav class="menu" id="mainMenu">
           <a href="/">그릿에듀</a>
@@ -28,6 +34,7 @@
           <a href="/contact.html">상담</a>
         </nav>
       </div>
+      <div class="right"></div>
     </div>
   </header>
 
@@ -37,85 +44,93 @@
     <!-- 카테고리 탭 -->
     <div class="album-tabs" id="albumTabs">
       <button class="tab active" data-cat="interior">학원 내부</button>
-      <button class="tab" data-cat="students" disabled title="준비중">학생 공부(준비중)</button>
-      <button class="tab" data-cat="events" disabled title="준비중">행사(준비중)</button>
+      <button class="tab" data-cat="study">공부</button>
+      <button class="tab" data-cat="event">행사</button>
     </div>
 
     <!-- 갤러리 -->
     <div class="gallery" id="gallery">
-      <!-- 학원 내부 4장 -->
-      <div class="ph" data-cat="interior"><img src="./assets/album/grit1.jpeg" alt="GRIT 내부1"></div>
-      <div class="ph" data-cat="interior"><img src="./assets/album/grit2.jpeg" alt="GRIT 내부2"></div>
-      <div class="ph" data-cat="interior"><img src="./assets/album/grit3.jpeg" alt="GRIT 내부3"></div>
-      <div class="ph" data-cat="interior"><img src="./assets/album/grit4.jpeg" alt="GRIT 내부4"></div>
+      <!-- 학원 내부 -->
+      <div class="ph" data-cat="interior"><img src="./assets/album/grit1.jpeg" alt="학원 내부 1" loading="lazy"></div>
+      <div class="ph" data-cat="interior"><img src="./assets/album/grit2.jpeg" alt="학원 내부 2" loading="lazy"></div>
+      <div class="ph" data-cat="interior"><img src="./assets/album/grit3.jpeg" alt="학원 내부 3" loading="lazy"></div>
+      <div class="ph" data-cat="interior"><img src="./assets/album/grit4.jpeg" alt="학원 내부 4" loading="lazy"></div>
+
+      <!-- 공부 -->
+      <div class="ph" data-cat="study"><img src="./assets/album/student1.png" alt="공부 모습 1" loading="lazy"></div>
+      <div class="ph" data-cat="study"><img src="./assets/album/student2.png" alt="공부 모습 2" loading="lazy"></div>
+      <div class="ph" data-cat="study"><img src="./assets/album/student_study1.png" alt="공부 모습 3" loading="lazy"></div>
+      <div class="ph" data-cat="study"><img src="./assets/album/student_study2.png" alt="공부 모습 4" loading="lazy"></div>
+
+      <!-- 행사 -->
+      <div class="ph" data-cat="event"><img src="./assets/album/student_play1.png" alt="행사 사진 1" loading="lazy"></div>
+      <div class="ph" data-cat="event"><img src="./assets/album/student_play2.png" alt="행사 사진 2" loading="lazy"></div>
+      <div class="ph" data-cat="event"><img src="./assets/album/student_play3.png" alt="행사 사진 3" loading="lazy"></div>
+      <div class="ph" data-cat="event"><img src="./assets/album/student_play4.png" alt="행사 사진 4" loading="lazy"></div>
+    </div>
+
+    <!-- 라이트박스 -->
+    <div id="lb" class="lightbox" aria-hidden="true">
+      <button class="lb-close" aria-label="닫기">×</button>
+      <img id="lbImg" alt="gallery large view">
     </div>
   </main>
 
-  <footer><div class="inner">© 2025 GRIT EduTech</div></footer>
+  <!-- 하단 SNS 공통 -->
+  <div class="footer-sns">
+    <a href="https://www.instagram.com/grit_edu_seoul/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"
+        fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.2" fill="none"
+        stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg>
+      인스타
+    </a>
+    <a href="https://www.youtube.com/@gritedu_official?feature=shared" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C18.8 4.5 12 4.5 12 4.5s-6.8 0-8.9.6A3 3 0 0 0 1 7.2
+        47 47 0 0 0 1 12a47 47 0 0 0 .1 4.8A3 3 0 0 0 3.2 19c2.1.6 8.8.6 8.8.6s6.8 0 8.9-.6A3 3 0 0 0 23 16.8
+        47 47 0 0 0 23 12a47 47 0 0 0 0-4.8z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <polygon points="10,15.5 10,8.5 16,12" fill="currentColor"/></svg>
+      유튜브
+    </a>
+    <a href="https://blog.naver.com/PostList.naver?blogId=gritedu&categoryNo=0&from=postList" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M8 8v8h2.8l3.2-4.1V16H16V8h-2.8L10 12.1V8H8z" fill="currentColor"/>
+      </svg>
+      블로그
+    </a>
+  </div>
 
-  <!-- 로그인 모달 -->
-  <dialog id="loginDialog" class="modal">
-    <header>
-      <span>로그인</span>
-      <button data-close class="btn">닫기</button>
-    </header>
-    <div class="body">
-      <div>
-        <label for="loginEmail">이메일</label>
-        <input id="loginEmail" type="email" placeholder="you@example.com">
-      </div>
-      <div>
-        <label for="loginPassword">비밀번호</label>
-        <input id="loginPassword" type="password" placeholder="8자 이상">
-      </div>
-      <div id="loginError" class="error-text"></div>
-    </div>
-    <div class="actions">
-      <button id="btnSignup" class="btn">회원가입</button>
-      <button id="doLogin" class="btn primary">로그인</button>
-    </div>
-  </dialog>
-
-  <!-- 회원가입 모달 -->
-  <dialog id="signupDialog" class="modal">
-    <header>
-      <span>회원가입</span>
-      <button data-close class="btn">닫기</button>
-    </header>
-    <div class="body">
-      <div>
-        <label for="signupEmail">이메일</label>
-        <input id="signupEmail" type="email" placeholder="you@example.com">
-      </div>
-      <div>
-        <label for="signupPassword">비밀번호 (8자 이상)</label>
-        <input id="signupPassword" type="password" placeholder="8자 이상">
-      </div>
-      <div>
-        <label for="signupPassword2">비밀번호 확인</label>
-        <input id="signupPassword2" type="password" placeholder="다시 입력">
-      </div>
-      <div id="signupError" class="error-text"></div>
-    </div>
-    <div class="actions">
-      <button id="doSignup" class="btn primary">가입하기</button>
-    </div>
-  </dialog>
+  <footer><div class="inner">© 2025 그릿에듀 | 대한민국 교육의 새로운 표준</div></footer>
 
   <script type="module">
-    // 간단 탭 필터
+    // 탭 필터
     const tabs = document.getElementById('albumTabs');
     const items = [...document.querySelectorAll('#gallery .ph')];
     tabs.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.tab'); if(!btn || btn.disabled) return;
-      tabs.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      const btn = e.target.closest('.tab'); if(!btn) return;
+      tabs.querySelectorAll('.tab').forEach(t=> t.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.dataset.cat;
       items.forEach(el=>{
-        el.style.display = (cat==='all' || el.dataset.cat===cat) ? '' : 'none';
+        el.style.display = (el.dataset.cat===cat) ? '' : 'none';
       });
     });
+    // 기본: '학원 내부'만 보이도록 초기 필터 적용
+    items.forEach(el=>{ el.style.display = (el.dataset.cat==='interior') ? '' : 'none'; });
+
+    // 라이트박스
+    const lb = document.getElementById('lb');
+    const lbImg = document.getElementById('lbImg');
+    const close = () => { lb.removeAttribute('data-open'); lb.setAttribute('aria-hidden','true'); lbImg.src=''; };
+    document.getElementById('gallery').addEventListener('click', (e)=>{
+      const img = e.target.closest('img'); if(!img) return;
+      lbImg.src = img.src;
+      lb.setAttribute('data-open','');
+      lb.setAttribute('aria-hidden','false');
+    });
+    lb.addEventListener('click', (e)=>{ if(e.target===lb) close(); });
+    document.querySelector('.lb-close').addEventListener('click', close);
+    window.addEventListener('keydown',(e)=>{ if(e.key==='Escape') close(); });
   </script>
-  <script type="module" src="./assets/js/app.js"></script>
 </body>
 </html>
