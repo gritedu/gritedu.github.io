@@ -7,124 +7,41 @@
   <meta name="theme-color" content="#f68b1f" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --brand:#f68b1f;   /* 오렌지 */
-      --text:#3b3b3b;    /* 본문 */
-      --muted:#6b7280;   /* 보조 */
-      --bg:#ffffff;      /* 배경 */
-      --border:#e6e8ee;  /* 테두리 */
-      --hover:#fff6ec;   /* hover 배경 */
-      --footerdark:#3d3d45;
-    }
-    *{box-sizing:border-box;}
-    html,body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text);}
-    a{text-decoration:none;color:inherit;}
-
-    /* NAV */
-    header{border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:20;}
-    .nav{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;}
-    .nav-left{display:flex;align-items:center;gap:12px;}
-    .nav-left img{height:36px;width:auto;}
-    .menu{display:flex;gap:18px;font-weight:600;}
-    .menu a:hover{color:var(--brand);}
-
-    /* MAIN WRAPPER */
-    .container{max-width:1120px;margin:0 auto;padding:24px 20px;}
-
-    /* TOP: Login + Poster */
-    .grid-main{display:grid;grid-template-columns:280px 1fr;gap:24px;}
-    .login-box{border:1px solid var(--border);border-radius:10px;padding:20px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.05);}
-    .login-box h3{margin-top:0;font-size:18px;font-weight:700;}
-    .login-box input{width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--border);border-radius:8px;}
-    .login-box .btn{width:100%;margin-top:4px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;transition:all .15s}
-    .login-box .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;}
-    .login-box .btn:hover{background:var(--hover)}
-    .login-box small{display:block;margin-top:8px;color:var(--muted);text-align:center;}
-    .hidden{display:none !important}
-    #loginUser{color:var(--brand);font-weight:600;text-align:center;}
-
-    .poster{border-radius:12px;overflow:hidden;position:relative;min-height:260px;background:#fafafa;border:1px solid var(--border);}
-    .poster img{width:100%;height:100%;object-fit:cover;display:block;}
-    .poster h2{position:absolute;bottom:20px;left:20px;background:rgba(0,0,0,.5);color:#fff;padding:8px 16px;border-radius:8px;}
-
-    /* SECTION */
-    .section{margin-top:48px;}
-    .section h2{font-size:20px;margin:0 0 12px;}
-
-    /* SUBJECT TABS */
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
-    .tab{padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;font-weight:600}
-    .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
-
-    /* INSTRUCTORS */
-    .grid-instructors{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
-    .card{border:1px solid var(--border);border-radius:14px;overflow:hidden;text-align:center;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.03);}
-    .card img{width:100%;height:260px;object-fit:cover;}
-    .card h3{margin:10px 0 4px;font-size:17px;}
-    .card p{color:var(--muted);font-size:14px;margin:0 0 12px;}
-
-    /* FOOTER */
-    .footerbar{background:var(--footerdark);color:#fff;padding:10px 0;margin-top:48px}
-    footer{background:#f6f7f9;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
-    footer .inner{max-width:1120px;margin:0 auto;padding:16px 20px;text-align:center}
-  </style>
+  <link rel="stylesheet" href="./assets/css/main.css" />
 </head>
 <body>
 
   <!-- HEADER -->
   <header>
     <div class="nav">
-      <div class="nav-left">
+      <div class="left">
         <a href="/"><img src="./assets/logo.png" alt="그릿에듀 로고"></a>
+      </div>
+      <div class="center">
         <nav class="menu">
-          <a href="#">그릿에듀</a>
-          <a href="#">GRIT EDU STORY</a>
-          <a href="#">최고의 강사진</a>
-          <a href="#">앨범</a>
-          <a href="#">상담 예약</a>
+          <a href="/">그릿에듀</a>
+          <a href="/story.html">GRIT EDU STORY</a>
+          <a href="/instructors.html">강사진</a>
+          <a href="/album.html">앨범</a>
+          <a href="/consult.html">상담 예약</a>
         </nav>
+      </div>
+      <div class="right">
+        <span id="navUser" class="hidden"></span>
+        <button id="btnOpenLogin" class="btn primary">로그인</button>
       </div>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <main class="container">
-    <!-- TOP: Login + Poster -->
-    <div class="grid-main">
-      <!-- LOGIN SIDE -->
-      <aside>
-        <div class="login-box" id="loginBox">
-          <h3>LOGIN</h3>
-          <div id="loginForm">
-            <input type="email" id="loginEmail" placeholder="이메일" />
-            <input type="password" id="loginPassword" placeholder="비밀번호" />
-            <button id="doLogin" class="btn primary">로그인</button>
-            <button id="openSignup" class="btn">회원가입 안내</button>
-          </div>
-          <div id="loginUserBox" class="hidden">
-            <p>환영합니다 👋</p>
-            <div id="loginUser"></div>
-            <button id="doLogout" class="btn">로그아웃</button>
-          </div>
-          <small>강의·자료는 로그인 후 이용할 수 있습니다.</small>
-        </div>
-      </aside>
+    <!-- BANNER -->
+    <section class="poster">
+      <img src="./assets/banner_main.png" alt="메인 배너">
+    </section>
 
-      <!-- POSTER -->
-      <section>
-        <div class="poster">
-          <!-- 배너 이미지는 assets/banner_main.jpg 로 넣어주세요 -->
-          <img src="./assets/banner_main.png" alt="배너 이미지" />
-          <h2>끝까지 하는 힘, GRIT을 가르칩니다.</h2>
-        </div>
-      </section>
-    </div>
-
-    <!-- INSTRUCTORS (과목별 탭) -->
+    <!-- SUBJECT -->
     <section class="section">
-      <h2>최고의 강사진</h2>
-
       <div class="tabs" id="subjectTabs">
         <button class="tab active" data-subject="ALL">전체</button>
         <button class="tab" data-subject="국어">국어</button>
@@ -132,116 +49,67 @@
         <button class="tab" data-subject="영어">영어</button>
         <button class="tab" data-subject="과학">과학</button>
       </div>
-
       <div class="grid-instructors" id="instructorGrid"></div>
     </section>
   </main>
 
-  <!-- FOOTER -->
   <div class="footerbar"></div>
-  <footer>
-    <div class="inner">
-      © GRIT EduTech · Firebase + GitHub Pages
+  <footer><div class="inner">© GRIT EduTech · Firebase + GitHub Pages</div></footer>
+
+  <!-- 로그인 모달 -->
+  <dialog id="loginDialog" class="modal">
+    <header>
+      <span>로그인</span>
+      <button data-close class="btn">닫기</button>
+    </header>
+    <div class="body">
+      <div class="pill-switch">
+        <button class="active" id="tabStudent">학생</button>
+        <button id="tabParent">관리자</button>
+      </div>
+      <div>
+        <label for="loginEmail">이메일</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="loginPassword">비밀번호</label>
+        <input id="loginPassword" type="password" placeholder="8자 이상">
+      </div>
+      <div id="loginError" class="error-text"></div>
     </div>
-  </footer>
+    <div class="actions">
+      <button id="btnSignup" class="btn">회원가입</button>
+      <button id="doLogin" class="btn primary">로그인</button>
+    </div>
+  </dialog>
 
-  <!-- APP: Firebase Auth + Instructors 렌더 -->
-  <script type="module">
-    /* ---------- Firebase ---------- */
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  <!-- 회원가입 모달 -->
+  <dialog id="signupDialog" class="modal">
+    <header>
+      <span>회원가입</span>
+      <button data-close class="btn">닫기</button>
+    </header>
+    <div class="body">
+      <div>
+        <label for="signupEmail">이메일</label>
+        <input id="signupEmail" type="email" placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="signupPassword">비밀번호 (8자 이상)</label>
+        <input id="signupPassword" type="password" placeholder="8자 이상">
+      </div>
+      <div>
+        <label for="signupPassword2">비밀번호 확인</label>
+        <input id="signupPassword2" type="password" placeholder="비밀번호 다시 입력">
+      </div>
+      <div id="signupError" class="error-text"></div>
+      <p class="note">기본 권한은 <b>student</b>이며, 관리자 권한은 콘솔에서 부여합니다.</p>
+    </div>
+    <div class="actions">
+      <button id="doSignup" class="btn primary">가입하기</button>
+    </div>
+  </dialog>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCYZXuZ5ZGRgSEzvEGfbaUg6ViiyidSVKU",
-      authDomain: "gritedu-lms.firebaseapp.com",
-      projectId: "gritedu-lms",
-      messagingSenderId: "789104307613",
-      appId: "1:789104307613:web:0d6acf64a261a1a86d9374"
-      // storageBucket은 이 페이지에서 직접 쓰지 않으므로 생략
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    /* ---------- 로그인 박스 ---------- */
-    const loginEmail = document.getElementById("loginEmail");
-    const loginPassword = document.getElementById("loginPassword");
-    const doLogin = document.getElementById("doLogin");
-    const openSignup = document.getElementById("openSignup");
-    const doLogout = document.getElementById("doLogout");
-    const loginForm = document.getElementById("loginForm");
-    const loginUserBox = document.getElementById("loginUserBox");
-    const loginUser = document.getElementById("loginUser");
-
-    doLogin.addEventListener("click", async () => {
-      try {
-        await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
-      } catch (e) {
-        alert("로그인 실패: " + e.message);
-      }
-    });
-
-    doLogout.addEventListener("click", () => signOut(auth));
-    openSignup.addEventListener("click", () => {
-      alert("회원가입은 상단 ‘회원가입’ 메뉴 또는 별도 페이지에서 진행해주세요.");
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginForm.classList.add("hidden");
-        loginUserBox.classList.remove("hidden");
-        loginUser.textContent = user.email ?? user.uid;
-      } else {
-        loginForm.classList.remove("hidden");
-        loginUserBox.classList.add("hidden");
-      }
-    });
-
-    /* ---------- 강사진(assets) 렌더: 과목 탭 필터 ---------- */
-    // 원하는 이미지 파일명으로 교체하세요 (assets/ 폴더에 넣기)
-    const instructors = [
-      // 국어
-      { name:"강지웅", role:"국어 문학/비문학", subject:"국어", photo:"./assets/kr_KGW.png" },
-      // { name:"박문법", role:"문법·독해 실전", subject:"국어", photo:"./assets/kr_lang_2.jpg" },
-      // 수학
-      { name:"유홍석", role:"4점각성", subject:"수학", photo:"./assets/math_YHS.pbg" },
-      // { name:"이해석", role:"미적/확통/기하", subject:"수학", photo:"./assets/math_2.jpg" },
-      // 영어
-      { name:"이민지", role:"영어 회화·듣기", subject:"영어", photo:"./assets/eng_PHR.png" },
-      // { name:"오리딩", role:"Reading/어휘", subject:"영어", photo:"./assets/eng_2.jpg" },
-      // 과학
-      { name:"김정연", role:"물리/화학/생명/지구", subject:"과학", photo:"./assets/si_KJY.jpg" },
-      // { name:"최탐구", role:"생명/지구 심화", subject:"과학", photo:"./assets/sci_2.jpg" },
-    ];
-
-    const instructorGrid = document.getElementById("instructorGrid");
-    const subjectTabs = document.getElementById("subjectTabs");
-
-    function renderInstructors(subject = "ALL") {
-      const data = subject === "ALL" ? instructors : instructors.filter(i => i.subject === subject);
-      if (!data.length) {
-        instructorGrid.innerHTML = `<div class="card" style="padding:28px">등록된 강사가 없습니다.</div>`;
-        return;
-      }
-      instructorGrid.innerHTML = data.map(t => `
-        <div class="card">
-          <img src="${t.photo}" alt="${t.name}">
-          <h3>${t.name}</h3>
-          <p>${t.subject} · ${t.role}</p>
-        </div>
-      `).join("");
-    }
-
-    subjectTabs.addEventListener("click", (e) => {
-      const btn = e.target.closest(".tab");
-      if (!btn) return;
-      subjectTabs.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      btn.classList.add("active");
-      renderInstructors(btn.dataset.subject);
-    });
-
-    // 초기 렌더: 전체
-    renderInstructors();
-  </script>
+  <script type="module" src="./assets/js/app.js"></script>
 </body>
 </html>
