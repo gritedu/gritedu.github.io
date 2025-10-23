@@ -23,9 +23,8 @@
         </nav>
       </div>
       <div class="right">
-        <button id="btnHamburger" class="hamburger" aria-label="메뉴 열기">
-          <span></span><span></span><span></span>
-        </button>
+        <span id="navUser" class="hidden"></span>
+        <button id="btnOpenLogin" class="btn primary">로그인</button>
       </div>
     </div>
   </header>
@@ -129,5 +128,6 @@
   <!-- 공통 스크립트: firebase 초기화 + auth UI -->
   <script type="module" src="/assets/js/firebase.js"></script>
   <script type="module" src="/assets/js/auth-ui.js"></script>
+  <script type="module" src="/assets/js/app.js"></script>
 </body>
 </html>

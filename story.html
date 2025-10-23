@@ -6,11 +6,17 @@
   <title>그릿에듀 | 이야기</title>
   <link rel="icon" href="./assets/favicon.jpg" type="image/jpeg">
   <link rel="stylesheet" href="./assets/css/main.css">
+  <style>
+    .hero-quote{max-width:980px;margin:40px auto 24px;text-align:center;line-height:1.7}
+    .highlight{background:linear-gradient(transparent 60%, #fff3b0 0)}
+    .p{max-width:880px;margin:14px auto;color:#555;font-size:18px;line-height:1.9}
+    h2{max-width:880px;margin:32px auto 8px}
+  </style>
 </head>
 <body>
   <header>
     <div class="nav">
-        <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="로고"></a></div>
+        <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="그릿에듀 로고" style="height:34px"></a></div>
       <div class="center">
         <nav class="menu" id="mainMenu">
           <a href="/">그릿에듀</a>
@@ -21,17 +27,25 @@
         </nav>
       </div>
       <div class="right">
-        <button id="btnHamburger" class="hamburger" aria-label="메뉴 열기">
-          <span></span><span></span><span></span>
-        </button>
+        <span id="navUser" class="hidden"></span>
+        <button id="btnOpenLogin" class="btn primary">로그인</button>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <h1>GRIT EDU STORY</h1>
-    <p>GRIT EduTech는 <b>교육의 새로운 표준</b>을 만들어가는 학원형 EdTech 브랜드입니다.</p>
-    <p>2025년, "도전과 끈기(GRIT)"를 모토로, 과목별 전문 강사진과 함께 학생 개개인에게 최적화된 학습 경험을 제공합니다.</p>
+    <div class="hero-quote">
+      <h1 style="margin:0 0 10px">공부는 단순한 지식의 싸움이 아닙니다.</h1>
+      <h2 style="margin:0 0 8px">노력과 꾸준함, 멘탈과 태도, 정서와 습관까지 함께 자라야</h2>
+      <h2 class="highlight" style="margin:0">진짜 성적, 그리고 진짜 성장이 따라옵니다.</h2>
+    </div>
+
+    <h2 style="color:#ff6b6b">그릿에듀는 단순한 학원이 아닙니다.</h2>
+    <p class="p">
+      국내 최고 수준의 대치동·목동 일타 강사진과 함께
+      학생의 <b>'심리적 성장'</b>과 <b>'학습 지속력'</b>을 동시에 키워내는
+      전문적인 교육 시스템을 운영합니다.
+    </p>
   </main>
 
   <footer>
@@ -112,11 +126,5 @@
   <!-- 공통 스크립트: firebase 초기화 + auth UI -->
   <script type="module" src="/assets/js/firebase.js"></script>
   <script type="module" src="/assets/js/auth-ui.js"></script>
-
-  <!-- 공통 스크립트: firebase 초기화 + auth UI -->
-  <script type="module" src="/assets/js/firebase.js"></script>
-  <script type="module" src="/assets/js/auth-ui.js"></script>
-
-  <script type="module" src="./assets/js/app.js"></script>
 </body>
 </html>
