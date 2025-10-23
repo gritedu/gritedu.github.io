@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>GRIT EduTech | 앨범</title>
+  <title>GRIT EduTech | 갤러리</title>
+  <link rel="icon" type="image/png" href="./assets/grit_icon.png">
   <link rel="stylesheet" href="./assets/css/main.css">
   <style>
     .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
@@ -17,21 +18,21 @@
 <body>
   <header>
     <div class="nav">
-      <div class="left"><a href="/"><img src="./assets/logo.png" alt="로고"></a></div>
+        <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="로고"></a></div>
       <div class="center">
         <nav class="menu" id="mainMenu">
           <a href="/">그릿에듀</a>
-          <a href="/story.html">GRIT EDU STORY</a>
+          <a href="/story.html">그릿 에듀 이야기</a>
           <a href="/instructors.html">강사진</a>
-          <a href="/album.html" class="active">앨범</a>
-          <a href="/consult.html">상담 예약</a>
+          <a href="/gallery.html" class="active">갤러리</a>
+          <a href="/contact.html">상담</a>
         </nav>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <h1>앨범</h1>
+    <h1>갤러리</h1>
 
     <!-- 카테고리 탭 -->
     <div class="album-tabs" id="albumTabs">
@@ -52,6 +53,55 @@
 
   <footer><div class="inner">© 2025 GRIT EduTech</div></footer>
 
+  <!-- 로그인 모달 -->
+  <dialog id="loginDialog" class="modal">
+    <header>
+      <span>로그인</span>
+      <button data-close class="btn">닫기</button>
+    </header>
+    <div class="body">
+      <div>
+        <label for="loginEmail">이메일</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="loginPassword">비밀번호</label>
+        <input id="loginPassword" type="password" placeholder="8자 이상">
+      </div>
+      <div id="loginError" class="error-text"></div>
+    </div>
+    <div class="actions">
+      <button id="btnSignup" class="btn">회원가입</button>
+      <button id="doLogin" class="btn primary">로그인</button>
+    </div>
+  </dialog>
+
+  <!-- 회원가입 모달 -->
+  <dialog id="signupDialog" class="modal">
+    <header>
+      <span>회원가입</span>
+      <button data-close class="btn">닫기</button>
+    </header>
+    <div class="body">
+      <div>
+        <label for="signupEmail">이메일</label>
+        <input id="signupEmail" type="email" placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="signupPassword">비밀번호 (8자 이상)</label>
+        <input id="signupPassword" type="password" placeholder="8자 이상">
+      </div>
+      <div>
+        <label for="signupPassword2">비밀번호 확인</label>
+        <input id="signupPassword2" type="password" placeholder="다시 입력">
+      </div>
+      <div id="signupError" class="error-text"></div>
+    </div>
+    <div class="actions">
+      <button id="doSignup" class="btn primary">가입하기</button>
+    </div>
+  </dialog>
+
   <script type="module">
     // 간단 탭 필터
     const tabs = document.getElementById('albumTabs');
@@ -66,5 +116,6 @@
       });
     });
   </script>
+  <script type="module" src="./assets/js/app.js"></script>
 </body>
 </html>

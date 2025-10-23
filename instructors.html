@@ -4,19 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>GRIT EduTech | 강사진</title>
+  <link rel="icon" type="image/png" href="./assets/grit_icon.png">
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
   <header>
     <div class="nav">
-      <div class="left"><a href="/"><img src="./assets/logo.png" alt="로고"></a></div>
+        <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="로고"></a></div>
       <div class="center">
         <nav class="menu" id="mainMenu">
           <a href="/">그릿에듀</a>
-          <a href="/story.html">GRIT EDU STORY</a>
+          <a href="/story.html">그릿 에듀 이야기</a>
           <a href="/instructors.html" class="active">강사진</a>
-          <a href="/album.html">앨범</a>
-          <a href="/consult.html">상담 예약</a>
+          <a href="/gallery.html">갤러리</a>
+          <a href="/contact.html">상담</a>
         </nav>
       </div>
       <div class="right">
@@ -27,12 +28,101 @@
     </div>
   </header>
 
-  <main class="container">
+  <main class="container" id="mainContent">
     <h1>GRIT EDU 강사진</h1>
     <div class="grid-instructors" id="instructorGrid"></div>
   </main>
 
   <footer><div class="inner">© 2025 GRIT EduTech</div></footer>
-  <script type="module" src="./assets/js/app.js"></script>
+
+  <!-- 로그인 모달 -->
+  <dialog id="loginDialog" class="modal">
+    <header>
+      <span>로그인</span>
+      <button data-close class="btn">닫기</button>
+    </header>
+    <div class="body">
+      <div>
+        <label for="loginEmail">이메일</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="loginPassword">비밀번호</label>
+        <input id="loginPassword" type="password" placeholder="8자 이상">
+      </div>
+      <div id="loginError" class="error-text"></div>
+    </div>
+    <div class="actions">
+      <button id="btnSignup" class="btn">회원가입</button>
+      <button id="doLogin" class="btn primary">로그인</button>
+    </div>
+  </dialog>
+
+  <!-- 회원가입 모달 -->
+  <dialog id="signupDialog" class="modal">
+    <header>
+      <span>회원가입</span>
+      <button data-close class="btn">닫기</button>
+    </header>
+    <div class="body">
+      <div>
+        <label for="signupEmail">이메일</label>
+        <input id="signupEmail" type="email" placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="signupPassword">비밀번호 (8자 이상)</label>
+        <input id="signupPassword" type="password" placeholder="8자 이상">
+      </div>
+      <div>
+        <label for="signupPassword2">비밀번호 확인</label>
+        <input id="signupPassword2" type="password" placeholder="다시 입력">
+      </div>
+      <div id="signupError" class="error-text"></div>
+    </div>
+    <div class="actions">
+      <button id="doSignup" class="btn primary">가입하기</button>
+    </div>
+  </dialog>
+
+  <script type="module">
+    import { INSTRUCTORS } from "./assets/js/data.instructors.js";
+    
+    // URL 파라미터 확인
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    
+    if (id) {
+      // 강사 상세 페이지
+      const data = INSTRUCTORS.find(i => i.id === id);
+      const mainContent = document.getElementById('mainContent');
+      
+      if (!data) {
+        mainContent.innerHTML = `
+          <p>강사 정보를 찾을 수 없습니다.</p>
+          <p><a class="btn" href="/instructors.html">← 강사진 목록</a></p>
+        `;
+      } else {
+        mainContent.innerHTML = `
+          <article class="detail" style="display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start">
+            <div class="photo" style="border:1px solid var(--border);border-radius:16px;background:#fff;overflow:hidden">
+              <img src="${data.photo}" alt="${data.name}" style="width:100%;height:360px;object-fit:contain;background:#fff" />
+            </div>
+            <div>
+              <h1 style="margin:0 0 8px">${data.name} 선생님</h1>
+              <p class="muted" style="margin:0 0 12px">${data.subject}</p>
+              ${data.bio ? `<p style="margin-top:6px">${data.bio}</p>` : ``}
+              ${data.highlights ? `<ul style="margin-top:8px">${data.highlights.map(h => `<li>${h}</li>`).join("")}</ul>` : ``}
+              <div style="margin-top:16px">
+                <a class="btn" href="/instructors.html">← 강사진 목록</a>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+    } else {
+      // 강사 목록 페이지
+      import('./assets/js/app.js');
+    }
+  </script>
 </body>
 </html>
