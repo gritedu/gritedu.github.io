@@ -3,10 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GRIT EduTech</title>
-  <meta name="theme-color" content="#f68b1f" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>GRIT EduTech | 교육의 새로운 표준</title>
   <link rel="stylesheet" href="./assets/css/main.css" />
 </head>
 <body>
@@ -14,9 +11,7 @@
   <!-- HEADER -->
   <header>
     <div class="nav">
-      <div class="left">
-        <a href="/"><img src="./assets/logo.png" alt="그릿에듀 로고"></a>
-      </div>
+      <div class="left"><a href="/"><img src="./assets/logo.png" alt="GRIT 로고"></a></div>
       <div class="center">
         <nav class="menu">
           <a href="/">그릿에듀</a>
@@ -26,90 +21,31 @@
           <a href="/consult.html">상담 예약</a>
         </nav>
       </div>
-      <div class="right">
-        <span id="navUser" class="hidden"></span>
-        <button id="btnOpenLogin" class="btn primary">로그인</button>
-      </div>
     </div>
   </header>
 
-  <!-- MAIN -->
   <main class="container">
-    <!-- BANNER -->
+    <!-- 메인 배너 -->
     <section class="poster">
-      <img src="./assets/banner_main.png" alt="메인 배너">
+      <img src="./assets/banner_main.png" alt="교육의 새로운 표준 GRIT EDU">
     </section>
 
-    <!-- SUBJECT -->
+    <!-- 강사진 섹션 -->
     <section class="section">
+      <h2 style="margin-bottom:8px;">강사진 소개</h2>
       <div class="tabs" id="subjectTabs">
         <button class="tab active" data-subject="ALL">전체</button>
         <button class="tab" data-subject="국어">국어</button>
         <button class="tab" data-subject="수학">수학</button>
         <button class="tab" data-subject="영어">영어</button>
         <button class="tab" data-subject="과학">과학</button>
+        <button class="tab" data-subject="컨설팅">컨설팅</button>
       </div>
       <div class="grid-instructors" id="instructorGrid"></div>
     </section>
   </main>
 
-  <div class="footerbar"></div>
-  <footer><div class="inner">© GRIT EduTech · Firebase + GitHub Pages</div></footer>
-
-  <!-- 로그인 모달 -->
-  <dialog id="loginDialog" class="modal">
-    <header>
-      <span>로그인</span>
-      <button data-close class="btn">닫기</button>
-    </header>
-    <div class="body">
-      <div class="pill-switch">
-        <button class="active" id="tabStudent">학생</button>
-        <button id="tabParent">관리자</button>
-      </div>
-      <div>
-        <label for="loginEmail">이메일</label>
-        <input id="loginEmail" type="email" placeholder="you@example.com">
-      </div>
-      <div>
-        <label for="loginPassword">비밀번호</label>
-        <input id="loginPassword" type="password" placeholder="8자 이상">
-      </div>
-      <div id="loginError" class="error-text"></div>
-    </div>
-    <div class="actions">
-      <button id="btnSignup" class="btn">회원가입</button>
-      <button id="doLogin" class="btn primary">로그인</button>
-    </div>
-  </dialog>
-
-  <!-- 회원가입 모달 -->
-  <dialog id="signupDialog" class="modal">
-    <header>
-      <span>회원가입</span>
-      <button data-close class="btn">닫기</button>
-    </header>
-    <div class="body">
-      <div>
-        <label for="signupEmail">이메일</label>
-        <input id="signupEmail" type="email" placeholder="you@example.com">
-      </div>
-      <div>
-        <label for="signupPassword">비밀번호 (8자 이상)</label>
-        <input id="signupPassword" type="password" placeholder="8자 이상">
-      </div>
-      <div>
-        <label for="signupPassword2">비밀번호 확인</label>
-        <input id="signupPassword2" type="password" placeholder="비밀번호 다시 입력">
-      </div>
-      <div id="signupError" class="error-text"></div>
-      <p class="note">기본 권한은 <b>student</b>이며, 관리자 권한은 콘솔에서 부여합니다.</p>
-    </div>
-    <div class="actions">
-      <button id="doSignup" class="btn primary">가입하기</button>
-    </div>
-  </dialog>
-
+  <footer><div class="inner">© 2025 GRIT EduTech | 교육의 새로운 표준</div></footer>
   <script type="module" src="./assets/js/app.js"></script>
 </body>
 </html>
