@@ -59,12 +59,13 @@ dialog{border:none;border-radius:16px;padding:0;width:min(480px,92%);box-shadow:
 footer{background:#f6f7f9;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
 footer .inner{max-width:1200px;margin:0 auto;padding:16px 20px;text-align:center}
 
-/* --- Mobile Nav --- */
+/* Mobile Nav */
 .hamburger{display:none;gap:6px;flex-direction:column;border:1px solid var(--border);padding:8px;border-radius:8px;background:#fff;cursor:pointer}
 .hamburger span{width:22px;height:2px;background:#333;display:block}
 @media (max-width:820px){
   .nav{grid-template-columns:auto auto auto}
   .menu{display:none;position:absolute;top:60px;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 16px;flex-direction:column;gap:10px}
   .menu.open{display:flex}
+  .right{display:flex;justify-content:flex-end}
   .hamburger{display:flex}
 }
