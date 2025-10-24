@@ -1,99 +1,78 @@
-// assets/js/auth-ui.js
-import { auth } from "./firebase.js";
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth, db } from "./firebase.js";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-// 허용 UID 화이트리스트
-const ALLOWED_UIDS = new Set(["BvPNaPre9yaFjMV0ISNIDHAnwfS2"]); // 요청하신 UID
+// 초기 로딩 시 깜빡임 방지
+document.documentElement.classList.add('pre-init');
 
-// DOM 헬퍼
-const $ = (s) => document.querySelector(s);
-const headerEmail = $("#headerEmail");
-const loginBtn    = $("#loginBtn");
-const logoutBtn   = $("#logoutBtn");
-const menuLearn   = $("#menuLearn");
-const loginDlg    = $("#loginDialog");
-const loginForm   = $("#loginForm");
-const emailInput  = $("#loginEmail");
-const passInput   = $("#loginPassword");
+const btnOpenLogin = document.getElementById("btnOpenLogin");
+const navUser      = document.getElementById("navUser");
+const loginDialog  = document.getElementById("loginDialog");
+const btnHamburger = document.getElementById("btnHamburger");
+const mainMenu     = document.getElementById("mainMenu");
 
-// 상태 → UI 반영
-function syncUI(user){
-  const loggedIn = !!user && ALLOWED_UIDS.has(user.uid);
-  if (loginBtn)  loginBtn.style.display  = loggedIn ? "none" : "inline-flex";
-  if (logoutBtn) logoutBtn.style.display = loggedIn ? "inline-flex" : "none";
-  if (menuLearn) menuLearn.style.display = loggedIn ? "" : "none";
+// localStorage에서 로그인 상태 복원
+const savedLoginState = localStorage.getItem('isLoggedIn');
+const savedUserName = localStorage.getItem('userName');
 
-  if (headerEmail){
-    if (loggedIn && user.email){
-      // 이메일 → 아이디만 + "님"
-      headerEmail.textContent = `${user.email.split("@")[0]} 님`;
-      headerEmail.hidden = false;
-    } else {
-      headerEmail.hidden = true;
-      headerEmail.textContent = "";
-    }
+if (savedLoginState === 'true' && savedUserName) {
+  navUser?.classList.remove("hidden");
+  if (navUser) navUser.textContent = savedUserName;
+  if (btnOpenLogin) { 
+    btnOpenLogin.textContent = "로그아웃"; 
+    btnOpenLogin.dataset.state = "logout"; 
   }
 }
 
-// 로그인 폼 submit
-if (loginForm && !loginForm.__bound){
-  loginForm.addEventListener("submit", async (e)=>{
-    e.preventDefault();
+/* 햄버거 토글 */
+btnHamburger?.addEventListener("click", ()=> mainMenu?.classList.toggle("open"));
+
+/* 모달 닫기 */
+document.querySelectorAll("[data-close]")?.forEach(b=> b.addEventListener("click", ()=> b.closest("dialog")?.close()));
+
+/* 로그인/로그아웃 */
+btnOpenLogin?.addEventListener("click", ()=>{
+  if(btnOpenLogin.dataset.state==="logout") signOut(auth);
+  else loginDialog?.showModal();
+});
+
+/* 로그인 실행 */
+document.getElementById("doLogin")?.addEventListener("click", async ()=>{
+  const email = document.getElementById("loginEmail")?.value.trim();
+  const pw    = document.getElementById("loginPassword")?.value;
+  const err   = document.getElementById("loginError");
+  err.textContent = "";
+  try{ await signInWithEmailAndPassword(auth, email, pw); loginDialog?.close(); }
+  catch(e){ err.textContent = e.message || String(e); }
+});
+
+/* 상태 반영 + 이름표시(없으면 이메일/UID) */
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    let label = user.email ?? user.uid;
     try{
-      const email = emailInput.value.trim();
-      const pw    = passInput.value;
-      const cred  = await signInWithEmailAndPassword(auth, email, pw);
-
-      // UID 화이트리스트 체크
-      if (!ALLOWED_UIDS.has(cred.user.uid)){
-        await signOut(auth);
-        alert("허용되지 않은 계정입니다. 관리자에게 문의하세요.");
-        return;
-      }
-
-      // 성공
-      if (loginDlg?.close) loginDlg.close();
-      // 필요하면 자동 이동: location.href = "./learn.html";
-    }catch(err){
-      alert("로그인에 실패했습니다. 이메일/비밀번호를 확인하세요.");
-      console.error(err);
-    }
-  });
-  loginForm.__bound = true;
-}
-
-// 버튼 핸들러
-if (loginBtn && !loginBtn.__bound){
-  loginBtn.addEventListener("click", (e)=>{ e.preventDefault(); loginDlg?.showModal?.(); });
-  loginBtn.__bound = true;
-}
-if (logoutBtn && !logoutBtn.__bound){
-  logoutBtn.addEventListener("click", async (e)=>{
-    e.preventDefault();
-    await signOut(auth);
-    if (location.pathname.endsWith("learn.html")) location.href = "/";
-  });
-  logoutBtn.__bound = true;
-}
-
-// 전역 인증 상태 구독
-onAuthStateChanged(auth, (user)=>{
-  // 허용되지 않은 UID가 로그인되면 즉시 차단
-  if (user && !ALLOWED_UIDS.has(user.uid)){
-    signOut(auth);
-    return;
+      const snap = await getDoc(doc(db, "users", user.uid));
+      const u = snap.exists() ? snap.data() : null;
+      if(u?.name) label = u.name;
+    }catch(_){}
+    
+    // localStorage에 저장
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userName', label);
+    
+    navUser?.classList.remove("hidden");
+    if(navUser) navUser.textContent = label;
+    if(btnOpenLogin){ btnOpenLogin.textContent="로그아웃"; btnOpenLogin.dataset.state="logout"; }
+  }else{
+    // localStorage에서 제거
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userName');
+    
+    navUser?.classList.add("hidden"); if(navUser) navUser.textContent="";
+    if(btnOpenLogin){ btnOpenLogin.textContent="로그인"; btnOpenLogin.dataset.state="login"; }
+    mainMenu?.classList.remove("open"); // 로그아웃 시 메뉴 닫기
   }
-  syncUI(user);
-  // learn.html에서 뷰 전환
-  if (location.pathname.endsWith("learn.html")){
-    const guest  = document.querySelector(".guest-view");
-    const member = document.querySelector(".member-view");
-    const nameEl = document.getElementById("memberName");
-    const ok = !!user && ALLOWED_UIDS.has(user?.uid);
-    if (guest && member){
-      guest.hidden = ok;
-      member.hidden = !ok;
-      if (ok && nameEl && user?.email) nameEl.textContent = user.email.split("@")[0];
-    }
-  }
+  
+  // DOM 로딩 완료 후 깜빡임 방지 해제
+  document.documentElement.classList.remove('pre-init');
 });
