@@ -36,14 +36,6 @@
   </section>
 </main>
 
-<button id="gritToTop" class="grit-top" aria-label="맨 위로">▲</button>
-<script>
-  const topBtn = document.getElementById('gritToTop');
-  const onScroll = () => { topBtn.style.opacity = (window.scrollY > 400) ? '1' : '0'; };
-  window.addEventListener('scroll', onScroll, { passive:true });
-  topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-  onScroll();
-
 <script type="module" src="./assets/js/common.js"></script>
 <script>
   // 강사진 프리뷰 (8명) + 필터
