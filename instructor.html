@@ -3,21 +3,36 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>그릿에듀 | 메인</title>
+  <title>그릿에듀 | 강사 상세</title>
   <link rel="icon" href="./assets/favicon.jpg" type="image/jpeg">
   <link rel="stylesheet" href="./assets/css/main.css" />
+  <style>
+    .detail{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:24px;align-items:start}
+    .detail .photo{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}
+    .detail .photo img{display:block;width:100%;height:auto;object-fit:cover;object-position:center top}
+    .detail .text h1{margin:0 0 8px}
+    .detail .text p.muted{margin:0 0 12px}
+    .video{margin-top:18px}
+    .video .yt{aspect-ratio:16/9;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#000}
+    .video iframe{width:100%;height:100%}
+    @media (max-width:860px){
+      .detail{grid-template-columns:1fr}
+      .detail .photo{order:1}
+      .detail .text{order:2}
+      .video{order:3}
+    }
+  </style>
 </head>
 <body>
-
-  <!-- HEADER -->
+  <!-- 공통 헤더 -->
   <header>
     <div class="nav">
-        <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="GRIT 로고"></a></div>
+      <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="그릿에듀 로고" style="height:34px"></a></div>
       <div class="center">
         <nav class="menu" id="mainMenu">
           <a href="/">그릿에듀</a>
           <a href="/story.html">이야기</a>
-          <a href="/instructors.html">강사진</a>
+          <a href="/instructors.html" class="active">강사진</a>
           <a href="/gallery.html">갤러리</a>
           <a href="/contact.html">상담</a>
         </nav>
@@ -30,54 +45,8 @@
     </div>
   </header>
 
-  <main class="container">
-    <!-- 메인 배너 -->
-    <section class="poster">
-      <img src="./assets/banner_main.png" alt="교육의 새로운 표준 GRIT EDU">
-    </section>
-
-    <!-- 🔸 강사진 소개 섹션 -->
-    <section class="section">
-      <h2 style="margin-bottom:16px;">강사진 소개</h2>
-
-      <div class="tabs" id="subjectTabs">
-        <button class="tab active" data-subject="ALL">전체</button>
-        <button class="tab" data-subject="국어">국어</button>
-        <button class="tab" data-subject="수학">수학</button>
-        <button class="tab" data-subject="영어">영어</button>
-        <button class="tab" data-subject="과학">과학</button>
-      </div>
-
-      <div class="grid-instructors" id="instructorGrid"></div>
-    </section>
-
-    <script type="module">
-      import { INSTRUCTORS } from "./assets/js/data.instructors.js";
-
-      const instructorGrid = document.getElementById("instructorGrid");
-      const subjectTabs = document.getElementById("subjectTabs");
-
-      function renderInstructors(subject="ALL") {
-        const data = subject === "ALL" ? INSTRUCTORS : INSTRUCTORS.filter(i => i.subject === subject);
-        instructorGrid.innerHTML = data.map(t => `
-          <a class="card" href="/instructor.html?id=${t.id}">
-            <img src="${t.photo}" alt="${t.name}">
-            <h3>${t.name} 선생님</h3>
-            <p>${t.subject}</p>
-          </a>
-        `).join("");
-      }
-
-      subjectTabs.addEventListener("click", e => {
-        const btn = e.target.closest(".tab");
-        if (!btn) return;
-        subjectTabs.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        btn.classList.add("active");
-        renderInstructors(btn.dataset.subject);
-      });
-
-      renderInstructors();
-    </script>
+  <main class="container" id="root">
+    <!-- JS가 내용 주입 -->
   </main>
 
   <footer>
@@ -106,7 +75,7 @@
     <div class="inner">© 2025 그릿에듀 | 대한민국 교육의 새로운 표준</div>
   </footer>
 
-  <!-- 로그인 모달만 남긴다 -->
+  <!-- 로그인 모달 -->
   <dialog id="loginDialog" class="modal">
     <header>
       <span>로그인</span>
@@ -135,5 +104,42 @@
   <script type="module" src="/assets/js/firebase.js"></script>
   <script type="module" src="/assets/js/auth-ui.js"></script>
   <script src="/assets/js/app.js" defer></script>
+
+  <!-- 스크립트 -->
+  <script type="module">
+    import { INSTRUCTORS } from "./assets/js/data.instructors.js";
+
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+    const root = document.getElementById("root");
+
+    const data = INSTRUCTORS.find(x => x.id === id);
+    if(!data){
+      document.title = "그릿에듀 | 강사 상세";
+      root.innerHTML = `<p>강사 정보를 찾을 수 없습니다.</p>`;
+    }else{
+      document.title = `그릿에듀 | ${data.name} 선생님`;
+      root.innerHTML = `
+        <article class="detail">
+          <div class="photo"><img src="${data.photo}" alt="${data.name}"></div>
+
+          <div class="text">
+            <h1>${data.name} 선생님</h1>
+            <p class="muted">${data.subject}</p>
+            ${data.bio ? `<p>${data.bio}</p>` : ``}
+            ${data.highlights ? `<ul>${data.highlights.map(h=>`<li>${h}</li>`).join("")}</ul>` : ``}
+          </div>
+
+          ${data.youtube ? `
+          <div class="video">
+            <h3 style="margin:8px 0">맛보기 강의</h3>
+            <div class="yt">
+              <iframe src="${data.youtube}" title="YouTube video" frameborder="0" allowfullscreen loading="lazy"></iframe>
+            </div>
+          </div>` : ``}
+        </article>
+      `;
+    }
+  </script>
 </body>
 </html>

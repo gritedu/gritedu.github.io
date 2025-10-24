@@ -28,8 +28,17 @@
     </div>
   </header>
 
-  <main class="container" id="mainContent">
-    <h1>GRIT EDU 강사진</h1>
+  <main class="container">
+    <h1 style="margin-bottom:16px;">그릿에듀 강사진</h1>
+
+    <div class="tabs" id="subjectTabs">
+      <button class="tab active" data-subject="ALL">전체</button>
+      <button class="tab" data-subject="국어">국어</button>
+      <button class="tab" data-subject="수학">수학</button>
+      <button class="tab" data-subject="영어">영어</button>
+      <button class="tab" data-subject="과학">과학</button>
+    </div>
+
     <div class="grid-instructors" id="instructorGrid"></div>
   </main>
 
@@ -91,47 +100,30 @@
 
   <script type="module">
     import { INSTRUCTORS } from "./assets/js/data.instructors.js";
-    
-    // URL 파라미터 확인
-    const params = new URLSearchParams(location.search);
-    const id = params.get('id');
-    
-    if (id) {
-      // 강사 상세 페이지
-      const data = INSTRUCTORS.find(i => i.id === id);
-      const mainContent = document.getElementById('mainContent');
-      
-      if (!data) {
-        mainContent.innerHTML = `
-          <p>강사 정보를 찾을 수 없습니다.</p>
-          <p><a class="btn" href="/instructors.html">← 강사진 목록</a></p>
-        `;
-      } else {
-        mainContent.innerHTML = `
-          <article class="detail">
-            <div class="photo"><img src="${data.photo}" alt="${data.name}"></div>
 
-            <div class="text">
-              <h1 style="margin:0 0 8px">${data.name} 선생님</h1>
-              <p class="muted" style="margin:0 0 12px">${data.subject}</p>
-              ${data.bio ? `<p style="margin-top:6px">${data.bio}</p>` : ``}
-              ${data.highlights ? `<ul style="margin-top:8px">${data.highlights.map(h => `<li>${h}</li>`).join("")}</ul>` : ``}
-              
-              ${data.youtube ? `
-                <div class="video">
-                  <h3 style="margin:18px 0 8px">맛보기 강의</h3>
-                  <div class="yt">
-                    <iframe src="${data.youtube}" title="YouTube video" frameborder="0" allowfullscreen loading="lazy"></iframe>
-                  </div>
-                </div>` : ``}
-            </div>
-          </article>
-        `;
-      }
-    } else {
-      // 강사 목록 페이지
-      import('./assets/js/app.js');
+    const instructorGrid = document.getElementById("instructorGrid");
+    const subjectTabs = document.getElementById("subjectTabs");
+
+    function renderInstructors(subject="ALL") {
+      const data = subject === "ALL" ? INSTRUCTORS : INSTRUCTORS.filter(i => i.subject === subject);
+      instructorGrid.innerHTML = data.map(t => `
+        <a class="card" href="/instructor.html?id=${t.id}">
+          <img src="${t.photo}" alt="${t.name}">
+          <h3>${t.name} 선생님</h3>
+          <p>${t.subject}</p>
+        </a>
+      `).join("");
     }
+
+    subjectTabs.addEventListener("click", e => {
+      const btn = e.target.closest(".tab");
+      if (!btn) return;
+      subjectTabs.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      btn.classList.add("active");
+      renderInstructors(btn.dataset.subject);
+    });
+
+    renderInstructors();
   </script>
 </body>
 </html>

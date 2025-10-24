@@ -99,26 +99,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// --- 강사진 필터 ---
-window.addEventListener('DOMContentLoaded', () => {
-  const tabs = document.querySelector('.filter-tabs');
-  const grid = document.getElementById('instructorGrid');
-  if (!tabs || !grid) return;
-
-  tabs.addEventListener('click', (e) => {
-    const btn = e.target.closest('.tab');
-    if (!btn) return;
-    tabs.querySelectorAll('.tab').forEach(b => b.classList.remove('is-active'));
-    btn.classList.add('is-active');
-
-    const f = btn.dataset.filter; // all | kor | math | eng | sci
-    grid.querySelectorAll('.instructor-card').forEach(card => {
-      const cat = card.dataset.cat;
-      const show = (f === 'all') || (cat === f);
-      card.style.display = show ? 'block' : 'none';
-    });
-  });
-});
 
 // --- Back to Top ---
 window.addEventListener('DOMContentLoaded', () => {
