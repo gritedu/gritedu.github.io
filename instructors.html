@@ -10,10 +10,10 @@
 <body>
   <header>
     <div class="nav">
-        <div class="left"><a href="./index.html"><img src="./assets/grite_logo_columns.jpg" alt="로고"></a></div>
+        <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="로고"></a></div>
       <div class="center">
         <nav class="menu" id="mainMenu">
-          <a href="./index.html">그릿에듀</a>
+          <a href="/">그릿에듀</a>
           <a href="./story.html">이야기</a>
           <a href="./instructors.html" class="active">강사진</a>
           <a href="./gallery.html">갤러리</a>
@@ -70,26 +70,17 @@
     <div class="inner">© 2025 그릿에듀 | 대한민국 교육의 새로운 표준</div>
   </footer>
 
-  <!-- 로그인 모달만 남긴다 -->
+  <!-- 로그인 모달 -->
   <dialog id="loginDialog" class="modal">
-    <header>
-      <span>로그인</span>
-      <button data-close class="btn">닫기</button>
-    </header>
-    <div class="body">
-      <div>
-        <label for="loginEmail">이메일</label>
-        <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email">
+    <form method="dialog" id="loginForm" class="login-form">
+      <h3>로그인</h3>
+      <label>이메일 <input type="email" id="loginEmail" required></label>
+      <label>비밀번호 <input type="password" id="loginPassword" required></label>
+      <div class="row">
+        <button value="cancel" class="btn btn-outline">취소</button>
+        <button id="loginSubmit" class="btn">로그인</button>
       </div>
-      <div>
-        <label for="loginPassword">비밀번호</label>
-        <input id="loginPassword" type="password" placeholder="8자 이상" autocomplete="current-password">
-      </div>
-      <div id="loginError" style="color:#d00;font-size:13px;"></div>
-    </div>
-    <div class="actions">
-      <button id="doLogin" class="btn primary">로그인</button>
-    </div>
+    </form>
   </dialog>
 
   <!-- Back to Top 버튼 -->

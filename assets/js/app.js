@@ -58,31 +58,27 @@ function syncAuthUI(){
   const loginBtn  = document.getElementById('loginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const menuLearn = document.getElementById('menuLearn');
+  const dlg = document.getElementById('loginDialog');
 
   if (loginBtn)  loginBtn.style.display  = auth.loggedIn ? 'none' : 'inline-flex';
   if (logoutBtn) logoutBtn.style.display = auth.loggedIn ? 'inline-flex' : 'none';
   if (menuLearn) menuLearn.style.display = auth.loggedIn ? '' : 'none';
 
-  // 버튼 동작 바인딩
   if (loginBtn && !loginBtn.__bound){
     loginBtn.addEventListener('click', (e)=>{
       e.preventDefault();
-      auth = { loggedIn: true, name: '회원' }; // 임시
-      saveAuth();
-      syncAuthUI();
-      // 바로 내 강의실로 이동
-      location.href = './learn.html';
+      // 🔸 바로 learn.html로 가지 않고, 로그인 모달만 열기
+      if (dlg?.showModal) dlg.showModal();
     });
     loginBtn.__bound = true;
   }
+
   if (logoutBtn && !logoutBtn.__bound){
     logoutBtn.addEventListener('click', (e)=>{
       e.preventDefault();
-      auth = { loggedIn: false, name: '' };
-      saveAuth();
-      syncAuthUI();
-      // 학습실에서 로그아웃하면 홈으로
-      if (location.pathname.endsWith('learn.html')) location.href = './index.html';
+      auth = { loggedIn:false, name:'' };
+      saveAuth(); syncAuthUI();
+      if (location.pathname.endsWith('learn.html')) location.href = '/'; // 학습실에서 로그아웃하면 홈
     });
     logoutBtn.__bound = true;
   }
@@ -116,3 +112,23 @@ function renderLearn(){
     goLogin.__bound = true;
   }
 }
+
+// ================================
+// F) 로그인 모달 처리 (임시)
+// ================================
+window.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('loginForm');
+  const dlg  = document.getElementById('loginDialog');
+  if (form && !form.__bound){
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault(); // dialog 기본 submit 막음
+      const email = document.getElementById('loginEmail')?.value?.trim();
+      auth = { loggedIn:true, name: (email ? email.split('@')[0] : '회원') };
+      saveAuth(); syncAuthUI();
+      if (dlg?.close) dlg.close();
+      // 필요시 내 강의실로 이동하려면 아래 주석 해제
+      // location.href = './learn.html';
+    });
+    form.__bound = true;
+  }
+});
