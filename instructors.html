@@ -3,44 +3,115 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>GRIT EduTech | 강사진</title>
+  <title>그릿에듀 | 강사진</title>
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
-  <header>
-    <div class="nav">
-      <div class="left"><a href="/"><img src="./assets/logo.png" alt="로고"></a></div>
-      <div class="center">
-        <nav class="menu">
-          <a href="/">그릿에듀</a>
-          <a href="/story.html">GRIT EDU STORY</a>
-          <a href="/instructors.html" class="active">강사진</a>
-          <a href="/album.html">앨범</a>
-          <a href="/consult.html">상담 예약</a>
-        </nav>
-      </div>
+  <header class="site-header">
+    <div class="container">
+      <a href="/index.html" class="logo" aria-label="그릿에듀">그릿에듀</a>
+      <nav class="site-nav" aria-label="주 메뉴">
+        <ul>
+          <li><a href="/index.html">그릿에듀</a></li>
+          <li><a href="/story.html">이야기</a></li>
+          <li><a href="/instructors.html" class="active">강사진</a></li>
+          <li><a href="/album.html">갤러리</a></li>
+          <li><a href="/contact.html">문의</a></li>
+        </ul>
+      </nav>
     </div>
   </header>
 
   <main class="container">
-    <h1>GRIT EDU 강사진</h1>
+    <h1>그릿에듀 강사진</h1>
     <div class="grid-instructors" id="instructorGrid"></div>
   </main>
 
-  <footer><div class="inner">© 2025 GRIT EduTech</div></footer>
+  <!-- 강사 상세 모달 -->
+  <div id="insModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close="1"></div>
+    <div class="modal__dialog" role="document" aria-labelledby="insModalTitle">
+      <button class="modal__close" aria-label="닫기" data-close="1">×</button>
+      <div class="modal__body">
+        <div class="modal__left">
+          <img id="insPoster" alt="강사 포스터" />
+        </div>
+        <div class="modal__right">
+          <h2 id="insModalTitle"></h2>
+          <p id="insSubject" class="muted"></p>
+          <p id="insBio"></p>
+          <ul id="insHighlights" class="bullets"></ul>
+          <div class="video">
+            <iframe id="insYoutube"
+              width="560" height="315" frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer><div class="inner">© 2025 그릿에듀</div></footer>
   <script>
+    let INSTRUCTORS = [];
+
     async function loadInstructors(){
       const res = await fetch('/data/instructors.json');
-      const list = (await res.json()).filter(i => i.subject !== '컨설팅'); // 컨설팅 제거
+      INSTRUCTORS = await res.json();
+      const list = INSTRUCTORS.filter(i => i.subject !== '컨설팅');
       const grid = document.querySelector('#instructorGrid');
       grid.innerHTML = list.map(i => `
-        <article class="instructor-card">
+        <article class="instructor-card" data-id="${i.id}" tabindex="0" role="button" aria-label="${i.name} 상세보기">
           <img src="${i.photo}" alt="${i.name}">
           <h3>${i.name}</h3>
           <p>${i.subject}</p>
         </article>
       `).join('');
+
+      // 클릭 & 키보드 접근
+      grid.querySelectorAll('.instructor-card').forEach(card=>{
+        card.addEventListener('click', () => showInstructorModal(card.dataset.id));
+        card.addEventListener('keydown', (e) => { if(e.key==='Enter' || e.key===' ') showInstructorModal(card.dataset.id); });
+      });
+
+      // 딥링크: instructors.html?id=math_yhs
+      const q = new URL(location.href).searchParams.get('id');
+      if(q){ showInstructorModal(q); }
     }
+
+    function showInstructorModal(id){
+      const ins = INSTRUCTORS.find(x=>x.id===id);
+      if(!ins) return;
+      document.getElementById('insPoster').src = ins.poster || ins.photo;
+      document.getElementById('insModalTitle').textContent = ins.name;
+      document.getElementById('insSubject').textContent = ins.subject || '';
+      document.getElementById('insBio').textContent = ins.bio || '';
+      const ul = document.getElementById('insHighlights');
+      ul.innerHTML = (ins.highlights||[]).map(h=>`<li>${h}</li>`).join('');
+      const yt = document.getElementById('insYoutube');
+      yt.src = ins.youtube_id ? `https://www.youtube.com/embed/${ins.youtube_id}?rel=0&modestbranding=1` : '';
+
+      const modal = document.getElementById('insModal');
+      modal.setAttribute('aria-hidden','false');
+
+      // 포커스 트랩 간단 처리
+      setTimeout(()=>document.querySelector('.modal__close').focus(), 0);
+    }
+
+    function closeInstructorModal(){
+      const modal = document.getElementById('insModal');
+      document.getElementById('insYoutube').src = ''; // 재생 정지
+      modal.setAttribute('aria-hidden','true');
+    }
+
+    document.addEventListener('click', (e)=>{
+      if(e.target.dataset.close) closeInstructorModal();
+    });
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') closeInstructorModal();
+    });
+
     document.addEventListener('DOMContentLoaded', loadInstructors);
   </script>
 </body>

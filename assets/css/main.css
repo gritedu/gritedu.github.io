@@ -52,6 +52,11 @@ header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--borde
   border-radius: 8px;
 }
 
+/* 강사 카드 중앙정렬 */
+.instructor-card { text-align: center; }
+.instructor-card h3, .instructor-card p { text-align: center; margin: 6px 0; }
+.badge-year, .year-2025, .tag-2025 { display: none !important; }
+
 /* 진행률 바 */
 .progress-bar {
   height: 8px; 
@@ -83,3 +88,17 @@ dialog{border:none;border-radius:16px;padding:0;width:min(480px,92%);box-shadow:
 .footerbar{background:var(--footerdark);color:#fff;padding:10px 0;margin-top:48px}
 footer{background:#f6f7f9;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
 footer .inner{max-width:1200px;margin:0 auto;padding:16px 20px;text-align:center}
+
+/* 강사 상세 모달 */
+.modal{position:fixed;inset:0;display:none;}
+.modal[aria-hidden="false"]{display:block;}
+.modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5);}
+.modal__dialog{position:relative;max-width:980px;margin:6vh auto;background:#fff;border-radius:12px;overflow:hidden}
+.modal__close{position:absolute;top:8px;right:12px;font-size:22px;background:transparent;border:0;cursor:pointer}
+.modal__body{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px}
+.modal__left img{width:100%;height:auto;display:block;border-radius:8px}
+.modal__right .video{margin-top:12px;aspect-ratio:16/9;background:#000}
+.modal__right .video iframe{width:100%;height:100%}
+@media (max-width: 768px){
+  .modal__body{grid-template-columns:1fr}
+}
