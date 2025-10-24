@@ -56,15 +56,15 @@
 <body>
   <header>
     <div class="nav">
-      <div class="left"><a href="/"><img src="./assets/grite_logo_columns.jpg" alt="GRIT 로고" style="height:34px"></a></div>
+      <div class="left"><a href="./index.html"><img src="./assets/grite_logo_columns.jpg" alt="GRIT 로고" style="height:34px"></a></div>
       <div class="center">
         <nav class="menu" id="mainMenu">
-          <a href="/">그릿에듀</a>
-          <a href="/story.html">이야기</a>
-          <a href="/instructors.html">강사진</a>
-          <a href="/gallery.html">갤러리</a>
-          <a href="/contact.html">상담</a>
-          <a href="/learn.html" class="active">내 강의실</a>
+          <a href="./index.html">그릿에듀</a>
+          <a href="./story.html">이야기</a>
+          <a href="./instructors.html">강사진</a>
+          <a href="./gallery.html">갤러리</a>
+          <a href="./contact.html">상담</a>
+          <a href="./learn.html" class="active">내 강의실</a>
         </nav>
       </div>
       <div class="right" style="display:flex;align-items:center;gap:8px">
@@ -79,19 +79,62 @@
     <h1 style="margin:8px 0 14px">내 강의실</h1>
 
     <!-- 게스트 뷰 -->
-    <div class="guest-view">
-      <h2>로그인이 필요합니다</h2>
-      <p>수강 중인 강의와 학습실은 로그인 후 이용 가능합니다.</p>
-      <a class="btn" href="#" id="goLogin">로그인</a>
+    <div class="guest-view" id="guestView">
+      <div class="login-required">
+        <div class="login-card">
+          <h2>로그인이 필요합니다</h2>
+          <p>수강 중인 강의와 학습실은 로그인 후 이용 가능합니다.</p>
+          <button class="btn primary" id="goLogin">로그인</button>
+        </div>
+      </div>
     </div>
 
     <!-- 회원 뷰 -->
-    <div class="member-view" hidden>
-      <h2><span id="memberName">회원</span> 님의 학습실</h2>
-      <ul class="course-list">
-        <li class="course">수학 내신 심화 – 10강 진행 중</li>
-        <li class="course">영어 구문 – 4강 진행 중</li>
-      </ul>
+    <div class="member-view" id="memberView" hidden>
+      <div class="learn-layout">
+        <aside class="learn-aside">
+          <h3>내 강의</h3>
+          <ul class="course-list" id="courseList">
+            <li><a href="#">수학 내신 심화 – 10강 진행 중</a></li>
+            <li><a href="#">영어 구문 – 4강 진행 중</a></li>
+          </ul>
+        </aside>
+        <main class="learn-main">
+          <div class="learn-head">
+            <h2><span id="memberName">회원</span> 님의 학습실</h2>
+            <div class="pill-tabs">
+              <button class="tab active">진행중</button>
+              <button class="tab">완료</button>
+            </div>
+          </div>
+          <div class="course-card">
+            <header>
+              <h3>수학 내신 심화 <small>10강 진행 중</small></h3>
+              <div class="tags">
+                <span>고3</span>
+                <span>수학</span>
+                <span>내신</span>
+              </div>
+            </header>
+            <div class="course-body">
+              <div>
+                <div class="ytwrap">
+                  <iframe src="https://www.youtube.com/embed/6aPYStft9Xo" title="수학 강의" frameborder="0" allowfullscreen></iframe>
+                </div>
+              </div>
+              <div class="course-side">
+                <h4>강의 목차</h4>
+                <ul class="weeks">
+                  <li>1주차: 함수의 극한</li>
+                  <li>2주차: 미분계수</li>
+                  <li>3주차: 도함수</li>
+                  <li>4주차: 함수의 증가/감소</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   </main>
 
@@ -147,11 +190,11 @@
   <button id="backToTop" aria-label="맨 위로">↑</button>
 
   <!-- 공통 스크립트: firebase 초기화 + auth UI -->
-  <script type="module" src="/assets/js/firebase.js"></script>
-  <script type="module" src="/assets/js/auth-ui.js"></script>
-  <script src="/assets/js/app.js" defer></script>
+  <script type="module" src="./assets/js/firebase.js"></script>
+  <script type="module" src="./assets/js/auth-ui.js"></script>
+  <script src="./assets/js/app.js" defer></script>
   
   <!-- 페이지 전용 스크립트 -->
-  <script type="module" src="/assets/js/learn.js"></script>
+  <script type="module" src="./assets/js/learn.js"></script>
 </body>
 </html>

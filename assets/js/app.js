@@ -38,31 +38,64 @@ function syncGlobalUI(){
   if (menuLearn) {
     menuLearn.style.display = auth.loggedIn ? '' : 'none';
   }
-}
-
-/* ===== 엔터로 로그인 ===== */
-const loginForm = document.getElementById('loginForm');
-if (loginForm) {
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('guestEmail')?.value.trim();
-    const password = document.getElementById('guestPassword')?.value;
-    const error = document.getElementById('guestError');
-    
-    if (error) error.textContent = '';
-    
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // 성공 시 로컬 상태 업데이트
-      auth = { loggedIn: true, name: email.split('@')[0] };
-      saveAuth();
-      syncGlobalUI();
-      if (location.pathname.endsWith('learn.html')) renderLearn();
-    } catch (err) {
-      if (error) error.textContent = err.message || String(err);
-    }
+  
+  // "내 강의실" 메뉴는 로그인 시에만 표시
+  const allMenuLearn = document.querySelectorAll('a[href*="learn.html"]');
+  allMenuLearn.forEach(menu => {
+    if (menu.classList.contains('active')) return; // 현재 페이지는 항상 표시
+    menu.style.display = auth.loggedIn ? '' : 'none';
   });
 }
+
+/* ===== 로그인 모달 처리 ===== */
+window.addEventListener('DOMContentLoaded', () => {
+  const loginDialog = document.getElementById('loginDialog');
+  const doLoginBtn = document.getElementById('doLogin');
+  const loginEmail = document.getElementById('loginEmail');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginError = document.getElementById('loginError');
+  
+  if (doLoginBtn && loginEmail && loginPassword) {
+    doLoginBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value;
+      
+      if (loginError) loginError.textContent = '';
+      
+      if (!email || !password) {
+        if (loginError) loginError.textContent = '이메일과 비밀번호를 입력해주세요.';
+        return;
+      }
+      
+      try {
+        // 임시 로그인 (실제 Firebase 연동 전까지)
+        auth = { loggedIn: true, name: email.split('@')[0] };
+        saveAuth();
+        syncGlobalUI();
+        if (location.pathname.endsWith('learn.html')) renderLearn();
+        
+        // 모달 닫기
+        if (loginDialog) loginDialog.close();
+        loginEmail.value = '';
+        loginPassword.value = '';
+      } catch (err) {
+        if (loginError) loginError.textContent = err.message || String(err);
+      }
+    });
+  }
+  
+  // 엔터키로 로그인
+  if (loginEmail && loginPassword) {
+    const handleEnter = (e) => {
+      if (e.key === 'Enter') {
+        doLoginBtn?.click();
+      }
+    };
+    loginEmail.addEventListener('keydown', handleEnter);
+    loginPassword.addEventListener('keydown', handleEnter);
+  }
+});
 
 /* ===== 모바일 메뉴 개선 ===== */
 window.addEventListener('DOMContentLoaded', () => {
@@ -133,8 +166,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // ---- Learn 페이지 렌더링 ----
 function renderLearn(){
-  const guest  = document.querySelector('.guest-view');
-  const member = document.querySelector('.member-view');
+  const guest  = document.getElementById('guestView');
+  const member = document.getElementById('memberView');
   const nameEl = document.getElementById('memberName');
   if (!guest || !member) return;
 
@@ -153,7 +186,15 @@ window.addEventListener('DOMContentLoaded', () => {
   if (location.pathname.endsWith('learn.html')) {
     // "내 강의실" 버튼으로도 로그인 유도
     const goLogin = document.getElementById('goLogin');
-    if (goLogin) goLogin.addEventListener('click', (e)=>{ e.preventDefault(); auth={loggedIn:true,name:'회원'}; saveAuth(); syncGlobalUI(); renderLearn(); });
+    if (goLogin) {
+      goLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        const loginDialog = document.getElementById('loginDialog');
+        if (loginDialog) {
+          loginDialog.showModal();
+        }
+      });
+    }
     renderLearn();
   }
 });
