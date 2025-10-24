@@ -1,0 +1,20 @@
+{
+  "grit": [
+    "assets/gallery/grit/grit1.jpeg",
+    "assets/gallery/grit/grit2.jpeg",
+    "assets/gallery/grit/grit3.jpeg",
+    "assets/gallery/grit/grit4.jpeg"
+  ],
+  "event": [
+    "assets/gallery/event/event1.png",
+    "assets/gallery/event/event2.png",
+    "assets/gallery/event/event3.png",
+    "assets/gallery/event/event4.png",
+    "assets/gallery/event/event5.png",
+    "assets/gallery/event/event6.png"
+  ],
+  "study": [
+    "assets/gallery/study/study1.png",
+    "assets/gallery/study/study2.png"
+  ]
+}

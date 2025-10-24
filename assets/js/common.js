@@ -24,10 +24,11 @@ export function injectCommonUI() {
     <div class="grit-footer-inner">
       <div class="grit-footer-sns">
         <a href="https://www.instagram.com/grit_edu_seoul/" target="_blank" rel="noopener" aria-label="Instagram" class="sns">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
-            <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Z"></path>
-            <path d="M12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z" fill="#fff"></path>
-            <circle cx="18" cy="6.5" r="1"></circle>
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" fill="#222"/>
+            <circle cx="12" cy="12" r="5.2" fill="#fff"/>
+            <circle cx="12" cy="12" r="3.8" fill="#222"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="#fff"/>
           </svg>
         </a>
         <a href="https://www.youtube.com/@gritedu_official" target="_blank" rel="noopener" aria-label="YouTube" class="sns">
@@ -70,23 +71,23 @@ export function injectCommonUI() {
   });
 
   // 4) 맨위로 버튼 추가
-  if (!document.getElementById('goTop')) {
-    const topBtn = document.createElement('button');
-    topBtn.id = 'goTop';
-    topBtn.className = 'grit-top';
-    topBtn.innerHTML = '▲';
-    topBtn.setAttribute('aria-label', '맨 위로');
-    topBtn.style.opacity = '0';
-    document.body.appendChild(topBtn);
+  ensureTopButton();
+}
 
-    // 맨위로 버튼 동작
-    window.addEventListener('scroll', () => {
-      topBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
-    });
-    topBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+function ensureTopButton(){
+  let btn = document.getElementById('goTop');
+  if(!btn){
+    document.body.insertAdjacentHTML('beforeend',
+      '<button id="goTop" class="grit-top" aria-label="맨 위로" style="opacity:0">▲</button>'
+    );
+    btn = document.getElementById('goTop');
   }
+  btn.style.display = 'flex';
+  btn.style.zIndex = '9999';
+  const onScroll = () => { btn.style.opacity = (window.scrollY > 300) ? '1' : '0'; };
+  window.addEventListener('scroll', onScroll, { passive:true });
+  btn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+  onScroll();
 }
 
 document.addEventListener('DOMContentLoaded', injectCommonUI);

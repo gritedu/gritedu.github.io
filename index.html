@@ -83,27 +83,20 @@
     });
   }
 
-  // 갤러리 최신 1장씩 (grit/event/study) - 확장자 가변
+  // 갤러리 최신 1장씩 (grit/event/study) - 매니페스트 기반
   async function renderLatestGallery(){
-    const base = './assets/gallery/';
-    const folders = ['grit','event','study'];
-    const exts = ['jpg','jpeg','png','JPG','JPEG','PNG'];
-    const maxIndex = 99;
-    async function fileExists(url){
-      try{ const r = await fetch(url,{method:'HEAD'}); return r.ok; }catch{ return false; }
-    }
-    async function latestOf(folder){
-      for(let i=maxIndex;i>=1;i--){
-        for(const ext of exts){
-          const u = `${base}${folder}/${folder}${i}.${ext}`;
-          if(await fileExists(u)) return u;
-        }
-      }
-      return null;
-    }
     const grid = document.getElementById('gritGalleryPreview');
-    const urls = await Promise.all(folders.map(latestOf));
-    grid.innerHTML = urls.filter(Boolean).map(u=>`<img src="${u}" class="gallery-thumb" alt="그릿에듀 갤러리 최신" onclick="openLightbox('${u}')">`).join('');
+    try{
+      const res = await fetch('./data/gallery.json');
+      const map = await res.json();
+      const pick = k => (map[k] && map[k].length ? map[k][map[k].length - 1] : null); // 최신 = 배열 마지막
+      const urls = [pick('grit'), pick('study'), pick('event')].filter(Boolean);
+      grid.innerHTML = urls.map(u =>
+        `<figure class="gallery-thumb"><img src="./${u}" alt="그릿에듀 갤러리" loading="lazy" onclick="openLightbox('./${u}')"></figure>`
+      ).join('');
+    }catch(e){
+      grid.innerHTML = '<p>갤러리를 불러오지 못했습니다.</p>';
+    }
   }
 
   // 라이트박스 함수

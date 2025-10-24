@@ -276,14 +276,14 @@ button, a{transition:all .3s ease;}
 }
 .grit-btn:hover { background: #ff9133; }
 
-html { scrollbar-gutter: stable both-edges; }
-.grit-header.fixed { z-index: 1000; }
-.grit-top { z-index: 1100; }
+.grit-top{position:fixed;right:24px;bottom:24px;width:48px;height:48px;border-radius:50%;
+  background:#ff7a00;color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 4px 10px rgba(0,0,0,.25);cursor:pointer;transition:.25s}
+.grit-top:hover{transform:translateY(-3px);background:#ff8f2b}
 
-.gallery-thumb img { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:10px; border:1px solid #eee; cursor:pointer; }
-.grit-gallery img { width:100%; aspect-ratio:1/1; object-fit:cover; }
+.profile-photo{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:14px;
+  box-shadow:0 8px 28px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);border:1px solid #eee}
 
-.grit-row-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; cursor:grab; }
-.grit-row-scroll::-webkit-scrollbar { height:8px; }
-.grit-row-scroll:active { cursor:grabbing; }
-.grit-row-item { min-width:220px; flex:0 0 auto; }
+.gallery-thumb img,.grit-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;border:1px solid #eee}
+
+html{scrollbar-gutter:stable both-edges}

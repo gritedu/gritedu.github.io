@@ -9,7 +9,6 @@
 </head>
 <body>
   <main class="grit-section" style="max-width:1080px;margin:0 auto;padding:16px">
-    <a href="./instructors.html" class="grit-link">← 강사진 목록</a>
     <div id="profile"></div>
   </main>
   <script type="module" src="./assets/js/common.js"></script>
@@ -19,20 +18,34 @@
       const res = await fetch('./data/instructors.json'); const data = await res.json();
       const me = data.find(x=>x.id===p);
       const wrap = document.getElementById('profile');
-      if(!me){ wrap.innerHTML = '<p>강사 정보를 찾을 수 없습니다.</p>'; return; }
+      if(!me){ wrap.innerHTML='<p>강사 정보를 찾을 수 없습니다.</p>'; return; }
+
+      // 유홍석 선생님 맛보기(없다면 지정)
+      if(me.id==='math_yhs' && !me.youtube_id){ me.youtube_id = '6aPYStft9Xo'; }
+
       wrap.innerHTML = `
-        <section class="grit-profile">
-          <div style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start">
-            <img src="${me.photo}" alt="${me.name}" style="width:100%;border-radius:12px;object-fit:cover;aspect-ratio:3/4">
-            <div>
-              <h1 style="margin:0 0 8px">${me.name}</h1>
-              <p style="margin:6px 0;color:#666">${me.subject||''}</p>
-              <p>${(me.bio||'').replace(/\n/g,'<br>')}</p>
-              ${me.poster?`<img src="${me.poster}" alt="포스터" style="width:100%;max-width:420px;border-radius:12px;margin-top:12px">`:''}
-              ${me.youtube_id?`<div style="margin-top:16px"><iframe width="560" height="315" src="https://www.youtube.com/embed/${me.youtube_id}" title="YouTube video" frameborder="0" allowfullscreen></iframe></div>`:''}
-            </div>
-          </div>
-        </section>`;
+      <section class="grit-profile" style="display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start">
+        <div>
+          <img class="profile-photo" src="${me.photo}" alt="${me.name}">
+        </div>
+        <div>
+          <h1 style="margin:0 0 6px">${me.name}</h1>
+          <p style="margin:0 0 12px;color:#666">${me.subject||''}</p>
+          <div style="line-height:1.7">${(me.bio||'').replace(/\n/g,'<br>')}</div>
+
+          ${me.books ? `<h3 style="margin:24px 0 8px">교재</h3><div>${me.books.replace(/\n/g,'<br>')}</div>` : ''}
+
+          ${me.youtube_id ? `
+            <h3 style="margin:24px 0 8px">맛보기 강좌</h3>
+            <div style="aspect-ratio:16/9;max-width:720px;border-radius:12px;overflow:hidden;border:1px solid #eee">
+              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${me.youtube_id}" 
+                title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
+                gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>` : ''}
+
+          ${me.poster?`<h3 style="margin:24px 0 8px">포스터</h3><img src="${me.poster}" alt="포스터" style="max-width:420px;width:100%;border-radius:12px;border:1px solid #eee">`:''}
+        </div>
+      </section>`;
     }
     document.addEventListener('DOMContentLoaded', loadProfile);
   </script>
