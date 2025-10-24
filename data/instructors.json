@@ -6,7 +6,7 @@
     "photo": "/assets/instructors/math_YHS.png",
     "bio": "미적/확통/기하 통합 커리, 킬러·준킬러 집중. 개념→기출→실전 3트랙으로 체계적 학습",
     "highlights": ["개념→기출→실전 3트랙", "학교별 내신 분석"],
-    "poster": "/assets/instructors/posters/math_yhs.jpg",
+    "poster": "./assets/instructors/posters/Pmath_YHS.png",
     "youtube_id": "6aPYStft9Xo"
   },
   {
@@ -16,7 +16,7 @@
     "photo": "/assets/instructors/kr_KGW.png",
     "bio": "문학·비문학 통합 독해 커리큘럼으로 체계적인 독해력 향상",
     "highlights": ["EBS 연계+비연계 통합학습", "학교별 내신 적중"],
-    "poster": "/assets/instructors/posters/kr_kgw.jpg",
+    "poster": "./assets/instructors/posters/Pkr_KGW.png",
     "youtube_id": "dQw4w9WgXcQ"
   },
   {
@@ -26,7 +26,7 @@
     "photo": "/assets/instructors/math_GBH.png",
     "bio": "기초부터 심화까지 단계별 수학 학습으로 확실한 실력 향상",
     "highlights": ["기초 개념 완벽 정리", "단계별 문제 해결"],
-    "poster": "/assets/instructors/posters/math_gbh.jpg",
+    "poster": "./assets/instructors/posters/Pmath_GBH.png",
     "youtube_id": "oHg5SJYRHA0"
   },
   {
@@ -36,7 +36,7 @@
     "photo": "/assets/instructors/si_KJY.jpg",
     "bio": "물리, 화학, 생물 통합 과학 교육으로 과학적 사고력 향상",
     "highlights": ["통합 과학 교육", "실험 중심 학습"],
-    "poster": "/assets/instructors/posters/sci_kjy.jpg",
+    "poster": "./assets/instructors/posters/Psi_KJY.png",
     "youtube_id": "PFDu9oVAE-g"
   },
   {
@@ -46,7 +46,7 @@
     "photo": "/assets/instructors/math_PNR.jpg",
     "bio": "수학의 원리를 이해하고 응용할 수 있는 능력 향상",
     "highlights": ["원리 이해 중심", "응용 문제 해결"],
-    "poster": "/assets/instructors/posters/math_pnr.jpg",
+    "poster": "./assets/instructors/posters/Pmath_PNR.png",
     "youtube_id": "dQw4w9WgXcQ"
   },
   {
@@ -56,7 +56,7 @@
     "photo": "/assets/instructors/kr_PSJ.png",
     "bio": "문법·독서·문학 전 영역 균형 학습으로 국어 실력 향상",
     "highlights": ["기출 분류 학습", "문항 유형화"],
-    "poster": "/assets/instructors/posters/kr_psj.jpg",
+    "poster": "./assets/instructors/posters/Pkr_PSJ.png",
     "youtube_id": "oHg5SJYRHA0"
   },
   {
@@ -66,7 +66,7 @@
     "photo": "/assets/instructors/eng_PHR.png",
     "bio": "영어의 4기능을 균형있게 학습하여 실용적인 영어 실력 향상",
     "highlights": ["4기능 균형 학습", "실용적 영어"],
-    "poster": "/assets/instructors/posters/eng_phr.jpg",
+    "poster": "./assets/instructors/posters/Peng_PHR.png",
     "youtube_id": "PFDu9oVAE-g"
   },
   {
@@ -76,7 +76,7 @@
     "photo": "/assets/instructors/math_SYJ.png",
     "bio": "수학적 사고력을 기르고 문제 해결 능력 향상",
     "highlights": ["수학적 사고력", "문제 해결 능력"],
-    "poster": "/assets/instructors/posters/math_syj.jpg",
+    "poster": "./assets/instructors/posters/Pmath_SYJ.png",
     "youtube_id": "dQw4w9WgXcQ"
   },
   {
@@ -86,7 +86,7 @@
     "photo": "/assets/instructors/si_OJS.png",
     "bio": "과학의 원리를 이해하고 탐구하는 능력 향상",
     "highlights": ["과학 원리 이해", "탐구 능력 향상"],
-    "poster": "/assets/instructors/posters/sci_ojs.jpg",
+    "poster": "./assets/instructors/posters/Psi_OJS.png",
     "youtube_id": "oHg5SJYRHA0"
   },
   {
@@ -96,7 +96,7 @@
     "photo": "/assets/instructors/eng_OHB.png",
     "bio": "영어의 기본기를 탄탄히 하고 실전 적용 능력 향상",
     "highlights": ["기본기 탄탄", "실전 적용"],
-    "poster": "/assets/instructors/posters/eng_ohb.jpg",
+    "poster": "./assets/instructors/posters/Peng_OHB.png",
     "youtube_id": "PFDu9oVAE-g"
   },
   {
@@ -106,7 +106,7 @@
     "photo": "/assets/instructors/math_LYJ.jpg",
     "bio": "수학의 개념을 명확히 이해하고 체계적으로 학습",
     "highlights": ["개념 명확화", "체계적 학습"],
-    "poster": "/assets/instructors/posters/math_lyj.jpg",
+    "poster": "./assets/instructors/posters/Pmath_LYJ.png",
     "youtube_id": "dQw4w9WgXcQ"
   },
   {
@@ -116,7 +116,7 @@
     "photo": "/assets/instructors/math_LGW.png",
     "bio": "수학의 논리적 사고를 기르고 문제 해결 전략 수립",
     "highlights": ["논리적 사고", "문제 해결 전략"],
-    "poster": "/assets/instructors/posters/math_lgw.jpg",
+    "poster": "./assets/instructors/posters/Pmath_LGW.png",
     "youtube_id": "oHg5SJYRHA0"
   },
   {
@@ -126,7 +126,7 @@
     "photo": "/assets/instructors/math_CJY.png",
     "bio": "수학의 기초부터 심화까지 단계별 학습으로 실력 향상",
     "highlights": ["기초부터 심화", "단계별 학습"],
-    "poster": "/assets/instructors/posters/math_cjy.jpg",
+    "poster": "./assets/instructors/posters/Pmath_CJY.png",
     "youtube_id": "PFDu9oVAE-g"
   },
   {
@@ -136,7 +136,7 @@
     "photo": "/assets/instructors/eng_JBH.png",
     "bio": "영어의 핵심을 파악하고 효율적으로 학습하는 방법 제시",
     "highlights": ["핵심 파악", "효율적 학습"],
-    "poster": "/assets/instructors/posters/eng_jbh.jpg",
+    "poster": "./assets/instructors/posters/Peng_JBH.png",
     "youtube_id": "dQw4w9WgXcQ"
   },
   {
@@ -146,7 +146,7 @@
     "photo": "/assets/instructors/math_JKH.jpg",
     "bio": "수학의 원리를 이해하고 응용할 수 있는 능력 향상",
     "highlights": ["원리 이해", "응용 능력"],
-    "poster": "/assets/instructors/posters/math_jkh.jpg",
+    "poster": "./assets/instructors/posters/Pmath_JKH.png",
     "youtube_id": "oHg5SJYRHA0"
   },
   {
@@ -156,7 +156,7 @@
     "photo": "/assets/instructors/math_HJH.jpg",
     "bio": "수학의 기본기를 탄탄히 하고 실전 문제 해결 능력 향상",
     "highlights": ["기본기 탄탄", "실전 문제 해결"],
-    "poster": "/assets/instructors/posters/math_hjh.jpg",
+    "poster": "./assets/instructors/posters/Pmath_HJH.png",
     "youtube_id": "PFDu9oVAE-g"
   },
   {
