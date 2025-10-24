@@ -1,9 +1,6 @@
-// assets/js/firebase.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
-// 프로젝트 키 (네가 준 값 그대로)
 const firebaseConfig = {
   apiKey: "AIzaSyCYZXuZ5ZGRgSEzvEGfbaUg6ViiyidSVKU",
   authDomain: "gritedu-lms.firebaseapp.com",
@@ -13,6 +10,5 @@ const firebaseConfig = {
   appId: "1:789104307613:web:0d6acf64a261a1a86d9374"
 };
 
-export const app = initializeApp(firebaseConfig);
+export const app  = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
