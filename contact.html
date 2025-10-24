@@ -143,7 +143,7 @@
     <div class="inner">© 2025 그릿에듀 | 대한민국 교육의 새로운 표준</div>
   </footer>
 
-  <!-- 로그인 모달 -->
+  <!-- 로그인 모달만 남긴다 -->
   <dialog id="loginDialog" class="modal">
     <header>
       <span>로그인</span>
@@ -152,43 +152,16 @@
     <div class="body">
       <div>
         <label for="loginEmail">이메일</label>
-        <input id="loginEmail" type="email" placeholder="you@example.com">
+        <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email">
       </div>
       <div>
         <label for="loginPassword">비밀번호</label>
-        <input id="loginPassword" type="password" placeholder="8자 이상">
+        <input id="loginPassword" type="password" placeholder="8자 이상" autocomplete="current-password">
       </div>
-      <div id="loginError" class="error-text"></div>
+      <div id="loginError" style="color:#d00;font-size:13px;"></div>
     </div>
     <div class="actions">
-      <button id="btnSignup" class="btn">회원가입</button>
       <button id="doLogin" class="btn primary">로그인</button>
-    </div>
-  </dialog>
-
-  <!-- 회원가입 모달 -->
-  <dialog id="signupDialog" class="modal">
-    <header>
-      <span>회원가입</span>
-      <button data-close class="btn">닫기</button>
-    </header>
-    <div class="body">
-      <div>
-        <label for="signupEmail">이메일</label>
-        <input id="signupEmail" type="email" placeholder="you@example.com">
-      </div>
-      <div>
-        <label for="signupPassword">비밀번호 (8자 이상)</label>
-        <input id="signupPassword" type="password" placeholder="8자 이상">
-      </div>
-      <div>
-        <label for="signupPassword2">비밀번호 확인</label>
-        <input id="signupPassword2" type="password" placeholder="다시 입력">
-      </div>
-      <div id="signupError" class="error-text"></div>
-    </div>
-    <div class="actions">
-      <button id="doSignup" class="btn primary">가입하기</button>
     </div>
   </dialog>
 
