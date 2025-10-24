@@ -3,55 +3,107 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>그릿에듀 | 교육의 새로운 표준</title>
+  <title>그릿에듀 | 대한민국 교육의 새로운 표준</title>
   <link rel="stylesheet" href="./assets/css/main.css" />
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="container">
-      <a href="/index.html" class="logo" aria-label="그릿에듀">그릿에듀</a>
-      <nav class="site-nav" aria-label="주 메뉴">
-        <ul>
-          <li><a href="/index.html">그릿에듀</a></li>
-          <li><a href="/story.html">이야기</a></li>
-          <li><a href="/instructors.html">강사진</a></li>
-          <li><a href="/album.html">갤러리</a></li>
-          <li><a href="/contact.html">문의</a></li>
-        </ul>
-      </nav>
+<header class="grit-header">
+  <div class="grit-header__wrap">
+    <a class="grit-logo" href="./index.html" aria-label="그릿에듀 홈">
+      <img src="./assets/logo.png" alt="그릿에듀 로고">
+    </a>
+    <nav class="grit-nav" aria-label="주 메뉴">
+      <ul>
+        <li><a href="./index.html" class="is-active">그릿에듀</a></li>
+        <li><a href="./story.html">이야기</a></li>
+        <li><a href="./instructors.html">강사진</a></li>
+        <li><a href="./album.html">갤러리</a></li>
+        <li><a href="./contact.html">문의</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="grit-hero">
+    <img src="./assets/banner_main.png" alt="그릿에듀 배너">
+  </section>
+
+  <section class="grit-section">
+    <div class="grit-section__head">
+      <h2>강사진</h2>
+      <a class="grit-link" href="./instructors.html">더보기</a>
     </div>
-  </header>
+    <div id="gritInstructorsPreview" class="grit-grid"></div>
+  </section>
 
-  <main class="container">
-    <!-- 메인 배너 -->
-    <section class="poster">
-      <img src="./assets/banner_main.png" alt="교육의 새로운 표준 GRIT EDU">
-    </section>
+  <section class="grit-section">
+    <div class="grit-section__head">
+      <h2>갤러리</h2>
+      <a class="grit-link" href="./album.html">더보기</a>
+    </div>
+    <div id="gritGalleryPreview" class="grit-grid"></div>
+  </section>
+</main>
 
-    <!-- 코스 섹션 -->
-    <section class="section">
-      <h2 style="margin-bottom:16px;">인기 코스</h2>
-      <div class="grid-instructors" id="coursesGrid"></div>
-    </section>
+<footer class="grit-footer">
+  <div class="grit-footer__sns">
+    <a href="https://www.instagram.com/grit_edu_seoul/" target="_blank" rel="noopener" aria-label="Instagram" class="sns">
+      <!-- Instagram SVG (흑백) -->
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="#222" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2.2A2.8 2.8 0 1 0 12 14.8 2.8 2.8 0 0 0 12 7.2zM18 6.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+    </a>
+    <a href="https://www.youtube.com/@gritedu_official" target="_blank" rel="noopener" aria-label="YouTube" class="sns">
+      <!-- YouTube SVG (흑백) -->
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="#222" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.7 3.5 12 3.5 12 3.5s-7.7 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.7.6 9.4.6 9.4.6s7.7 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.8 15.5V8.5L16 12l-6.2 3.5z"/></svg>
+    </a>
+    <a href="https://blog.naver.com/PostList.naver?blogId=gritedu&categoryNo=0&from=postList" target="_blank" rel="noopener" aria-label="Naver Blog" class="sns">
+      <!-- Blog SVG (흑백) -->
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="#222" aria-hidden="true"><path d="M3 3h18v18H3z"/><path fill="#fff" d="M8 7h2.6l3 4.3V7H16v10h-2.6L10.4 12v5H8z"/></svg>
+    </a>
+  </div>
+  <div class="grit-footer__text">
+    <p>© 2025 그릿에듀 | 대한민국 교육의 새로운 표준</p>
+    <p>[08635] 서울 금천구 시흥대로47길 28-5 남서울교육문화센터 5층<br>Tel : 02-809-0611</p>
+  </div>
+</footer>
+<button id="gritToTop" class="grit-top" aria-label="맨 위로">▲</button>
+<script>
+  const topBtn = document.getElementById('gritToTop');
+  const onScroll = () => { topBtn.style.opacity = (window.scrollY > 400) ? '1' : '0'; };
+  window.addEventListener('scroll', onScroll, { passive:true });
+  topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  onScroll();
 
-    <!-- 강사진 섹션 -->
-    <section class="section">
-      <h2 style="margin-bottom:8px;">강사진 소개</h2>
-      <div class="tabs" id="subjectTabs">
-        <button class="tab active" data-subject="ALL">전체</button>
-        <button class="tab" data-subject="국어">국어</button>
-        <button class="tab" data-subject="수학">수학</button>
-        <button class="tab" data-subject="영어">영어</button>
-        <button class="tab" data-subject="과학">과학</button>
-      </div>
-      <div class="grid-instructors" id="instructorGrid"></div>
-    </section>
-  </main>
+  // 강사진 8명 프리뷰
+  (async () => {
+    const res = await fetch('./data/instructors.json');
+    const data = await res.json();
+    const list = data.filter(i => i.subject !== '컨설팅').slice(0,8);
+    document.getElementById('gritInstructorsPreview').innerHTML = list.map(i => `
+      <a class="instructor-card" href="./instructors.html?id=${i.id}" aria-label="${i.name} 상세">
+        <img src="${i.photo}" alt="${i.name}">
+        <h3>${i.name}</h3>
+        <p>${i.subject||''}</p>
+      </a>
+    `).join('');
+  })();
 
-  <footer><div class="inner">© 2025 그릿에듀 | 교육의 새로운 표준</div></footer>
-  <script type="module" src="./assets/js/app.js"></script>
-  <script type="module" src="./assets/js/render-courses.js"></script>
+  // 갤러리 6장 프리뷰(이미지 경로가 /assets/album 혹은 /assets/gallery 가정)
+  (async () => {
+    const grid = document.getElementById('gritGalleryPreview');
+    if(!grid) return;
+    // 정적 썸네일 6장만(있으면 교체)
+    const thumbs = [
+      './assets/album/grit1.jpeg','./assets/album/grit2.jpeg','./assets/album/grit3.jpeg',
+      './assets/album/grit4.jpeg','./assets/album/student1.png','./assets/album/student2.png'
+    ];
+    grid.innerHTML = thumbs.map(src => `
+      <a class="gallery-thumb" href="./album.html">
+        <img src="${src}" alt="그릿에듀 갤러리">
+      </a>
+    `).join('');
+  })();
+</script>
 </body>
 </html>

@@ -102,3 +102,43 @@ footer .inner{max-width:1200px;margin:0 auto;padding:16px 20px;text-align:center
 @media (max-width: 768px){
   .modal__body{grid-template-columns:1fr}
 }
+
+/* header */
+.grit-header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #eee}
+.grit-header__wrap{display:grid;grid-template-columns:160px 1fr;align-items:center;gap:12px;max-width:1080px;margin:0 auto;padding:10px 16px}
+.grit-logo img{height:40px;width:auto;display:block}
+.grit-nav ul{display:flex;justify-content:center;gap:20px;list-style:none;margin:0;padding:0}
+.grit-nav a{display:inline-block;padding:8px 10px;color:#222;text-decoration:none}
+.grit-nav a.is-active{font-weight:700}
+
+/* hero */
+.grit-hero img{width:100%;height:auto;display:block;border-radius:12px;margin:16px auto;max-width:1080px}
+
+/* sections */
+.grit-section{max-width:1080px;margin:24px auto;padding:0 16px}
+.grit-section__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.grit-link{color:#222;text-decoration:underline}
+
+/* grid */
+.grit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media (max-width:1024px){.grit-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.grit-grid{grid-template-columns:repeat(2,1fr)}}
+
+.instructor-card{display:block;text-align:center;background:#fff;border:1px solid #eee;border-radius:10px;overflow:hidden;padding:10px}
+.instructor-card img{width:100%;height:200px;object-fit:cover;object-position:center top;display:block;border-radius:8px}
+.instructor-card h3,.instructor-card p{margin:6px 0;text-align:center}
+
+.gallery-thumb img{width:100%;height:200px;object-fit:cover;border-radius:10px;border:1px solid #eee}
+
+/* footer */
+.grit-footer{margin-top:40px;padding:20px 16px;border-top:1px solid #eee;text-align:center}
+.grit-footer__sns{display:flex;justify-content:center;gap:16px;margin-bottom:8px}
+.grit-footer__sns .sns{opacity:.8;transition:opacity .2s}
+.grit-footer__sns .sns:hover{opacity:1}
+.grit-footer__text p{margin:4px 0;color:#333}
+
+/* to top */
+.grit-top{position:fixed;right:18px;bottom:18px;width:40px;height:40px;border-radius:20px;border:0;background:#222;color:#fff;font-weight:700;cursor:pointer;opacity:0;transition:opacity .2s}
+
+/* 2025 텍스트 잔여 제거 */
+.badge-year,.year-2025,.tag-2025{display:none !important}
