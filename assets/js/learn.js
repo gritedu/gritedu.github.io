@@ -17,7 +17,14 @@ onAuthStateChanged(auth, async (user)=>{
     alert("로그인이 필요합니다.");
     location.href = "/"; return;
   }
-  meEmail && (meEmail.textContent = user.email || user.uid);
+
+  // 이름 표시
+  let label = user.email || user.uid;
+  try{
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if(snap.exists() && snap.data().name) label = snap.data().name; // ✅
+  }catch(_){}
+  if(meEmail) meEmail.textContent = label;
 
   // 승인 여부/수강 강좌 조회
   const uref = doc(db, "users", user.uid);
