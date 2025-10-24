@@ -7,10 +7,9 @@
 html,body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text)}
 a{text-decoration:none;color:inherit}
 
-/* ============ 글로벌 ============ */
-html, body { overflow-x: hidden; } /* 모바일 가로 스크롤 방지 */
-img { max-width: 100%; height: auto; display: block; } /* 이미지 튀어나옴 방지 */
-.container { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+/* 로고 이미지 스타일 */
+.logo img { height: 28px; width: auto; display: block; }
+@media (max-width:860px){ .logo img { height: 24px; } }
 
 /* 네비 리스트 표시(글머리표) 제거 + 여백 초기화 */
 .site-nav ul { list-style: none; margin: 0; padding: 0; }
