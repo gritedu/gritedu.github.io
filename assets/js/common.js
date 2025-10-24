@@ -1,7 +1,9 @@
+const HEADER_HEIGHT = 64;
+
 export function injectCommonUI() {
   const headerTpl = `
-  <header class="grit-header fixed">
-    <div class="grit-header__wrap">
+  <header class="grit-header fixed" style="height:${HEADER_HEIGHT}px">
+    <div class="grit-header__wrap" style="height:${HEADER_HEIGHT}px">
       <a class="grit-logo" href="./index.html" aria-label="그릿에듀 홈">
         <img src="./assets/logo.png" alt="그릿에듀 로고">
       </a>
@@ -10,12 +12,13 @@ export function injectCommonUI() {
           <li><a href="./index.html">그릿에듀</a></li>
           <li><a href="./story.html">이야기</a></li>
           <li><a href="./instructors.html">강사진</a></li>
-          <li><a href="./album.html">갤러리</a></li>
+          <li><a href="./gallery.html">갤러리</a></li>
           <li><a href="./contact.html">문의</a></li>
         </ul>
       </nav>
     </div>
   </header>`;
+
   const footerTpl = `
   <footer class="grit-footer">
     <div class="grit-footer__sns">
@@ -29,18 +32,26 @@ export function injectCommonUI() {
     </div>
   </footer>`;
 
-  // 기존 정적 헤더/푸터가 있으면 교체, 없으면 주입
+  // 1) 기존 헤더/푸터 있으면 교체, 없으면 주입
   const existHeader = document.querySelector('.grit-header');
-  if (existHeader) { existHeader.outerHTML = headerTpl; } else { document.body.insertAdjacentHTML('afterbegin', headerTpl); }
+  if (existHeader) existHeader.outerHTML = headerTpl; else document.body.insertAdjacentHTML('afterbegin', headerTpl);
+
+  // 2) 고정 높이를 위한 스페이서(한 번만)
+  if (!document.querySelector('.grit-header-spacer')) {
+    const spacer = document.createElement('div');
+    spacer.className = 'grit-header-spacer';
+    spacer.style.height = HEADER_HEIGHT + 'px';
+    document.body.insertBefore(spacer, document.body.firstElementChild.nextElementSibling);
+  }
 
   const existFooter = document.querySelector('.grit-footer');
-  if (existFooter) { existFooter.outerHTML = footerTpl; } else { document.body.insertAdjacentHTML('beforeend', footerTpl); }
+  if (existFooter) existFooter.outerHTML = footerTpl; else document.body.insertAdjacentHTML('beforeend', footerTpl);
 
-  // 현재 페이지 활성 메뉴 표시
-  const path = location.pathname.split('/').pop() || 'index.html';
+  // 3) 현재 페이지 활성 메뉴
+  const page = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.grit-nav a').forEach(a=>{
-    const href = a.getAttribute('href');
-    if ((path === '' && href.endsWith('index.html')) || path === href) a.classList.add('is-active');
+    if (a.getAttribute('href').endsWith(page)) a.classList.add('is-active');
   });
 }
+
 document.addEventListener('DOMContentLoaded', injectCommonUI);

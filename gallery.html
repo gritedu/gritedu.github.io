@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
+  <link rel="stylesheet" href="./assets/css/main.css">
+  <title>그릿에듀 | 갤러리</title>
+</head>
+<body>
+  <main class="grit-section">
+    <h1>갤러리</h1>
+    <div class="grit-filter" data-for="gallery">
+      <button class="on" data-group="all">전체</button>
+      <button data-group="grit">grit</button>
+      <button data-group="event">event</button>
+      <button data-group="study">study</button>
+    </div>
+    <div id="galleryGrid" class="grit-grid"></div>
+  </main>
+
+  <!-- 라이트박스 -->
+  <div id="lightbox" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close="1"></div>
+    <div class="modal__dialog" role="document">
+      <button class="modal__close" aria-label="닫기" data-close="1">×</button>
+      <img id="lightboxImg" alt="그릿에듀 갤러리 원본" style="max-width:90vw;max-height:80vh;display:block;margin:40px auto;">
+    </div>
+  </div>
+
+  <script type="module" src="./assets/js/common.js"></script>
+  <script>
+    const exts = ['jpg','jpeg','png','JPG','JPEG','PNG'];
+    const maxIndex = 99;
+    const folders = ['grit','event','study'];
+
+    async function fileExists(url){
+      try{ const r = await fetch(url,{method:'HEAD'}); return r.ok; }catch{ return false; }
+    }
+    async function listFiles(folder){
+      const base = `./assets/gallery/${folder}/${folder}`;
+      const found = [];
+      for(let i=1;i<=maxIndex;i++){
+        for(const ext of exts){
+          const u = `${base}${i}.${ext}`;
+          if(await fileExists(u)){ found.push(u); break; }
+        }
+      }
+      return found;
+    }
+
+    async function loadGallery(){
+      const grid = document.getElementById('galleryGrid');
+      const map = {};
+      for(const f of folders){ map[f] = await listFiles(f); }
+
+      function paint(group='all'){
+        let imgs = [];
+        if(group==='all'){ imgs = folders.flatMap(f=>map[f].map(u=>({u,f}))); }
+        else { imgs = map[group].map(u=>({u: u, f: group})); }
+        grid.innerHTML = imgs.map(({u,f}) => `
+          <figure class="gallery-thumb" data-group="${f}">
+            <img src="${u}" alt="그릿에듀 ${f}">
+          </figure>`).join('');
+      }
+      paint();
+
+      // 필터
+      const bar = document.querySelector('.grit-filter[data-for="gallery"]');
+      bar.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-group]');
+        if(!btn) return;
+        bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+        btn.classList.add('on');
+        paint(btn.dataset.group);
+      });
+
+      // 라이트박스
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightboxImg');
+      grid.addEventListener('click', e=>{
+        const img = e.target.closest('img');
+        if(!img) return;
+        lbImg.src = img.src;
+        lb.setAttribute('aria-hidden','false');
+      });
+      document.addEventListener('click', e=>{ if(e.target.dataset.close) lb.setAttribute('aria-hidden','true'); });
+      document.addEventListener('keydown', e=>{ if(e.key==='Escape') lb.setAttribute('aria-hidden','true'); });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadGallery);
+  </script>
+</body>
+</html>

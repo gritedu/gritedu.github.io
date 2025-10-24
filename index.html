@@ -18,7 +18,7 @@
     <div class="grit-section__head">
       <h2>강사진</h2>
     </div>
-    <div class="grit-filter" role="tablist" aria-label="강사진 필터">
+    <div class="grit-filter" role="tablist" aria-label="강사진 필터" data-for="instructors">
       <button class="on" data-subject="all" role="tab" aria-selected="true">전체</button>
       <button data-subject="국어" role="tab">국어</button>
       <button data-subject="수학" role="tab">수학</button>
@@ -44,79 +44,64 @@
   topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   onScroll();
 
+<script type="module" src="./assets/js/common.js"></script>
 <script>
-async function renderInstructors(targetId, limit=null){
-  const res = await fetch('./data/instructors.json');
-  const data = await res.json();
-  let list = data.filter(i => i.subject !== '컨설팅');
-
-  const grid = document.getElementById(targetId);
-  const bar  = grid.previousElementSibling; // .grit-filter
-  function paint(subject='all'){
-    let arr = subject==='all' ? list : list.filter(x=>x.subject===subject);
-    if (limit) arr = arr.slice(0, limit);
-    grid.innerHTML = arr.map(i => `
-      <a class="instructor-card" href="./instructors.html?id=${i.id}" aria-label="${i.name} 상세" data-subject="${i.subject||''}">
-        <div class="overlay">
-          <div class="txt">
-            <strong>${i.subject||''}</strong>
-            <span>${(i.bio||'').slice(0,40)}${(i.bio||'').length>40?'…':''}</span>
-          </div>
-        </div>
-        <img src="${i.photo}" alt="${i.name}">
-        <h3>${i.name}</h3>
-      </a>
-    `).join('');
-  }
-  paint();
-
-  if (bar && bar.classList.contains('grit-filter')) {
-    bar.querySelectorAll('button').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
+  // 강사진 프리뷰 (8명) + 필터
+  async function renderInstructorsHome(){
+    const res = await fetch('./data/instructors.json');
+    const data = await res.json();
+    const all = data.filter(x=>x.subject!=='컨설팅');
+    const grid = document.getElementById('gritInstructorsPreview');
+    const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
+    function paint(subject='all'){
+      let arr = subject==='all' ? all : all.filter(x=>x.subject===subject);
+      arr = arr.slice(0,8);
+      grid.innerHTML = arr.map(i => `
+        <a class="instructor-card" href="./instructors.html?id=${i.id}" aria-label="${i.name} 상세" data-subject="${i.subject||''}">
+          <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,40)}${(i.bio||'').length>40?'…':''}</span></div></div>
+          <img src="${i.photo}" alt="${i.name}">
+          <h3>${i.name}</h3>
+        </a>`).join('');
+    }
+    paint();
+    if (bar) {
+      bar.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-subject]');
+        if(!btn) return;
         bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
         btn.classList.add('on');
         paint(btn.dataset.subject);
       });
-    });
+    }
   }
-}
-document.addEventListener('DOMContentLoaded', ()=>{
-  // index.html: 프리뷰 8명
-  if (document.getElementById('gritInstructorsPreview')) renderInstructors('gritInstructorsPreview', 8);
-  // instructors.html: 전체
-  if (document.getElementById('instructorGrid')) renderInstructors('instructorGrid', null);
-});
-</script>
 
-  // 갤러리 자동 로드 (폴더 3개)
-  (async()=>{
+  // 갤러리 최신 1장씩 (grit/event/study) - 확장자 가변
+  async function renderLatestGallery(){
     const base = './assets/gallery/';
     const folders = ['grit','event','study'];
     const exts = ['jpg','jpeg','png','JPG','JPEG','PNG'];
     const maxIndex = 99;
-
     async function fileExists(url){
-      try{
-        const res = await fetch(url, { method:'HEAD' });
-        return res.ok;
-      }catch(e){ return false; }
+      try{ const r = await fetch(url,{method:'HEAD'}); return r.ok; }catch{ return false; }
     }
-    async function findLatest(folder){
+    async function latestOf(folder){
       for(let i=maxIndex;i>=1;i--){
         for(const ext of exts){
-          const url = `${base}${folder}/${folder}${i}.${ext}`;
-          if(await fileExists(url)) return url;
+          const u = `${base}${folder}/${folder}${i}.${ext}`;
+          if(await fileExists(u)) return u;
         }
       }
       return null;
     }
-
     const grid = document.getElementById('gritGalleryPreview');
-    const urls = await Promise.all(folders.map(findLatest));
-    const cards = urls.map(u => u ? `<img src="${u}" class="gallery-thumb" alt="그릿에듀 갤러리 최신">` : '').join('');
-    grid.innerHTML = cards;
-  })();
+    const urls = await Promise.all(folders.map(latestOf));
+    grid.innerHTML = urls.filter(Boolean).map(u=>`<img src="${u}" class="gallery-thumb" alt="그릿에듀 갤러리 최신">`).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    renderInstructorsHome();
+    renderLatestGallery();
+  });
 </script>
-<script type="module" src="./assets/js/common.js"></script>
 </body>
 </html>
