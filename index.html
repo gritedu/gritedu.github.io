@@ -42,7 +42,7 @@
   async function renderInstructorsHome(){
     const res = await fetch('./data/instructors.json');
     const data = await res.json();
-    const all = data.filter(x=>x.subject!=='컨설팅');
+    const all = data;   // 컨설팅 포함
     const grid = document.getElementById('gritInstructorsPreview');
     const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
 
