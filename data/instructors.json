@@ -158,5 +158,15 @@
     "highlights": ["기본기 탄탄", "실전 문제 해결"],
     "poster": "/assets/instructors/posters/math_hjh.jpg",
     "youtube_id": "PFDu9oVAE-g"
+  },
+  {
+    "id": "con_cej",
+    "name": "최은지",
+    "subject": "컨설팅",
+    "photo": "/assets/instructors/con_CEJ.png",
+    "bio": "학습 컨설턴트 / 심리코칭 / 동기부여 전문가\n개별 학습 상담 및 성적 관리 프로그램 담당",
+    "highlights": ["학습 컨설팅", "심리코칭", "동기부여"],
+    "poster": "/assets/instructors/posters/con_cej.jpg",
+    "youtube_id": "dQw4w9WgXcQ"
   }
 ]

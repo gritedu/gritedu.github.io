@@ -286,4 +286,14 @@ button, a{transition:all .3s ease;}
 
 .gallery-thumb img,.grit-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;border:1px solid #eee}
 
-html{scrollbar-gutter:stable both-edges}
+@media (max-width:768px){
+  .grit-header nav ul{display:none;flex-direction:column;gap:12px;background:#fff;position:absolute;top:64px;right:0;width:180px;padding:16px 0;border:1px solid #eee;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+  .grit-header nav ul.active{display:flex;}
+  .menu-toggle{display:block;position:absolute;right:16px;top:20px;cursor:pointer;width:28px;height:24px;}
+  .menu-toggle span{display:block;height:3px;background:#333;margin:5px 0;border-radius:2px;transition:.3s}
+  .menu-toggle.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+  .menu-toggle.active span:nth-child(2){opacity:0;}
+  .menu-toggle.active span:nth-child(3){transform:rotate(-45deg) translate(6px,-6px);}
+  .grit-grid{grid-template-columns:1fr 1fr!important;}
+  footer .grit-footer__sns svg{width:22px;height:22px;}
+}
