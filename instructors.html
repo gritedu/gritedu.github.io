@@ -56,7 +56,7 @@
       function paint(subject='all'){
         const arr = subject==='all' ? all : all.filter(x=>x.subject===subject);
         grid.innerHTML = arr.map(i => `
-          <article class="instructor-card" data-subject="${i.subject||''}">
+          <article class="instructor-card" data-subject="${i.subject||''}" onclick="location.href='./instructor.html?id=${i.id}'" style="cursor:pointer">
             <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,60)}${(i.bio||'').length>60?'…':''}</span></div></div>
             <img src="${i.photo}" alt="${i.name}">
             <h3>${i.name}</h3>

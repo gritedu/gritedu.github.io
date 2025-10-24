@@ -12,11 +12,11 @@
     <h1>갤러리</h1>
     <div class="grit-filter" data-for="gallery">
       <button class="on" data-group="all">전체</button>
-      <button data-group="grit">grit</button>
-      <button data-group="event">event</button>
-      <button data-group="study">study</button>
+      <button data-group="grit">학원</button>
+      <button data-group="study">공부</button>
+      <button data-group="event">행사</button>
     </div>
-    <div id="galleryGrid" class="grit-grid"></div>
+    <div id="galleryGrid" class="grit-grid grit-gallery"></div>
   </main>
 
   <!-- 라이트박스 -->
@@ -31,77 +31,59 @@
   <script type="module" src="./assets/js/common.js"></script>
   <script>
     const exts = ['jpg','jpeg','png','JPG','JPEG','PNG'];
-    const maxIndex = 99;
-    const folders = ['grit','event','study'];
+    const maxIndex = 200;
+    const folders = { grit:'학원', study:'공부', event:'행사' };
 
-    async function fileExists(url){
-      try{ const r = await fetch(url,{method:'HEAD'}); return r.ok; }catch{ return false; }
-    }
+    async function fileExists(u){ try{ const r=await fetch(u,{method:'HEAD'}); return r.ok; }catch{ return false; } }
     async function listFiles(folder){
       const base = `./assets/gallery/${folder}/${folder}`;
-      const found = [];
+      const arr = [];
       for(let i=1;i<=maxIndex;i++){
         for(const ext of exts){
           const u = `${base}${i}.${ext}`;
-          if(await fileExists(u)){ found.push(u); break; }
+          if(await fileExists(u)){ arr.push(u); break; }
         }
       }
-      return found;
+      return arr;
     }
 
     async function loadGallery(){
       const grid = document.getElementById('galleryGrid');
       const map = {};
-      for(const f of folders){ map[f] = await listFiles(f); }
+      for (const f of Object.keys(folders)) map[f] = await listFiles(f);
 
       function paint(group='all'){
         let imgs = [];
-        if(group==='all'){ imgs = folders.flatMap(f=>map[f].map(u=>({u,f}))); }
-        else { imgs = map[group].map(u=>({u: u, f: group})); }
-        grid.innerHTML = imgs.map(({u,f}) => `
-          <figure class="gallery-thumb" data-group="${f}">
-            <img src="${u}" alt="그릿에듀 ${f}" onclick="openLightbox('${u}')">
+        if(group==='all'){
+          imgs = Object.entries(map).flatMap(([k,arr])=>arr.map(u=>({u, k})));
+        }else{
+          imgs = map[group].map(u=>({u, k:group}));
+        }
+        grid.innerHTML = imgs.map(({u,k})=>`
+          <figure class="gallery-thumb" data-group="${k}">
+            <img src="${u}" alt="그릿에듀 ${folders[k]}" />
           </figure>`).join('');
       }
       paint();
 
-      // 필터
       const bar = document.querySelector('.grit-filter[data-for="gallery"]');
       bar.addEventListener('click', e=>{
-        const btn = e.target.closest('button[data-group]');
-        if(!btn) return;
+        const btn = e.target.closest('button[data-group]'); if(!btn) return;
         bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
         btn.classList.add('on');
         paint(btn.dataset.group);
       });
 
-      // 라이트박스 함수
-      function openLightbox(src) {
-        const lightbox = document.createElement('div');
-        lightbox.className = 'lightbox active';
-        lightbox.innerHTML = `
-          <div class="lightbox-content">
-            <img src="${src}" alt="그릿에듀 갤러리">
-            <button class="lightbox-close" onclick="closeLightbox()">×</button>
-          </div>
-        `;
-        document.body.appendChild(lightbox);
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeLightbox() {
-        const lightbox = document.querySelector('.lightbox');
-        if (lightbox) {
-          lightbox.remove();
-          document.body.style.overflow = 'auto';
-        }
-      }
-
-      // 전역 함수로 등록
-      window.openLightbox = openLightbox;
-      window.closeLightbox = closeLightbox;
+      // 라이트박스
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightboxImg');
+      grid.addEventListener('click', e=>{
+        const img = e.target.closest('img'); if(!img) return;
+        lbImg.src = img.src; lb.setAttribute('aria-hidden','false');
+      });
+      document.addEventListener('click', e=>{ if(e.target.dataset.close) lb.setAttribute('aria-hidden','true'); });
+      document.addEventListener('keydown', e=>{ if(e.key==='Escape') lb.setAttribute('aria-hidden','true'); });
     }
-
     document.addEventListener('DOMContentLoaded', loadGallery);
   </script>
 </body>

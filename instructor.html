@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>강사 상세 | 그릿에듀</title>
+  <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
+  <link rel="stylesheet" href="./assets/css/main.css">
+</head>
+<body>
+  <main class="grit-section" style="max-width:1080px;margin:0 auto;padding:16px">
+    <a href="./instructors.html" class="grit-link">← 강사진 목록</a>
+    <div id="profile"></div>
+  </main>
+  <script type="module" src="./assets/js/common.js"></script>
+  <script>
+    async function loadProfile(){
+      const p = new URLSearchParams(location.search).get('id');
+      const res = await fetch('./data/instructors.json'); const data = await res.json();
+      const me = data.find(x=>x.id===p);
+      const wrap = document.getElementById('profile');
+      if(!me){ wrap.innerHTML = '<p>강사 정보를 찾을 수 없습니다.</p>'; return; }
+      wrap.innerHTML = `
+        <section class="grit-profile">
+          <div style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start">
+            <img src="${me.photo}" alt="${me.name}" style="width:100%;border-radius:12px;object-fit:cover;aspect-ratio:3/4">
+            <div>
+              <h1 style="margin:0 0 8px">${me.name}</h1>
+              <p style="margin:6px 0;color:#666">${me.subject||''}</p>
+              <p>${(me.bio||'').replace(/\n/g,'<br>')}</p>
+              ${me.poster?`<img src="${me.poster}" alt="포스터" style="width:100%;max-width:420px;border-radius:12px;margin-top:12px">`:''}
+              ${me.youtube_id?`<div style="margin-top:16px"><iframe width="560" height="315" src="https://www.youtube.com/embed/${me.youtube_id}" title="YouTube video" frameborder="0" allowfullscreen></iframe></div>`:''}
+            </div>
+          </div>
+        </section>`;
+    }
+    document.addEventListener('DOMContentLoaded', loadProfile);
+  </script>
+</body>
+</html>

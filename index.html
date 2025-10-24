@@ -45,26 +45,42 @@
     const all = data.filter(x=>x.subject!=='컨설팅');
     const grid = document.getElementById('gritInstructorsPreview');
     const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
-    function paint(subject='all'){
-      let arr = subject==='all' ? all : all.filter(x=>x.subject===subject);
-      arr = arr.slice(0,8);
-      grid.innerHTML = arr.map(i => `
-        <a class="instructor-card" href="./instructors.html?id=${i.id}" aria-label="${i.name} 상세" data-subject="${i.subject||''}">
+
+    function gridMarkup(list){
+      return list.map(i=>`
+        <a class="instructor-card grit-row-item" href="./instructor.html?id=${i.id}" data-subject="${i.subject||''}">
           <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,40)}${(i.bio||'').length>40?'…':''}</span></div></div>
           <img src="${i.photo}" alt="${i.name}">
           <h3>${i.name}</h3>
         </a>`).join('');
     }
-    paint();
-    if (bar) {
-      bar.addEventListener('click', e=>{
-        const btn = e.target.closest('button[data-subject]');
-        if(!btn) return;
-        bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-        btn.classList.add('on');
-        paint(btn.dataset.subject);
-      });
+
+    function paint(subject='all'){
+      if(subject==='all'){
+        grid.classList.remove('grit-row-scroll');
+        grid.style.overflowX=''; grid.innerHTML = gridMarkup(all); // 전부 표시
+      }else{
+        const list = all.filter(x=>x.subject===subject);
+        grid.classList.add('grit-row-scroll'); // 1행 가로 스크롤
+        grid.innerHTML = gridMarkup(list);
+      }
     }
+
+    // 마우스 드래그 스크롤 UX
+    let isDown=false,startX,scrollLeft;
+    grid.addEventListener('mousedown',e=>{ if(!grid.classList.contains('grit-row-scroll')) return; isDown=true; grid.classList.add('drag'); startX=e.pageX-grid.offsetLeft; scrollLeft=grid.scrollLeft; });
+    grid.addEventListener('mouseleave',()=>{ isDown=false; grid.classList.remove('drag'); });
+    grid.addEventListener('mouseup',()=>{ isDown=false; grid.classList.remove('drag'); });
+    grid.addEventListener('mousemove',e=>{ if(!isDown) return; e.preventDefault(); const x=e.pageX-grid.offsetLeft; const walk=(x-startX)*1.2; grid.scrollLeft=scrollLeft-walk; });
+
+    paint();
+    if (bar) bar.addEventListener('click', e=>{
+      const btn = e.target.closest('button[data-subject]');
+      if(!btn) return;
+      bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      paint(btn.dataset.subject);
+    });
   }
 
   // 갤러리 최신 1장씩 (grit/event/study) - 확장자 가변

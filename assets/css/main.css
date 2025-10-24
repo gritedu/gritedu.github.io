@@ -276,14 +276,14 @@ button, a{transition:all .3s ease;}
 }
 .grit-btn:hover { background: #ff9133; }
 
-/* 푸터 개선 */
-.grit-footer-inner {
-  max-width: 1080px; margin: 0 auto; padding: 20px 16px;
-  text-align: center;
-}
-.grit-footer-sns {
-  display: flex; justify-content: center; gap: 16px; margin-bottom: 12px;
-}
-.grit-footer-sns .sns { opacity: 0.8; transition: opacity 0.2s; }
-.grit-footer-sns .sns:hover { opacity: 1; }
-.grit-footer-inner p { margin: 4px 0; color: #333; }
+html { scrollbar-gutter: stable both-edges; }
+.grit-header.fixed { z-index: 1000; }
+.grit-top { z-index: 1100; }
+
+.gallery-thumb img { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:10px; border:1px solid #eee; cursor:pointer; }
+.grit-gallery img { width:100%; aspect-ratio:1/1; object-fit:cover; }
+
+.grit-row-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; cursor:grab; }
+.grit-row-scroll::-webkit-scrollbar { height:8px; }
+.grit-row-scroll:active { cursor:grabbing; }
+.grit-row-item { min-width:220px; flex:0 0 auto; }
