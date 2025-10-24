@@ -166,7 +166,7 @@
     "photo": "/assets/instructors/con_CEJ.png",
     "bio": "학습 컨설턴트 / 심리코칭 / 동기부여 전문가\n개별 학습 상담 및 성적 관리 프로그램 담당",
     "highlights": ["학습 컨설팅", "심리코칭", "동기부여"],
-    "poster": "/assets/instructors/posters/con_cej.jpg",
+    "poster": "./assets/instructors/posters/Pcin_CEJ.png",
     "youtube_id": "dQw4w9WgXcQ"
   }
 ]

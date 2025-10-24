@@ -286,7 +286,39 @@ button, a{transition:all .3s ease;}
 
 .gallery-thumb img,.grit-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;border:1px solid #eee}
 
-@media (max-width:768px){
+html, body { overflow-x: hidden; }
+
+@media (max-width: 768px){
+  /* 강사 상세: 한 컬럼 세로 스크롤 */
+  .grit-profile {
+    grid-template-columns: 1fr !important;
+  }
+  .grit-profile .profile-photo {
+    max-width: 520px;
+    width: 100%;
+    height: auto;         /* 세로 스크롤만, 가로잘림 방지 */
+    aspect-ratio: auto;   /* 강제 비율 해제 */
+  }
+  /* 유튜브/지도 등 임베드 반응형 */
+  .embed-16x9 {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+  }
+  .embed-16x9 > iframe {
+    position:absolute; inset:0;
+    width:100%; height:100%;
+  }
+
+  /* 문의 페이지 버튼 스택 + 텍스트 줄바꿈 방지 */
+  .grit-cta-row { display:flex; gap:10px; flex-wrap:wrap; }
+  .grit-cta-row .grit-btn { flex:1 1 140px; white-space: nowrap; }
+
+  /* 기존 모바일 스타일 */
   .grit-header nav ul{display:none;flex-direction:column;gap:12px;background:#fff;position:absolute;top:64px;right:0;width:180px;padding:16px 0;border:1px solid #eee;box-shadow:0 4px 12px rgba(0,0,0,.1)}
   .grit-header nav ul.active{display:flex;}
   .menu-toggle{display:block;position:absolute;right:16px;top:20px;cursor:pointer;width:28px;height:24px;}

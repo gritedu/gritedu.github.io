@@ -38,10 +38,10 @@
 
           ${me.youtube_id ? `
             <h3 style="margin:24px 0 8px;color:#333;border-left:4px solid #ff7a00;padding-left:8px;">맛보기 강좌</h3>
-            <div style="aspect-ratio:16/9;max-width:720px;border-radius:12px;overflow:hidden;border:1px solid #eee;box-shadow:0 6px 20px rgba(0,0,0,.1)">
-              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${me.youtube_id}" 
-                title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
-                gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <div class="embed-16x9">
+              <iframe src="https://www.youtube.com/embed/${me.youtube_id}" title="YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
             </div>` : ''}
 
           ${me.poster?`
