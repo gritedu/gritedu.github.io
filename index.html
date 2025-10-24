@@ -37,18 +37,53 @@
     </section>
 
     <!-- 강사진 섹션 -->
-    <section id="instructors-preview" class="instructors">
-      <h2 style="margin-bottom:8px;">강사진 소개</h2>
-      <div class="tabs" id="subjectTabs">
-        <button class="tab active" data-subject="ALL">전체</button>
-        <button class="tab" data-subject="국어">국어</button>
-        <button class="tab" data-subject="수학">수학</button>
-        <button class="tab" data-subject="영어">영어</button>
-        <button class="tab" data-subject="과학">과학</button>
-        <button class="tab" data-subject="컨설팅">컨설팅</button>
+    <section id="instructors-preview" class="container" style="margin-top:24px">
+      <h2>강사진 소개</h2>
+
+      <!-- 탭 -->
+      <div class="filter-tabs" role="tablist" aria-label="강사진 필터">
+        <button class="tab is-active" data-filter="all" role="tab" aria-selected="true">전체</button>
+        <button class="tab" data-filter="kor" role="tab">국어</button>
+        <button class="tab" data-filter="math" role="tab">수학</button>
+        <button class="tab" data-filter="eng" role="tab">영어</button>
+        <button class="tab" data-filter="sci" role="tab">과학</button>
       </div>
-      <div class="grid-instructors" id="instructorGrid"></div>
-      <div style="text-align:center; margin-top:20px;">
+
+      <!-- 그리드 -->
+      <div class="instructor-cards" id="instructorGrid">
+        <!-- 예시 카드: data-cat 에 카테고리 부여, 링크는 세부페이지 쿼리로 -->
+        <a class="instructor-card" data-cat="math" href="./instructors.html?id=yhs" aria-label="유홍석 선생님 상세">
+          <img src="./assets/instructors/math_YHS.png" alt="수학 유홍석">
+          <div class="card-body"><h3>유홍석</h3><p>수학</p></div>
+        </a>
+
+        <a class="instructor-card" data-cat="eng" href="./instructors.html?id=phr">
+          <img src="./assets/instructors/eng_PHR.png" alt="영어 PHR">
+          <div class="card-body"><h3>PHR</h3><p>영어</p></div>
+        </a>
+
+        <a class="instructor-card" data-cat="kor" href="./instructors.html?id=kgw">
+          <img src="./assets/instructors/kr_KGW.png" alt="국어 KGW">
+          <div class="card-body"><h3>KGW</h3><p>국어</p></div>
+        </a>
+
+        <a class="instructor-card" data-cat="sci" href="./instructors.html?id=kjy">
+          <img src="./assets/instructors/si_KJY.jpg" alt="과학 KJY">
+          <div class="card-body"><h3>KJY</h3><p>과학</p></div>
+        </a>
+
+        <a class="instructor-card" data-cat="math" href="./instructors.html?id=gbh">
+          <img src="./assets/instructors/math_GBH.png" alt="수학 GBH">
+          <div class="card-body"><h3>GBH</h3><p>수학</p></div>
+        </a>
+
+        <a class="instructor-card" data-cat="eng" href="./instructors.html?id=ohb">
+          <img src="./assets/instructors/eng_OHB.png" alt="영어 OHB">
+          <div class="card-body"><h3>OHB</h3><p>영어</p></div>
+        </a>
+      </div>
+
+      <div style="margin-top:12px; text-align:center;">
         <a class="btn" href="./instructors.html">전체 강사진 보기</a>
       </div>
     </section>
@@ -101,6 +136,9 @@
       <button id="doLogin" class="btn primary">로그인</button>
     </div>
   </dialog>
+
+  <!-- Back to Top 버튼 -->
+  <button id="backToTop" aria-label="맨 위로">↑</button>
 
   <!-- 공통 스크립트: firebase 초기화 + auth UI -->
   <script type="module" src="/assets/js/firebase.js"></script>

@@ -75,55 +75,23 @@
     </div>
   </header>
 
-  <main class="container learn-layout" id="learnRoot">
-    <!-- 로그인 전 UI -->
-    <div id="loginRequired" class="login-required" style="display:none;">
-      <div class="login-card">
-        <h2>로그인이 필요합니다</h2>
-        <p>강의실에 접근하려면 로그인해주세요.</p>
-        <form id="loginForm" class="login-form">
-          <div>
-            <label for="guestEmail">이메일</label>
-            <input id="guestEmail" type="email" placeholder="you@example.com" autocomplete="email" required>
-          </div>
-          <div>
-            <label for="guestPassword">비밀번호</label>
-            <input id="guestPassword" type="password" placeholder="8자 이상" autocomplete="current-password" required>
-          </div>
-          <div id="guestError" style="color:#d00;font-size:13px;"></div>
-          <button type="submit" class="btn primary">로그인하기</button>
-        </form>
-      </div>
+  <main class="container">
+    <h1 style="margin:8px 0 14px">내 강의실</h1>
+
+    <!-- 게스트 뷰 -->
+    <div class="guest-view">
+      <h2>로그인이 필요합니다</h2>
+      <p>수강 중인 강의와 학습실은 로그인 후 이용 가능합니다.</p>
+      <a class="btn" href="#" id="goLogin">로그인</a>
     </div>
 
-    <!-- 로그인 후 UI -->
-    <div id="learnContent" class="learn-content" style="display:none;">
-      <!-- 사이드바 -->
-      <aside class="learn-aside">
-        <div class="me">
-          <div class="avatar">👤</div>
-          <div class="info"><div id="meEmail" class="email">loading…</div><div class="role">학생</div></div>
-        </div>
-        <h3>내 강의실</h3>
-        <ul>
-          <li><a href="#dashboard">대시보드</a></li>
-          <li><a href="#courses">수강 중인 강의</a></li>
-          <li><a href="#assignments">과제</a></li>
-          <li><a href="#notices">공지사항</a></li>
-          <li><a href="#profile">프로필</a></li>
-        </ul>
-      </aside>
-
-      <!-- 메인 콘텐츠 -->
-      <section class="learn-main">
-        <div class="learn-head">
-          <h1>내 강의실</h1>
-          <div class="pill-tabs">
-            <button class="tab active">공지/강좌</button>
-          </div>
-        </div>
-        <div id="courseList"></div> <!-- ← 강좌 카드가 여기에 렌더 -->
-      </section>
+    <!-- 회원 뷰 -->
+    <div class="member-view" hidden>
+      <h2><span id="memberName">회원</span> 님의 학습실</h2>
+      <ul class="course-list">
+        <li class="course">수학 내신 심화 – 10강 진행 중</li>
+        <li class="course">영어 구문 – 4강 진행 중</li>
+      </ul>
     </div>
   </main>
 
@@ -174,6 +142,9 @@
       <button id="doLogin" class="btn primary">로그인</button>
     </div>
   </dialog>
+
+  <!-- Back to Top 버튼 -->
+  <button id="backToTop" aria-label="맨 위로">↑</button>
 
   <!-- 공통 스크립트: firebase 초기화 + auth UI -->
   <script type="module" src="/assets/js/firebase.js"></script>
