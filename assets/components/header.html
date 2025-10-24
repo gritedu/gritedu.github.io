@@ -1,0 +1,63 @@
+<header class="site-header">
+  <div class="container header-row">
+    <a class="brand" href="/"><img src="/assets/logo.png" alt="GRIT EDU" class="brand-logo"><span>GRIT EDU</span></a>
+
+    <nav class="nav-desktop">
+      <a href="/learn.html" class="nav-link">강의</a>
+      <a href="/instructors.html" class="nav-link">강사진</a>
+      <a href="/gallery.html" class="nav-link">갤러리</a>
+      <a href="/story.html" class="nav-link">스토리</a>
+      <a href="/contact.html" class="nav-link">문의</a>
+    </nav>
+
+    <div class="header-cta">
+      <button id="btn-login" class="btn btn--primary" data-open="login">로그인</button>
+      <!-- Firebase 연동 후: 로그인 시 "OOO님 · 로그아웃" 토글 예정 -->
+      <button id="btn-hamburger" class="hamburger" aria-label="메뉴 열기" aria-controls="mobile-drawer" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer -->
+  <div id="drawer-overlay" class="overlay hidden" data-close="drawer"></div>
+  <aside id="mobile-drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <span class="drawer-title">메뉴</span>
+      <button class="drawer-close" data-close="drawer" aria-label="메뉴 닫기">✕</button>
+    </div>
+    <nav class="drawer-nav">
+      <a href="/learn.html" class="drawer-link">강의</a>
+      <a href="/instructors.html" class="drawer-link">강사진</a>
+      <a href="/gallery.html" class="drawer-link">갤러리</a>
+      <a href="/story.html" class="drawer-link">스토리</a>
+      <a href="/contact.html" class="drawer-link">문의</a>
+    </nav>
+  </aside>
+</header>
+
+<!-- Login Modal -->
+<div id="login-overlay" class="overlay hidden" data-close="login"></div>
+<div id="login-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="login-title">로그인</h3>
+      <button class="modal-close" data-close="login" aria-label="로그인 닫기">✕</button>
+    </div>
+    <form id="login-form" class="modal-body">
+      <label class="field">
+        <span>이메일</span>
+        <input type="email" name="email" placeholder="you@example.com" required>
+      </label>
+      <label class="field">
+        <span>비밀번호</span>
+        <input type="password" name="password" placeholder="••••••••" required>
+      </label>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn--primary">로그인</button>
+        <button type="button" class="btn btn--ghost" data-close="login">취소</button>
+      </div>
+      <p class="helper">* 현재는 UI만 동작합니다. Firebase 연동은 이후 단계에서 진행합니다.</p>
+    </form>
+  </div>
+</div>
