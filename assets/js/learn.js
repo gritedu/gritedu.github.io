@@ -8,14 +8,23 @@ import {
 const root = document.getElementById("learnRoot");   // 본문 래퍼
 const list = document.getElementById("courseList");  // 강좌 카드가 붙을 곳
 const meEmail = document.getElementById("meEmail");
+const loginRequired = document.getElementById("loginRequired");
+const learnContent = document.getElementById("learnContent");
+const btnLoginFromLearn = document.getElementById("btnLoginFromLearn");
 
-root.style.display = "none";
+// 로그인 버튼 이벤트
+btnLoginFromLearn?.addEventListener("click", ()=>{
+  document.getElementById("loginDialog")?.showModal();
+});
+
+root.style.display = "block";
 list.innerHTML = `<p class="muted">로딩 중…</p>`;
 
 onAuthStateChanged(auth, async (user)=>{
   if(!user){
-    alert("로그인이 필요합니다.");
-    location.href = "/"; return;
+    loginRequired.style.display = "flex";
+    learnContent.style.display = "none";
+    return;
   }
 
   // 이름 표시
@@ -31,18 +40,24 @@ onAuthStateChanged(auth, async (user)=>{
   const usnap = await getDoc(uref);
   if(!usnap.exists()){
     list.innerHTML = `<div class="card-soft">승인 대기 중입니다. (관리자에게 문의)</div>`;
-    root.style.display = "block"; return;
+    loginRequired.style.display = "none";
+    learnContent.style.display = "contents";
+    return;
   }
   const u = usnap.data();
   if(u.active !== true){
     list.innerHTML = `<div class="card-soft">승인 대기 중입니다. (관리자에게 문의)</div>`;
-    root.style.display = "block"; return;
+    loginRequired.style.display = "none";
+    learnContent.style.display = "contents";
+    return;
   }
 
   const courses = Array.isArray(u.courses) ? u.courses : [];
   if(courses.length === 0){
     list.innerHTML = `<div class="card-soft">수강 중인 강좌가 없습니다.</div>`;
-    root.style.display = "block"; return;
+    loginRequired.style.display = "none";
+    learnContent.style.display = "contents";
+    return;
   }
 
   // 각 강좌 문서 로드 후 카드 렌더
@@ -79,5 +94,6 @@ onAuthStateChanged(auth, async (user)=>{
   }
 
   list.innerHTML = cards.join("") || `<div class="card-soft">표시할 강좌가 없습니다.</div>`;
-  root.style.display = "block";
+  loginRequired.style.display = "none";
+  learnContent.style.display = "contents";
 });

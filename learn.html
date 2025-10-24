@@ -38,6 +38,14 @@
     .weeks li{padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#666}
     .weeks li:last-child{border-bottom:none}
     .card-soft{border:1px solid var(--border);border-radius:12px;padding:20px;background:#f9f9f9;text-align:center;color:var(--muted)}
+    
+    /* 로그인 전/후 UI */
+    .login-required{display:flex;justify-content:center;align-items:center;min-height:400px}
+    .login-card{text-align:center;padding:40px;border:1px solid var(--border);border-radius:16px;background:#fff;box-shadow:var(--shadow)}
+    .login-card h2{margin:0 0 12px;color:var(--brand)}
+    .login-card p{margin:0 0 20px;color:var(--muted)}
+    .learn-content{display:contents}
+    
     @media (max-width:860px){ 
       .learn-layout{grid-template-columns:1fr} 
       .course-body{grid-template-columns:1fr}
@@ -68,32 +76,44 @@
   </header>
 
   <main class="container learn-layout" id="learnRoot">
-    <!-- 사이드바 -->
-    <aside class="learn-aside">
-      <div class="me">
-        <div class="avatar">👤</div>
-        <div class="info"><div id="meEmail" class="email">loading…</div><div class="role">학생</div></div>
+    <!-- 로그인 전 UI -->
+    <div id="loginRequired" class="login-required" style="display:none;">
+      <div class="login-card">
+        <h2>로그인이 필요합니다</h2>
+        <p>강의실에 접근하려면 로그인해주세요.</p>
+        <button id="btnLoginFromLearn" class="btn primary">로그인하기</button>
       </div>
-      <h3>내 강의실</h3>
-      <ul>
-        <li><a href="#dashboard">대시보드</a></li>
-        <li><a href="#courses">수강 중인 강의</a></li>
-        <li><a href="#assignments">과제</a></li>
-        <li><a href="#notices">공지사항</a></li>
-        <li><a href="#profile">프로필</a></li>
-      </ul>
-    </aside>
+    </div>
 
-    <!-- 메인 콘텐츠 -->
-    <section class="learn-main">
-      <div class="learn-head">
-        <h1>내 강의실</h1>
-        <div class="pill-tabs">
-          <button class="tab active">공지/강좌</button>
+    <!-- 로그인 후 UI -->
+    <div id="learnContent" class="learn-content" style="display:none;">
+      <!-- 사이드바 -->
+      <aside class="learn-aside">
+        <div class="me">
+          <div class="avatar">👤</div>
+          <div class="info"><div id="meEmail" class="email">loading…</div><div class="role">학생</div></div>
         </div>
-      </div>
-      <div id="courseList"></div> <!-- ← 강좌 카드가 여기에 렌더 -->
-    </section>
+        <h3>내 강의실</h3>
+        <ul>
+          <li><a href="#dashboard">대시보드</a></li>
+          <li><a href="#courses">수강 중인 강의</a></li>
+          <li><a href="#assignments">과제</a></li>
+          <li><a href="#notices">공지사항</a></li>
+          <li><a href="#profile">프로필</a></li>
+        </ul>
+      </aside>
+
+      <!-- 메인 콘텐츠 -->
+      <section class="learn-main">
+        <div class="learn-head">
+          <h1>내 강의실</h1>
+          <div class="pill-tabs">
+            <button class="tab active">공지/강좌</button>
+          </div>
+        </div>
+        <div id="courseList"></div> <!-- ← 강좌 카드가 여기에 렌더 -->
+      </section>
+    </div>
   </main>
 
   <!-- 하단 SNS 공통 -->

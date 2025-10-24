@@ -112,15 +112,15 @@
               <p class="muted" style="margin:0 0 12px">${data.subject}</p>
               ${data.bio ? `<p style="margin-top:6px">${data.bio}</p>` : ``}
               ${data.highlights ? `<ul style="margin-top:8px">${data.highlights.map(h => `<li>${h}</li>`).join("")}</ul>` : ``}
+              
+              ${data.youtube ? `
+                <div class="video">
+                  <h3 style="margin:18px 0 8px">맛보기 강의</h3>
+                  <div class="yt">
+                    <iframe src="${data.youtube}" title="YouTube video" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                  </div>
+                </div>` : ``}
             </div>
-
-            ${data.youtube ? `
-              <div class="video">
-                <h3 style="margin:8px 0">맛보기 강의</h3>
-                <div class="yt">
-                  <iframe src="${data.youtube}" title="YouTube video" frameborder="0" allowfullscreen loading="lazy"></iframe>
-                </div>
-              </div>` : ``}
           </article>
         `;
       }
