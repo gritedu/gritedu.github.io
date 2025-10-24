@@ -104,25 +104,23 @@
         `;
       } else {
         mainContent.innerHTML = `
-          <article class="detail" style="display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start">
-            <div class="photo" style="border:1px solid var(--border);border-radius:16px;background:#fff;overflow:hidden">
-              <img src="${data.photo}" alt="${data.name}" style="width:100%;height:360px;object-fit:contain;background:#fff" />
-            </div>
-            <div>
+          <article class="detail">
+            <div class="photo"><img src="${data.photo}" alt="${data.name}"></div>
+
+            <div class="text">
               <h1 style="margin:0 0 8px">${data.name} 선생님</h1>
               <p class="muted" style="margin:0 0 12px">${data.subject}</p>
               ${data.bio ? `<p style="margin-top:6px">${data.bio}</p>` : ``}
               ${data.highlights ? `<ul style="margin-top:8px">${data.highlights.map(h => `<li>${h}</li>`).join("")}</ul>` : ``}
-
-              ${data.youtube ? `
-                <div style="margin-top:18px">
-                  <h3 style="margin:8px 0">맛보기 강의</h3>
-                  <div style="aspect-ratio:16/9;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#000">
-                    <iframe width="100%" height="100%" src="${data.youtube}" title="YouTube video"
-                      frameborder="0" allowfullscreen loading="lazy"></iframe>
-                  </div>
-                </div>` : ``}
             </div>
+
+            ${data.youtube ? `
+              <div class="video">
+                <h3 style="margin:8px 0">맛보기 강의</h3>
+                <div class="yt">
+                  <iframe src="${data.youtube}" title="YouTube video" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                </div>
+              </div>` : ``}
           </article>
         `;
       }
