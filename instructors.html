@@ -28,6 +28,20 @@
   </main>
 
   <footer><div class="inner">© 2025 GRIT EduTech</div></footer>
-  <script type="module" src="./assets/js/app.js"></script>
+  <script>
+    async function loadInstructors(){
+      const res = await fetch('/data/instructors.json');
+      const list = (await res.json()).filter(i => i.subject !== '컨설팅'); // 컨설팅 제거
+      const grid = document.querySelector('#instructorGrid');
+      grid.innerHTML = list.map(i => `
+        <article class="instructor-card">
+          <img src="${i.photo}" alt="${i.name}">
+          <h3>${i.name}</h3>
+          <p>${i.subject}</p>
+        </article>
+      `).join('');
+    }
+    document.addEventListener('DOMContentLoaded', loadInstructors);
+  </script>
 </body>
 </html>

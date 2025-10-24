@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="/assets/css/main.css" />
+<title>Course</title>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="left"><a href="/"><img src="./assets/logo.png" alt="GRIT 로고"></a></div>
+    <div class="center">
+      <nav class="menu">
+        <a href="/">그릿에듀</a>
+        <a href="/story.html">GRIT EDU STORY</a>
+        <a href="/instructors.html">강사진</a>
+        <a href="/album.html">앨범</a>
+        <a href="/consult.html">상담 예약</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="container" style="display:grid;grid-template-columns:280px 1fr;gap:24px;padding:16px;">
+  <aside>
+    <h2 id="courseTitle">코스</h2>
+    <div class="progress-bar"><span id="progressFill"></span></div>
+    <ol id="lessonList" style="margin-top:12px;"></ol>
+  </aside>
+
+  <section>
+    <div id="player" style="aspect-ratio:16/9;background:#000;position:relative;">
+      <iframe id="ytFrame" width="100%" height="100%" frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+    </div>
+    <div id="resources" style="margin-top:16px;"></div>
+  </section>
+</main>
+
+<footer><div class="inner">© 2025 GRIT EduTech</div></footer>
+
+<script type="module" src="/assets/js/progress.js"></script>
+<script type="module" src="/assets/js/render-course.js"></script>
+</body>
+</html>

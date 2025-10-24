@@ -1,0 +1,21 @@
+{
+  "course_id": "calc-201",
+  "lessons": [
+    {
+      "id": "c01",
+      "title": "극한의 정의와 성질",
+      "youtube_id": "dQw4w9WgXcQ",
+      "duration_min": 20,
+      "resources": [
+        {"type": "pdf", "title": "극한 정리", "url": "/assets/pdf/calc-01.pdf"}
+      ]
+    },
+    {
+      "id": "c02",
+      "title": "미분의 응용",
+      "youtube_id": "oHg5SJYRHA0",
+      "duration_min": 24,
+      "resources": []
+    }
+  ]
+}
