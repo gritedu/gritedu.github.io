@@ -1,0 +1,17 @@
+# 개발용 파일들
+repository_structure.txt
+
+# IDE 설정
+.vscode/
+.idea/
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+
+# 로그 파일
+*.log
+
+# 임시 파일
+*.tmp
+*.temp
