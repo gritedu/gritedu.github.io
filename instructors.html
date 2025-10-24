@@ -8,23 +8,15 @@
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a href="/index.html" class="logo" aria-label="그릿에듀">그릿에듀</a>
-      <nav class="site-nav" aria-label="주 메뉴">
-        <ul>
-          <li><a href="/index.html">그릿에듀</a></li>
-          <li><a href="/story.html">이야기</a></li>
-          <li><a href="/instructors.html" class="active">강사진</a></li>
-          <li><a href="/album.html">갤러리</a></li>
-          <li><a href="/contact.html">문의</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
   <main class="container">
     <h1>그릿에듀 강사진</h1>
+    <div class="grit-filter" role="tablist" aria-label="강사진 필터">
+      <button class="on" data-subject="all" role="tab" aria-selected="true">전체</button>
+      <button data-subject="국어" role="tab">국어</button>
+      <button data-subject="수학" role="tab">수학</button>
+      <button data-subject="영어" role="tab">영어</button>
+      <button data-subject="과학" role="tab">과학</button>
+    </div>
     <div class="grid-instructors" id="instructorGrid"></div>
   </main>
 
@@ -53,67 +45,46 @@
     </div>
   </div>
 
-  <footer><div class="inner">© 2025 그릿에듀</div></footer>
   <script>
-    let INSTRUCTORS = [];
+    async function renderInstructors(targetId, limit=null){
+      const res = await fetch('./data/instructors.json');
+      const data = await res.json();
+      let list = data.filter(i => i.subject !== '컨설팅');
 
-    async function loadInstructors(){
-      const res = await fetch('/data/instructors.json');
-      INSTRUCTORS = await res.json();
-      const list = INSTRUCTORS.filter(i => i.subject !== '컨설팅');
-      const grid = document.querySelector('#instructorGrid');
-      grid.innerHTML = list.map(i => `
-        <article class="instructor-card" data-id="${i.id}" tabindex="0" role="button" aria-label="${i.name} 상세보기">
-          <img src="${i.photo}" alt="${i.name}">
-          <h3>${i.name}</h3>
-          <p>${i.subject}</p>
-        </article>
-      `).join('');
+      const grid = document.getElementById(targetId);
+      const bar  = grid.previousElementSibling; // .grit-filter
+      function paint(subject='all'){
+        let arr = subject==='all' ? list : list.filter(x=>x.subject===subject);
+        if (limit) arr = arr.slice(0, limit);
+        grid.innerHTML = arr.map(i => `
+          <a class="instructor-card" href="./instructors.html?id=${i.id}" aria-label="${i.name} 상세" data-subject="${i.subject||''}">
+            <div class="overlay">
+              <div class="txt">
+                <strong>${i.subject||''}</strong>
+                <span>${(i.bio||'').slice(0,40)}${(i.bio||'').length>40?'…':''}</span>
+              </div>
+            </div>
+            <img src="${i.photo}" alt="${i.name}">
+            <h3>${i.name}</h3>
+          </a>
+        `).join('');
+      }
+      paint();
 
-      // 클릭 & 키보드 접근
-      grid.querySelectorAll('.instructor-card').forEach(card=>{
-        card.addEventListener('click', () => showInstructorModal(card.dataset.id));
-        card.addEventListener('keydown', (e) => { if(e.key==='Enter' || e.key===' ') showInstructorModal(card.dataset.id); });
-      });
-
-      // 딥링크: instructors.html?id=math_yhs
-      const q = new URL(location.href).searchParams.get('id');
-      if(q){ showInstructorModal(q); }
+      if (bar && bar.classList.contains('grit-filter')) {
+        bar.querySelectorAll('button').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+            btn.classList.add('on');
+            paint(btn.dataset.subject);
+          });
+        });
+      }
     }
-
-    function showInstructorModal(id){
-      const ins = INSTRUCTORS.find(x=>x.id===id);
-      if(!ins) return;
-      document.getElementById('insPoster').src = ins.poster || ins.photo;
-      document.getElementById('insModalTitle').textContent = ins.name;
-      document.getElementById('insSubject').textContent = ins.subject || '';
-      document.getElementById('insBio').textContent = ins.bio || '';
-      const ul = document.getElementById('insHighlights');
-      ul.innerHTML = (ins.highlights||[]).map(h=>`<li>${h}</li>`).join('');
-      const yt = document.getElementById('insYoutube');
-      yt.src = ins.youtube_id ? `https://www.youtube.com/embed/${ins.youtube_id}?rel=0&modestbranding=1` : '';
-
-      const modal = document.getElementById('insModal');
-      modal.setAttribute('aria-hidden','false');
-
-      // 포커스 트랩 간단 처리
-      setTimeout(()=>document.querySelector('.modal__close').focus(), 0);
-    }
-
-    function closeInstructorModal(){
-      const modal = document.getElementById('insModal');
-      document.getElementById('insYoutube').src = ''; // 재생 정지
-      modal.setAttribute('aria-hidden','true');
-    }
-
-    document.addEventListener('click', (e)=>{
-      if(e.target.dataset.close) closeInstructorModal();
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // instructors.html: 전체
+      if (document.getElementById('instructorGrid')) renderInstructors('instructorGrid', null);
     });
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape') closeInstructorModal();
-    });
-
-    document.addEventListener('DOMContentLoaded', loadInstructors);
   </script>
   <script type="module" src="./assets/js/common.js"></script>
 </body>

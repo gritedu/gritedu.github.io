@@ -1,5 +1,5 @@
 export function injectCommonUI() {
-  const header = `
+  const headerTpl = `
   <header class="grit-header fixed">
     <div class="grit-header__wrap">
       <a class="grit-logo" href="./index.html" aria-label="그릿에듀 홈">
@@ -16,7 +16,7 @@ export function injectCommonUI() {
       </nav>
     </div>
   </header>`;
-  const footer = `
+  const footerTpl = `
   <footer class="grit-footer">
     <div class="grit-footer__sns">
       <a href="https://www.instagram.com/grit_edu_seoul/" target="_blank" rel="noopener" aria-label="Instagram" class="sns"><svg width="26" height="26" viewBox="0 0 24 24" fill="#222"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2.2A2.8 2.8 0 1 0 12 14.8 2.8 2.8 0 0 0 12 7.2zM18 6.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg></a>
@@ -28,7 +28,19 @@ export function injectCommonUI() {
       <p>[08635] 서울 금천구 시흥대로47길 28-5 남서울교육문화센터 5층<br>Tel : 02-809-0611</p>
     </div>
   </footer>`;
-  document.body.insertAdjacentHTML('afterbegin', header);
-  document.body.insertAdjacentHTML('beforeend', footer);
+
+  // 기존 정적 헤더/푸터가 있으면 교체, 없으면 주입
+  const existHeader = document.querySelector('.grit-header');
+  if (existHeader) { existHeader.outerHTML = headerTpl; } else { document.body.insertAdjacentHTML('afterbegin', headerTpl); }
+
+  const existFooter = document.querySelector('.grit-footer');
+  if (existFooter) { existFooter.outerHTML = footerTpl; } else { document.body.insertAdjacentHTML('beforeend', footerTpl); }
+
+  // 현재 페이지 활성 메뉴 표시
+  const path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.grit-nav a').forEach(a=>{
+    const href = a.getAttribute('href');
+    if ((path === '' && href.endsWith('index.html')) || path === href) a.classList.add('is-active');
+  });
 }
 document.addEventListener('DOMContentLoaded', injectCommonUI);

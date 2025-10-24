@@ -169,3 +169,18 @@ button, a{transition:all .3s ease;}
 
 /* 2025 텍스트 잔여 제거 */
 .badge-year,.year-2025,.tag-2025{display:none !important}
+
+.grit-filter{display:flex;gap:8px;margin:8px 0 12px}
+.grit-filter button{border:1px solid #eee;background:#fff;padding:6px 10px;border-radius:20px;cursor:pointer}
+.grit-filter button.on{background:var(--grit-main,#ff7a00);color:#fff;border-color:transparent}
+
+.instructor-card{position:relative}
+.instructor-card .overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.5);
+  opacity:0;transition:opacity .25s ease;
+  display:flex;align-items:flex-end;justify-content:flex-start;
+}
+.instructor-card:hover .overlay{opacity:1}
+.instructor-card .overlay .txt{color:#fff;padding:10px}
+.instructor-card .overlay .txt strong{display:block;font-size:14px;margin-bottom:4px}
+.instructor-card .overlay .txt span{display:block;font-size:12px;opacity:.9}
