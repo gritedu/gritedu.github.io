@@ -166,6 +166,24 @@ body.nav-open { overflow:hidden; }
   box-shadow:0 4px 12px rgba(0,0,0,.15);
 }
 
+/* 레이어 우선순위 일괄 */
+.site-header{position:sticky;top:0;z-index:10000;isolation:isolate;}
+.hamburger{position:relative;z-index:11000;}
+.site-nav{z-index:10990;}
+body.nav-open{overflow:hidden;}
+
+/* 헤더 오른쪽 영역 정렬(모바일에서도 상하 중앙) */
+.header-right{display:flex; align-items:center; gap:8px;}
+/* 버튼 소형화 일관 */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border-radius:999px;font-size:.875rem;}
+.btn-sm{padding:6px 10px;font-size:.8125rem;}
+.btn-outline{border:1px solid #ddd;background:#fff;color:#333;}
+
+/* 햄버거 터치 타깃 확대 + 정렬 */
+.hamburger{width:44px;height:44px;padding:10px;border:none;background:transparent;border-radius:10px;touch-action:manipulation;}
+.hamburger .bar{display:block;height:2px;background:#111;margin:6px 0;border-radius:2px;}
+
+/* 모바일에서 헤더 오른쪽 그룹을 수평 유지 & 중앙 정렬 */
 @media (max-width:860px){
   .nav{grid-template-columns:1fr auto auto}
   .menu{
@@ -176,9 +194,14 @@ body.nav-open { overflow:hidden; }
   .menu.open{display:flex}
   .menu a{padding:12px 8px; border-radius:8px; font-size:16px; text-align:center}
   .hamburger{display:flex; z-index:11000; position:relative}
-  
-  /* 메뉴 열림 시 스크롤 잠금 */
-  body.nav-open{overflow:hidden}
+  .header-right{gap:10px;}
+}
+
+/* Back-to-Top */
+#backToTop{
+  position:fixed;right:16px;bottom:16px;width:44px;height:44px;border:none;border-radius:999px;
+  background:#111;color:#fff;font-size:18px;display:none;align-items:center;justify-content:center;
+  z-index:12000;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15)
 }
 
 /* === 강사 상세 레이아웃(모바일 상하 배치 고정) === */
