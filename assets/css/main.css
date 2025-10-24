@@ -1,7 +1,7 @@
 :root{
   --brand:#f68b1f; --text:#3b3b3b; --muted:#6b7280; --bg:#ffffff;
   --border:#e6e8ee; --hover:#fff6ec; --shadow:0 8px 24px rgba(0,0,0,.08);
-  --footerdark:#3d3d45;
+  --footerdark:#3d3d45; --grit-main:#ff7a00;
 }
 *{box-sizing:border-box}
 html,body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text)}
@@ -108,7 +108,9 @@ footer .inner{max-width:1200px;margin:0 auto;padding:16px 20px;text-align:center
 .grit-header__wrap{display:grid;grid-template-columns:160px 1fr;align-items:center;gap:12px;max-width:1080px;margin:0 auto;padding:10px 16px}
 .grit-logo img{height:40px;width:auto;display:block}
 .grit-nav ul{display:flex;justify-content:center;gap:20px;list-style:none;margin:0;padding:0}
-.grit-nav a{display:inline-block;padding:8px 10px;color:#222;text-decoration:none}
+.grit-nav a{display:inline-block;padding:8px 10px;color:#222;text-decoration:none;font-weight:600;}
+.grit-header.fixed{position:fixed;top:0;width:100%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+body{scroll-behavior:smooth;padding-top:70px;}
 .grit-nav a.is-active{font-weight:700}
 
 /* hero */
@@ -116,17 +118,42 @@ footer .inner{max-width:1200px;margin:0 auto;padding:16px 20px;text-align:center
 
 /* sections */
 .grit-section{max-width:1080px;margin:24px auto;padding:0 16px}
-.grit-section__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.grit-link{color:#222;text-decoration:underline}
+.grit-section__head h2{color:var(--grit-main);}
+.grit-link:hover{color:var(--grit-main);}
+.grit-top{background:var(--grit-main);box-shadow:0 2px 6px rgba(0,0,0,.2);}
+.grit-footer{box-shadow:0 -2px 8px rgba(0,0,0,.05);}
+button, a{transition:all .3s ease;}
 
 /* grid */
 .grit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 @media (max-width:1024px){.grit-grid{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:640px){.grit-grid{grid-template-columns:repeat(2,1fr)}}
 
-.instructor-card{display:block;text-align:center;background:#fff;border:1px solid #eee;border-radius:10px;overflow:hidden;padding:10px}
-.instructor-card img{width:100%;height:200px;object-fit:cover;object-position:center top;display:block;border-radius:8px}
-.instructor-card h3,.instructor-card p{margin:6px 0;text-align:center}
+.instructor-card {
+  display:block;
+  position:relative;
+  text-align:center;
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:14px;
+  overflow:hidden;
+  padding:0;
+  box-shadow:0 4px 8px rgba(0,0,0,0.05);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.instructor-card:hover {
+  transform:translateY(-8px);
+  box-shadow:0 8px 18px rgba(0,0,0,0.1);
+}
+.instructor-card img {
+  width:100%;
+  height:280px;
+  object-fit:cover;
+  object-position:center top;
+  display:block;
+}
+.instructor-card h3 {margin:10px 0;color:#111;font-weight:600;}
+.instructor-card p {display:none;} /* 설명 제거 */
 
 .gallery-thumb img{width:100%;height:200px;object-fit:cover;border-radius:10px;border:1px solid #eee}
 

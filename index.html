@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
   <title>그릿에듀 | 대한민국 교육의 새로운 표준</title>
   <link rel="stylesheet" href="./assets/css/main.css" />
 </head>
@@ -33,7 +34,6 @@
   <section class="grit-section">
     <div class="grit-section__head">
       <h2>강사진</h2>
-      <a class="grit-link" href="./instructors.html">더보기</a>
     </div>
     <div id="gritInstructorsPreview" class="grit-grid"></div>
   </section>
@@ -41,7 +41,6 @@
   <section class="grit-section">
     <div class="grit-section__head">
       <h2>갤러리</h2>
-      <a class="grit-link" href="./album.html">더보기</a>
     </div>
     <div id="gritGalleryPreview" class="grit-grid"></div>
   </section>
@@ -89,21 +88,21 @@
     `).join('');
   })();
 
-  // 갤러리 6장 프리뷰(이미지 경로가 /assets/album 혹은 /assets/gallery 가정)
-  (async () => {
-    const grid = document.getElementById('gritGalleryPreview');
-    if(!grid) return;
-    // 정적 썸네일 6장만(있으면 교체)
-    const thumbs = [
-      './assets/album/grit1.jpeg','./assets/album/grit2.jpeg','./assets/album/grit3.jpeg',
-      './assets/album/grit4.jpeg','./assets/album/student1.png','./assets/album/student2.png'
-    ];
-    grid.innerHTML = thumbs.map(src => `
-      <a class="gallery-thumb" href="./album.html">
-        <img src="${src}" alt="그릿에듀 갤러리">
-      </a>
-    `).join('');
+  // 갤러리 자동 로드 (폴더 3개)
+  (async()=>{
+    const base='./assets/gallery/';
+    const folders=['grit','event','study'];
+    const grid=document.getElementById('gritGalleryPreview');
+    let imgs=[];
+    for(const f of folders){
+      // GitHub Pages 정적 호스팅에선 디렉토리 리스트 불가 → 수동 패턴 1~6.jpg 사용
+      for(let i=1;i<=6;i++){
+        imgs.push(`${base}${f}/${i}.jpg`);
+      }
+    }
+    grid.innerHTML=imgs.map(src=>`<img src="${src}" class="gallery-thumb" alt="그릿에듀 갤러리">`).join('');
   })();
 </script>
+<script type="module" src="./assets/js/common.js"></script>
 </body>
 </html>
