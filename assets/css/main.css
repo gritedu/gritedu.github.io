@@ -378,14 +378,15 @@ html,body{overflow-x:hidden}
 .grit-nav a {
   font-weight: 700 !important;
   font-size: 16px !important;
-  color: #222;
-  text-decoration: none;
+  font-family: 'Noto Sans KR', 'Pretendard', 'Apple SD Gothic Neo', sans-serif !important;
+  color: #222 !important;
+  text-decoration: none !important;
   transition: color .2s ease;
 }
 .grit-nav a.is-active,
 .grit-nav a:hover {
-  color: #ff7a00;
-  text-decoration: none;
+  color: #ff7a00 !important;
+  text-decoration: none !important;
 }
 
 /* header preload skeleton to avoid flash */
