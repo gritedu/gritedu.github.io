@@ -1,25 +1,34 @@
+// assets/js/common.js
+import { auth, signOut } from "/assets/js/firebase-init.js";
+
 const HEADER_HEIGHT = 64;
 
-export function injectCommonUI() {
-  const headerTpl = `
+function headerTemplate() {
+  return `
   <header class="grit-header fixed" style="height:${HEADER_HEIGHT}px">
     <div class="grit-header__wrap" style="height:${HEADER_HEIGHT}px">
-      <a class="grit-logo" href="./" aria-label="그릿에듀 홈">
-        <img src="./assets/logo.png" alt="그릿에듀" class="grit-logo">
+      <a class="grit-logo" href="/index.html" aria-label="그릿에듀 홈">
+        <img src="/assets/logo.png" alt="그릿에듀" class="grit-logo">
       </a>
       <nav class="grit-nav" aria-label="주 메뉴">
         <ul>
-          <li><a href="./">그릿에듀</a></li>
-          <li><a href="./story.html">이야기</a></li>
-          <li><a href="./instructors.html">강사진</a></li>
-          <li><a href="./gallery.html">갤러리</a></li>
-          <li><a href="./contact.html">문의</a></li>
+          <li><a href="/index.html">그릿에듀</a></li>
+          <li><a href="/story.html">이야기</a></li>
+          <li><a href="/instructors.html">강사진</a></li>
+          <li><a href="/gallery.html">갤러리</a></li>
+          <li><a href="/contact.html">문의</a></li>
+          <li><a href="/members/dashboard.html" id="menu-myclass" style="display:none;">내 강의실</a></li>
+          <li><a href="/login.html" id="menu-login">로그인</a></li>
+          <li><a href="#" id="menu-logout" style="display:none;">로그아웃</a></li>
         </ul>
       </nav>
     </div>
+    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
   </header>`;
+}
 
-  const footerTpl = `
+function footerTemplate() {
+  return `
   <footer class="grit-footer">
     <div class="grit-footer-inner">
       <div class="grit-footer-sns">
@@ -48,42 +57,74 @@ export function injectCommonUI() {
       <p>Tel : 02-809-0611</p>
     </div>
   </footer>`;
+}
 
-  // 1) 기존 헤더/푸터 있으면 교체, 없으면 주입
+export function injectCommonUI() {
+  // 1) 헤더/푸터 주입(있으면 교체)
   const existHeader = document.querySelector('.grit-header');
-  if (existHeader) existHeader.outerHTML = headerTpl; else document.body.insertAdjacentHTML('afterbegin', headerTpl);
+  const headerHtml = headerTemplate();
+  if (existHeader) existHeader.outerHTML = headerHtml;
+  else document.body.insertAdjacentHTML('afterbegin', headerHtml);
 
-  // 햄버거 메뉴 토글 로직
-  const header = document.querySelector('.grit-header');
-  const nav = header.querySelector('nav ul');
-  header.insertAdjacentHTML('beforeend','<div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>');
-  const menuBtn = document.getElementById('menuToggle');
-  menuBtn.addEventListener('click',()=>{nav.classList.toggle('active');menuBtn.classList.toggle('active');});
+  const existFooter = document.querySelector('.grit-footer');
+  const footerHtml = footerTemplate();
+  if (existFooter) existFooter.outerHTML = footerHtml;
+  else document.body.insertAdjacentHTML('beforeend', footerHtml);
 
-  // 2) 고정 높이를 위한 스페이서(한 번만)
+  // 2) 헤더 스페이서(중복 생성 방지)
   if (!document.querySelector('.grit-header-spacer')) {
     const spacer = document.createElement('div');
     spacer.className = 'grit-header-spacer';
     spacer.style.height = HEADER_HEIGHT + 'px';
-    document.body.insertBefore(spacer, document.body.firstElementChild.nextElementSibling);
+    const headerEl = document.querySelector('.grit-header');
+    headerEl.insertAdjacentElement('afterend', spacer);
   }
 
-  const existFooter = document.querySelector('.grit-footer');
-  if (existFooter) existFooter.outerHTML = footerTpl; else document.body.insertAdjacentHTML('beforeend', footerTpl);
+  // 3) 햄버거 메뉴 토글
+  const navList = document.querySelector('.grit-nav ul');
+  const menuBtn = document.getElementById('menuToggle');
+  if (menuBtn && navList) {
+    menuBtn.addEventListener('click', () => {
+      navList.classList.toggle('active');
+      menuBtn.classList.toggle('active');
+    });
+  }
 
-  // 3) 현재 페이지 활성 메뉴
+  // 4) 현재 페이지 활성 메뉴
   const page = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.grit-nav a').forEach(a=>{
+  document.querySelectorAll('.grit-nav a').forEach(a => {
     if (a.getAttribute('href').endsWith(page)) a.classList.add('is-active');
   });
 
-  // 4) 맨위로 버튼 추가
+  // 5) 맨위로 버튼
   ensureTopButton();
+
+  // 6) === 로그인 상태에 따른 메뉴 표시(주입 직후 DOM에서 엘리먼트 바인딩) ===
+  const menuMyClass = document.getElementById("menu-myclass");
+  const menuLogin = document.getElementById("menu-login");
+  const menuLogout = document.getElementById("menu-logout");
+
+  // 상태 반영
+  auth.onAuthStateChanged(user => {
+    const loggedIn = !!user;
+    if (menuMyClass) menuMyClass.style.display = loggedIn ? "inline-block" : "none";
+    if (menuLogin)   menuLogin.style.display   = loggedIn ? "none" : "inline-block";
+    if (menuLogout)  menuLogout.style.display  = loggedIn ? "inline-block" : "none";
+  });
+
+  // 로그아웃
+  if (menuLogout) {
+    menuLogout.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await signOut(auth);
+      location.href = "/index.html";
+    });
+  }
 }
 
-function ensureTopButton(){
+function ensureTopButton() {
   let btn = document.getElementById('goTop');
-  if(!btn){
+  if (!btn) {
     document.body.insertAdjacentHTML('beforeend',
       '<button id="goTop" class="grit-top" aria-label="맨 위로" style="opacity:0">▲</button>'
     );
@@ -92,34 +133,10 @@ function ensureTopButton(){
   btn.style.display = 'flex';
   btn.style.zIndex = '9999';
   const onScroll = () => { btn.style.opacity = (window.scrollY > 300) ? '1' : '0'; };
-  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('scroll', onScroll, { passive: true });
   btn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
   onScroll();
 }
 
-// 로그인 상태에 따른 메뉴 표시 제어
-import { auth } from "./firebase-init.js";
-
-const menuMyClass = document.getElementById("menu-myclass");
-const menuLogin = document.getElementById("menu-login");
-const menuLogout = document.getElementById("menu-logout");
-
-// 로그인 상태 감시
-auth.onAuthStateChanged(user => {
-  const loggedIn = !!user;
-  if (menuMyClass) menuMyClass.style.display = loggedIn ? "inline-block" : "none";
-  if (menuLogin) menuLogin.style.display = loggedIn ? "none" : "inline-block";
-  if (menuLogout) menuLogout.style.display = loggedIn ? "inline-block" : "none";
-});
-
-// 로그아웃 버튼 클릭 시 처리
-if (menuLogout) {
-  menuLogout.addEventListener("click", async (e) => {
-    e.preventDefault();
-    const { signOut } = await import("https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js");
-    await signOut(auth);
-    location.href = "./index.html"; // 로그아웃 후 메인으로 이동
-  });
-}
-
+// 페이지 로드 시 주입
 document.addEventListener('DOMContentLoaded', injectCommonUI);

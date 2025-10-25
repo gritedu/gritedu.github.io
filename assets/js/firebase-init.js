@@ -1,6 +1,12 @@
 // assets/js/firebase-init.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+import {
+  getAuth,
+  setPersistence,
+  browserSessionPersistence,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCYZXuZ5ZGRgSEzvEGfbaUg6ViiyidSVKU",
@@ -13,6 +19,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// 창/탭 닫으면 자동 로그아웃되도록 세션 유지
+await setPersistence(auth, browserSessionPersistence);
 
 function guardPage(redirectUrl = "/login.html") {
   return new Promise((resolve, reject) => {
@@ -34,4 +43,4 @@ function handleLogout() {
   });
 }
 
-export { auth, guardPage, handleLogout };
+export { auth, guardPage, signOut };

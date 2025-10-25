@@ -8,17 +8,6 @@
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
-<nav class="navbar">
-  <a href="./index.html">그릿에듀</a>
-  <a href="./story.html">이야기</a>
-  <a href="./instructors.html">강사진</a>
-  <a href="./gallery.html">갤러리</a>
-  <a href="./contact.html">문의</a>
-  <a href="./members/dashboard.html" id="menu-myclass" style="display:none;">내 강의실</a>
-  <a href="./login.html" id="menu-login">로그인</a>
-  <a href="#" id="menu-logout" style="display:none;">로그아웃</a>
-</nav>
-
   <main class="container">
     <h1>그릿에듀 강사진</h1>
     <div class="grit-filter" role="tablist" aria-label="강사진 필터" data-for="instructors">
@@ -56,7 +45,7 @@
     </div>
   </div>
 
-  <script type="module" src="./assets/js/common.js"></script>
+  <script type="module" src="/assets/js/common.js"></script>
   <script>
     async function renderInstructorsPage(){
       const res = await fetch('./data/instructors.json');

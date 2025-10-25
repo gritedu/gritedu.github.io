@@ -10,117 +10,43 @@
     :root {
       --brand:#f68b1f; --text:#333333; --muted:#6b7280; --bg:#ffffff;
       --border:#e6e8ee; --hover:#fff6ec; --shadow:0 4px 16px rgba(0,0,0,.05);
-      --footerdark:#3d3d45; --grit-main:#ff7a00;
+      --grit-main:#ff7a00;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Noto Sans KR', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.9;
-      letter-spacing: 0.2px;
+    body{
+      background:var(--bg); color:var(--text);
+      font-family:'Noto Sans KR','Pretendard','Apple SD Gothic Neo',sans-serif;
+      margin:0; padding:0; line-height:1.9; letter-spacing:.2px;
     }
-
-    main.grit-section {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 80px 24px 120px;
+    main.grit-section{max-width:820px;margin:0 auto;padding:80px 24px 120px;}
+    /* 상단 가운데 제목 */
+    .page-title{
+      text-align:center; font-size:1.9rem; color:var(--grit-main);
+      font-weight:800; margin:0 0 60px; letter-spacing:-.5px;
     }
-
-    /* 상단 제목 */
-    .page-title {
-      text-align: center;
-      font-size: 1.9rem;
-      color: var(--grit-main);
-      font-weight: 800;
-      margin: 0 0 60px;
-      letter-spacing: -0.5px;
+    h2{
+      font-size:1.35rem; color:var(--brand); margin:50px 0 25px;
+      border-left:5px solid var(--grit-main); padding-left:10px; font-weight:700;
     }
-
-    h2 {
-      font-size: 1.35rem;
-      color: var(--brand);
-      margin: 50px 0 25px;
-      border-left: 5px solid var(--grit-main);
-      padding-left: 10px;
-      font-weight: 700;
+    p{font-size:1.05rem; margin-bottom:16px;}
+    ul{margin:16px 0 16px 20px; font-size:1.05rem;}
+    li{margin-bottom:8px;}
+    mark{background:var(--hover); color:var(--grit-main); font-weight:600; padding:0 4px; border-radius:3px;}
+    .quote{
+      font-style:italic; color:var(--muted); font-size:1rem;
+      margin:16px 0; border-left:4px solid var(--grit-main); padding-left:12px;
     }
-
-    p {
-      font-size: 1.05rem;
-      margin-bottom: 16px;
-      color: var(--text);
+    section{margin-top:70px; border-top:1px solid var(--border); padding-top:40px;}
+    .cta{text-align:center; margin-top:80px; padding-top:40px; border-top:2px solid var(--border);}
+    .cta a{
+      display:inline-block; background:var(--grit-main); color:#fff; text-decoration:none;
+      font-weight:600; padding:14px 32px; border-radius:6px; margin:10px 8px;
+      box-shadow:var(--shadow); font-size:1rem; transition:background .3s;
     }
-
-    ul {
-      margin: 16px 0 16px 20px;
-      font-size: 1.05rem;
-    }
-
-    li { margin-bottom: 8px; }
-
-    mark {
-      background: var(--hover);
-      color: var(--grit-main);
-      font-weight: 600;
-      padding: 0 4px;
-      border-radius: 3px;
-    }
-
-    .quote {
-      font-style: italic;
-      color: var(--muted);
-      font-size: 1rem;
-      margin: 16px 0;
-      border-left: 4px solid var(--grit-main);
-      padding-left: 12px;
-    }
-
-    section {
-      margin-top: 70px;
-      border-top: 1px solid var(--border);
-      padding-top: 40px;
-    }
-
-    .cta {
-      text-align: center;
-      margin-top: 80px;
-      padding-top: 40px;
-      border-top: 2px solid var(--border);
-    }
-
-    .cta a {
-      display: inline-block;
-      background: var(--grit-main);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 14px 32px;
-      border-radius: 6px;
-      margin: 10px 8px;
-      box-shadow: var(--shadow);
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-
-    .cta a:hover { background: #ff9833; }
+    .cta a:hover{background:#ff9833;}
   </style>
 </head>
 
 <body>
-<nav class="navbar">
-  <a href="./index.html">그릿에듀</a>
-  <a href="./story.html">이야기</a>
-  <a href="./instructors.html">강사진</a>
-  <a href="./gallery.html">갤러리</a>
-  <a href="./contact.html">문의</a>
-  <a href="./members/dashboard.html" id="menu-myclass" style="display:none;">내 강의실</a>
-  <a href="./login.html" id="menu-login">로그인</a>
-  <a href="#" id="menu-logout" style="display:none;">로그아웃</a>
-</nav>
-
   <main class="grit-section">
 
     <!-- 상단 가운데 정렬 제목 -->
@@ -154,9 +80,9 @@
 
     <section>
       <h2>💬 학부모와 학생이 말하는 변화</h2>
-      <p class="quote">“그릿에듀에 다니고 나서 처음으로 아이가 ‘공부가 재밌다’고 말했습니다.”<br>– 동일여고 고2 학부모</p>
-      <p class="quote">“예전엔 한 번 틀리면 포기했는데, 지금은 ‘한 번 더 해볼까?’라고 말해요.”<br>– 금천고 고1 학생</p>
-      <p class="quote">“시험이 끝나면 무너졌던 아이가 이제는 결과보다 과정을 보며 다시 도전합니다.”<br>– 문일고 고3 학부모</p>
+      <p class="quote">“그릿에듀에 다니고 나서 처음으로 아이가 ‘공부가 재밌다’고 말했습니다.”<br>– 고2 학부모</p>
+      <p class="quote">“예전엔 한 번 틀리면 포기했는데, 지금은 ‘한 번 더 해볼까?’라고 말해요.”<br>– 고1 학생</p>
+      <p class="quote">“시험이 끝나면 무너졌던 아이가 이제는 결과보다 과정을 보며 다시 도전합니다.”<br>– 고3 학부모</p>
       <p>이 작은 변화들이 쌓여, 아이는 점점 더 단단해지고 있습니다.</p>
     </section>
 
@@ -168,13 +94,15 @@
       <p>GRIT EDU는 오늘도 아이들의 미래를 함께 고민합니다. 단단하고 올바른 마음을 기르는 교육, 그 철학을 지켜나가겠습니다.</p>
     </section>
 
+    <!-- 하단 CTA: 두 개만 -->
     <section class="cta">
+      <h2>🙌 함께하는 우리</h2>
       <p>아이들의 꿈과 성장을 응원하는 강사진, 그리고 끝까지 해내는 힘을 길러주는 GRIT EDU가 함께합니다.</p>
       <a href="./contact.html">상담 신청하기</a>
       <a href="./instructors.html">강사진 보러가기</a>
     </section>
 
   </main>
-  <script type="module" src="./assets/js/common.js"></script>
+  <script type="module" src="/assets/js/common.js"></script>
 </body>
 </html>

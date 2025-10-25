@@ -10,10 +10,11 @@
   <div id="course-list">로딩 중...</div>
   <button id="logout-btn">로그아웃</button>
 
+  <script type="module" src="/assets/js/common.js"></script>
   <script type="module">
-    import { guardPage, handleLogout } from "../assets/js/firebase-init.js";
+    import { guardPage, handleLogout } from "/assets/js/firebase-init.js";
     import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-    import { auth } from "../assets/js/firebase-init.js";
+    import { auth } from "/assets/js/firebase-init.js";
 
     try {
       await guardPage();
