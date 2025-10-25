@@ -9,108 +9,133 @@
 <body style="min-height:100vh;">
   <main class="container" style="padding:24px; margin-top:64px;">
     <h1 style="margin:0 0 16px; font-size:24px; font-weight:800;">내 강의실</h1>
-    <div class="grid" id="dash-grid">
-      <section class="card" id="profile-card">
-        <h2>내 정보</h2>
-        <div id="profile-content">로딩 중…</div>
-      </section>
 
-      <section class="card" id="courses-card" style="grid-column:1/-1;">
-        <h2>수강 중인 강좌</h2>
-        <div id="courses">로딩 중…</div>
-      </section>
-    </div>
+    <section class="card" id="profile-card" style="margin-bottom:16px;">
+      <h2>내 정보</h2>
+      <div id="profile-content">로딩 중…</div>
+    </section>
+
+    <section class="card">
+      <h2>수강 중인 강좌</h2>
+      <p style="color:#666; margin-top:0;">
+        체크하면 진행상태가 저장됩니다. (동기화: Firestore / 기기 간 공유)
+      </p>
+      <div id="playlist-courses" class="grid" style="margin-top:12px;"></div>
+    </section>
   </main>
 
   <script type="module">
     import { guardPage, auth } from "../assets/js/firebase-init.js";
     import {
-      getFirestore, collection, query, where, getDocs, doc, getDoc,
-      setDoc, serverTimestamp
+      getFirestore, doc, getDoc, setDoc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
     await guardPage();
     const db = getFirestore();
     const uid = auth.currentUser.uid;
 
-    // 프로필 카드
-    const profileBox = document.getElementById("profile-content");
+    // 1) 프로필 카드 (관리자/학생 이름 고정 표기)
     const user = auth.currentUser;
     const email = user.email || "";
-    const name = (email === "griteducto@gmail.com") ? "관리자" : "학생";
-    profileBox.innerHTML = `
+    const displayName = (email === "griteducto@gmail.com") ? "관리자" : "학생";
+    document.getElementById("profile-content").innerHTML = `
       <div style="display:flex;gap:12px;align-items:center;">
         <div style="width:48px;height:48px;border-radius:24px;background:#f1f1f1;display:flex;align-items:center;justify-content:center;font-weight:800;">
-          ${name.charAt(0)}
+          ${displayName.charAt(0)}
         </div>
         <div>
-          <div style="font-weight:800;">${name}</div>
+          <div style="font-weight:800;">${displayName}</div>
           <div style="color:#666;">${email}</div>
         </div>
       </div>
     `;
 
-    // 수강 강좌 + 체크리스트
-    const container = document.getElementById("courses");
-    container.innerHTML = "";
+    // 2) 체크리스트: 유튜브 플레이리스트 2개
+    const PLAYLISTS = [
+      { id: "PLAyaOmgagQpgVDOd9sT8PO0MFSHr7zaYM", title: "코스 A" },
+      { id: "PLAyaOmgagQpg-mZl9HSdCdBcgTySbdlub", title: "코스 B" }
+    ];
 
-    const qEnroll = query(collection(db, "enrollments"), where("uid", "==", uid));
-    const enrollSnap = await getDocs(qEnroll);
+    const container = document.getElementById("playlist-courses");
 
-    if (enrollSnap.empty) {
-      container.textContent = "수강중인 강좌가 없습니다.";
-    } else {
-      for (const enr of enrollSnap.docs) {
-        const { courseId } = enr.data();
-        const courseRef = doc(db, "courses", courseId);
-        const courseSnap = await getDoc(courseRef);
-        const course = courseSnap.exists() ? courseSnap.data() : { title: courseId };
+    // RSS 피드에서 항목 파싱
+    async function fetchPlaylistItems(playlistId) {
+      const url = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("RSS fetch failed");
+      const xml = new DOMParser().parseFromString(await res.text(), "text/xml");
+      const entries = Array.from(xml.getElementsByTagName("entry"));
+      // 최신→오래된 순으로 되어 있을 수 있음. 필요시 reverse()
+      return entries.map(entry => {
+        const title = entry.getElementsByTagName("title")[0]?.textContent || "제목 없음";
+        const vid = entry.getElementsByTagNameNS("http://www.youtube.com/xml/schemas/2015", "videoId")[0]?.textContent;
+        return { title, videoId: vid };
+      }).filter(v => !!v.videoId);
+    }
 
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <h2>${course.title || courseId}</h2>
-          <p style="margin:0 0 12px; color:#666;">${course.description || ""}</p>
-          <div id="lectures-${courseId}">강의 목록 로딩…</div>
-          <p style="margin-top:12px;"><a href="/members/course.html?id=${courseId}">강좌 상세 보기</a></p>
-        `;
-        container.appendChild(card);
+    async function renderPlaylistCard(pl) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h2>${pl.title}</h2>
+        <div id="list-${pl.id}">로딩 중…</div>
+      `;
+      container.appendChild(card);
 
-        // 강의 체크리스트
-        const lecWrap = card.querySelector(`#lectures-${courseId}`);
-        const lecCol = collection(db, "courses", courseId, "lectures");
-        const lecSnap = await getDocs(lecCol);
-        if (lecSnap.empty) {
-          lecWrap.textContent = "등록된 강의가 없습니다.";
-        } else {
-          lecWrap.innerHTML = "";
-          for (const lec of lecSnap.docs) {
-            const { title } = lec.data();
-            const lectureId = lec.id;
-            const pid = `${uid}_${courseId}_${lectureId}`;
-            const progRef = doc(db, "progress", pid);
-            const progSnap = await getDoc(progRef);
-            const completed = progSnap.exists() ? !!progSnap.data().completed : false;
-
-            const row = document.createElement("div");
-            row.className = "lecture-row";
-            row.innerHTML = `
-              <input type="checkbox" id="chk-${pid}" ${completed ? "checked" : ""} />
-              <label for="chk-${pid}">${title || lectureId}</label>
-            `;
-            lecWrap.appendChild(row);
-
-            row.querySelector(`#chk-${pid}`).addEventListener("change", async (e) => {
-              await setDoc(progRef, {
-                uid, courseId, lectureId,
-                completed: e.target.checked,
-                updatedAt: serverTimestamp()
-              }, { merge: true });
-            });
-          }
+      try {
+        const items = await fetchPlaylistItems(pl.id);
+        const listDiv = card.querySelector(`#list-${pl.id}`);
+        if (!items.length) {
+          listDiv.textContent = "플레이리스트에서 항목을 찾지 못했습니다.";
+          return;
         }
+        listDiv.innerHTML = "";
+        for (const item of items) {
+          const pid = `${uid}_playlist_${pl.id}_${item.videoId}`;
+          const progRef = doc(db, "progress", pid);
+          const progSnap = await getDoc(progRef);
+          const completed = progSnap.exists() ? !!progSnap.data().completed : false;
+
+          const row = document.createElement("div");
+          row.className = "lecture-row";
+          const inputId = `chk-${pl.id}-${item.videoId}`;
+          row.innerHTML = `
+            <input type="checkbox" id="${inputId}" ${completed ? "checked" : ""} />
+            <label for="${inputId}" style="flex:1;">
+              ${item.title}
+            </label>
+            <a href="https://www.youtube.com/watch?v=${item.videoId}&list=${pl.id}" target="_blank" rel="noopener" style="font-size:12px;color:#ff7a00;">보기</a>
+          `;
+          listDiv.appendChild(row);
+
+          row.querySelector("#" + inputId).addEventListener("change", async (e) => {
+            await setDoc(progRef, {
+              uid,
+              courseId: `playlist_${pl.id}`,
+              lectureId: item.videoId,
+              completed: e.target.checked,
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+          });
+        }
+      } catch (err) {
+        card.querySelector(`#list-${pl.id}`).textContent = "불러오기 오류: RSS 차단 또는 네트워크 문제";
+        console.error(err);
       }
     }
+
+    for (const pl of PLAYLISTS) {
+      await renderPlaylistCard(pl);
+    }
+
   </script>
+
+  <style>
+    /* 모바일 1열 */
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr !important; }
+      .card { padding: 12px; }
+    }
+  </style>
 </body>
 </html>

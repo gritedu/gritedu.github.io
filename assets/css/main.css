@@ -374,13 +374,13 @@ html,body{overflow-x:hidden}
 /* Go top button basic style (if not already) */
 #goTop { align-items:center; justify-content:center; width:40px; height:40px; border-radius:20px; border:none; cursor:pointer; }
 
-/* nav: all bold, active = underline or color only */
+/* --- NAV: 스타일 통일(모든 페이지 공통) --- */
 .grit-nav a {
   font-weight: 700 !important;
   font-size: 16px !important;
   color: #222;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color .2s ease;
 }
 .grit-nav a.is-active,
 .grit-nav a:hover {
@@ -413,12 +413,12 @@ html,body{overflow-x:hidden}
 /* go top button */
 #goTop { align-items:center; justify-content:center; width:44px; height:44px; border-radius:22px; border:none; cursor:pointer; background:#ff7a00; color:#fff; }
 
-/* Mobile responsive dashboard */
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr !important;
-  }
-  .card {
-    padding: 12px;
-  }
+/* --- 강사진 카드 이름/캡션 숨김 --- */
+.instructor-name,
+.teacher-name,
+.inst-name,
+.card .name,
+.instructor-card .name,
+.instructor-card figcaption {
+  display: none !important;
 }
