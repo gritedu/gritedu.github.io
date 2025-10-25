@@ -339,3 +339,33 @@ html,body{overflow-x:hidden}
 
 /* Go top button basic style (if not already) */
 #goTop { align-items:center; justify-content:center; width:40px; height:40px; border-radius:20px; border:none; cursor:pointer; }
+
+/* nav: all bold, active = underline or color only */
+.grit-nav a { font-weight: 700; text-decoration: none; }
+.grit-nav a.is-active { text-decoration: underline; }
+.grit-nav a:hover { text-decoration: underline; }
+
+/* header preload skeleton to avoid flash */
+.grit-header.grit-preload {
+  position: fixed; top:0; left:0; right:0; height:64px; z-index:1000;
+  background:#fff; border-bottom:1px solid #eee;
+}
+
+/* auth (login) card */
+.auth-wrap { min-height: calc(100vh - 64px); display:flex; align-items:center; justify-content:center; padding:24px; }
+.auth-card { width:100%; max-width:420px; background:#fff; border:1px solid #eee; border-radius:16px; padding:24px; box-shadow:0 8px 24px rgba(0,0,0,.06); }
+.auth-card h1 { margin:0 0 16px; font-size:22px; font-weight:800; }
+.auth-card .desc { margin-bottom:16px; color:#666; }
+.auth-card label { display:block; font-weight:700; margin:12px 0 6px; }
+.auth-card input { width:100%; height:44px; padding:0 12px; border:1px solid #ddd; border-radius:10px; }
+.auth-card button { width:100%; height:44px; margin-top:16px; border:0; border-radius:10px; cursor:pointer; font-weight:800; }
+.auth-card button.primary { background:#ff7a00; color:#fff; }
+
+/* dashboard cards */
+.grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); }
+.card { background:#fff; border:1px solid #eee; border-radius:16px; padding:16px; box-shadow:0 4px 14px rgba(0,0,0,.05); }
+.card h2 { margin:0 0 8px; font-size:18px; font-weight:800; }
+.lecture-row { display:flex; align-items:center; gap:8px; padding:6px 0; }
+
+/* go top button */
+#goTop { align-items:center; justify-content:center; width:44px; height:44px; border-radius:22px; border:none; cursor:pointer; background:#ff7a00; color:#fff; }

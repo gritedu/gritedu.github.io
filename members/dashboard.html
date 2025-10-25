@@ -1,46 +1,115 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>대시보드 - 나의 강좌</title>
-  <link rel="stylesheet" href="../assets/css/main.css">
-</head>
-<body style="display:none;" id="app">
-  <h1>내 강좌</h1>
-  <div id="course-list">로딩 중...</div>
-  <button id="logout-btn">로그아웃</button>
-
+  <meta charset="UTF-8" />
+  <title>내 강의실 - GritEdu</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
   <script type="module" src="/assets/js/common.js"></script>
+</head>
+<body style="min-height:100vh;">
+  <main class="container" style="padding:24px; margin-top:64px;">
+    <h1 style="margin:0 0 16px; font-size:24px; font-weight:800;">내 강의실</h1>
+    <div class="grid" id="dash-grid">
+      <section class="card" id="profile-card">
+        <h2>내 정보</h2>
+        <div id="profile-content">로딩 중…</div>
+      </section>
+
+      <section class="card" id="courses-card" style="grid-column:1/-1;">
+        <h2>수강 중인 강좌</h2>
+        <div id="courses">로딩 중…</div>
+      </section>
+    </div>
+  </main>
+
   <script type="module">
-    import { guardPage, handleLogout } from "/assets/js/firebase-init.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-    import { auth } from "/assets/js/firebase-init.js";
+    import { guardPage, auth } from "../assets/js/firebase-init.js";
+    import {
+      getFirestore, collection, query, where, getDocs, doc, getDoc,
+      setDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-    try {
-      await guardPage();
-      document.getElementById("app").style.display = "block";
+    await guardPage();
+    const db = getFirestore();
+    const uid = auth.currentUser.uid;
 
-      const db = getFirestore();
-      const uid = auth.currentUser.uid;
-      const q = query(collection(db, "enrollments"), where("uid", "==", uid));
-      const snap = await getDocs(q);
-      const container = document.getElementById("course-list");
-      container.innerHTML = "";
-      if (snap.empty) {
-        container.innerText = "수강중인 강좌가 없습니다.";
-      } else {
-        snap.forEach(doc => {
-          const data = doc.data();
-          const div = document.createElement("div");
-          div.innerHTML = `<a href="../course.html?id=${data.courseId}">${data.courseId} 강좌 보기</a>`;
-          container.appendChild(div);
-        });
+    // 프로필 카드
+    const profileBox = document.getElementById("profile-content");
+    const user = auth.currentUser;
+    const name = user.displayName || "이름 미설정";
+    const email = user.email || "";
+    profileBox.innerHTML = `
+      <div style="display:flex;gap:12px;align-items:center;">
+        <div style="width:48px;height:48px;border-radius:24px;background:#f1f1f1;display:flex;align-items:center;justify-content:center;font-weight:800;">
+          ${name.charAt(0)}
+        </div>
+        <div>
+          <div style="font-weight:800;">${name}</div>
+          <div style="color:#666;">${email}</div>
+        </div>
+      </div>
+    `;
+
+    // 수강 강좌 + 체크리스트
+    const container = document.getElementById("courses");
+    container.innerHTML = "";
+
+    const qEnroll = query(collection(db, "enrollments"), where("uid", "==", uid));
+    const enrollSnap = await getDocs(qEnroll);
+
+    if (enrollSnap.empty) {
+      container.textContent = "수강중인 강좌가 없습니다.";
+    } else {
+      for (const enr of enrollSnap.docs) {
+        const { courseId } = enr.data();
+        const courseRef = doc(db, "courses", courseId);
+        const courseSnap = await getDoc(courseRef);
+        const course = courseSnap.exists() ? courseSnap.data() : { title: courseId };
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h2>${course.title || courseId}</h2>
+          <p style="margin:0 0 12px; color:#666;">${course.description || ""}</p>
+          <div id="lectures-${courseId}">강의 목록 로딩…</div>
+          <p style="margin-top:12px;"><a href="/members/course.html?id=${courseId}">강좌 상세 보기</a></p>
+        `;
+        container.appendChild(card);
+
+        // 강의 체크리스트
+        const lecWrap = card.querySelector(`#lectures-${courseId}`);
+        const lecCol = collection(db, "courses", courseId, "lectures");
+        const lecSnap = await getDocs(lecCol);
+        if (lecSnap.empty) {
+          lecWrap.textContent = "등록된 강의가 없습니다.";
+        } else {
+          lecWrap.innerHTML = "";
+          for (const lec of lecSnap.docs) {
+            const { title } = lec.data();
+            const lectureId = lec.id;
+            const pid = `${uid}_${courseId}_${lectureId}`;
+            const progRef = doc(db, "progress", pid);
+            const progSnap = await getDoc(progRef);
+            const completed = progSnap.exists() ? !!progSnap.data().completed : false;
+
+            const row = document.createElement("div");
+            row.className = "lecture-row";
+            row.innerHTML = `
+              <input type="checkbox" id="chk-${pid}" ${completed ? "checked" : ""} />
+              <label for="chk-${pid}">${title || lectureId}</label>
+            `;
+            lecWrap.appendChild(row);
+
+            row.querySelector(`#chk-${pid}`).addEventListener("change", async (e) => {
+              await setDoc(progRef, {
+                uid, courseId, lectureId,
+                completed: e.target.checked,
+                updatedAt: serverTimestamp()
+              }, { merge: true });
+            });
+          }
+        }
       }
-
-      document.getElementById("logout-btn").addEventListener("click", handleLogout);
-    } catch (e) {
-      console.error("접근 불가:", e);
-      // 리디렉션은 guardPage 내부에서 처리됨
     }
   </script>
 </body>
