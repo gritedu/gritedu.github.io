@@ -1,4 +1,4 @@
-# === 기본 GitHub Pages용 ignore ===
+# === GitHub Pages / 일반 ===
 .DS_Store
 Thumbs.db
 node_modules/
@@ -10,8 +10,9 @@ __pycache__/
 *.zip
 *.bak
 *.tmp
+desktop.ini
 
-# === Firebase 관련 ===
+# === Firebase (로컬 작업물) ===
 firebase-debug.log
 .firebaserc
 .firebase/
@@ -19,16 +20,13 @@ database.rules.json
 storage.rules
 firebase.json
 
-# === Local / 관리툴 임시파일 ===
+# === 관리툴 임시/산출물 ===
 tools/*.csv
 tools/*.json
 tools/test/
 members/plans/*.zip
 
-# === 토큰/비밀키 ===
+# === 비밀/토큰 ===
 *_token.txt
 token.json
 config_private.json
-
-# === OS / 편집기 ===
-desktop.ini

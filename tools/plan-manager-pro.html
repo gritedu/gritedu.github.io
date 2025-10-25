@@ -1,376 +1,328 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>GRIT EDU 관리자 툴 — 학생·강의 JSON 자동화 + GitHub Push</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GRIT EDU 관리자 툴</title>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
 <style>
-  :root { --brand:#ff7a00; }
-  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, sans-serif;
-         max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-  h1 { margin: 0 0 6px; font-weight: 800; }
-  .note { color:#666; font-size:13px; margin: 6px 0 14px; }
-  .cfg, .gh { border:1px solid #eee; border-radius:10px; padding:12px; background:#fafafa; margin-top:10px;}
-  .row { display:flex; gap:8px; flex-wrap:wrap; margin: 10px 0; }
-  label { display:flex; gap:6px; align-items:center; }
-  input[type="text"], input[type="password"] { padding:6px 8px; font:inherit; }
-  button { font: inherit; padding: 8px 12px; border-radius: 8px; cursor: pointer; border:1px solid #ddd; background:#fff; }
-  button.primary { background:var(--brand); border-color:var(--brand); color:#fff; }
-  button.danger { background:#e74c3c; color:#fff; border-color:#c0392b; }
-  table { width:100%; border-collapse: collapse; margin-top:10px; table-layout: fixed; }
-  th, td { border:1px solid #ddd; padding:8px; vertical-align: top; }
-  th { background:#f8f8f8; }
-  th:nth-child(1){ width:120px }
-  th:nth-child(2){ width:260px }
-  th:nth-child(3){ width:180px }
-  th:nth-child(5){ width:80px }
-  input, textarea { width:100%; font:inherit; padding:6px 8px; }
-  textarea { resize: vertical; min-height: 90px; }
-  .muted { color:#777; font-size:12px; }
-  pre { background:#f6f6f8; padding:10px; border-radius:10px; overflow:auto; font-size:12px; }
-  .email-wrap { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .email-wrap input { flex: 1 1 auto; min-width: 120px; }
-  .email-wrap .suffix { color:#666; font-size:13px; }
-  .pill { background:#fff7ee; border:1px solid #ffd7b0; color:#aa5a00; padding:4px 8px; border-radius:999px; font-size:12px; }
+  body{font-family:'Noto Sans KR','Pretendard',system-ui,-apple-system,Segoe UI,Roboto;margin:0;background:#fff;color:#222}
+  .wrap{max-width:1080px;margin:20px auto;padding:0 16px}
+  h1{display:flex;align-items:center;gap:8px;margin:0 0 16px}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  input,textarea,button{font-size:14px}
+  input[type="text"], input[type="password"]{height:38px;padding:0 10px;border:1px solid #ddd;border-radius:8px}
+  textarea{width:100%;min-height:90px;border:1px solid #ddd;border-radius:8px;padding:8px}
+  .btn{height:38px;padding:0 14px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer}
+  .btn.primary{background:#ff7a00;border-color:#ff7a00;color:#fff}
+  .btn.danger{background:#f04438;border-color:#f04438;color:#fff}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{border:1px solid #eee;padding:8px;vertical-align:top}
+  th{background:#f7f7f7}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;white-space:pre-wrap;border:1px solid #eee;border-radius:8px;padding:10px;background:#fafafa;margin-top:12px}
+  .sub{color:#666;font-size:12px}
 </style>
 </head>
 <body>
-<h1>📚 GRIT EDU 관리자 툴</h1>
-<p class="note">학생 명단 및 강의 정보를 입력하고 <b>저장 버튼</b>을 눌러야 반영됩니다. 자동 저장은 없습니다.</p>
+<div class="wrap">
+  <h1>📋 GRIT EDU 관리자 툴</h1>
+  <p class="sub">학생 명단과 강의 정보를 CSV로 관리하고, 각 학생 JSON을 자동 생성합니다. (자동 저장 있음)</p>
 
-<!-- 기본 도메인 -->
-<div class="cfg">
-  <div class="row">
-    <label>기본 이메일 도메인: <input id="domain" value="@gmail.com" style="width:200px" type="text"></label>
-    <span class="pill">예: ksh + @gmail.com ⇒ ksh@gmail.com</span>
+  <div class="row" style="margin:12px 0">
+    <label>기본 이메일 도메인:
+      <input id="domain" type="text" value="@gmail.com" style="width:240px">
+    </label>
+    <button class="btn" id="btnSaveAll">저장</button>
+    <button class="btn danger" id="btnReset">전체 초기화</button>
   </div>
+
+  <div class="row" style="margin:12px 0">
+    <button class="btn" id="btnCsvTemplate">CSV 템플릿 다운로드</button>
+    <input id="csvFile" type="file" accept=".csv" class="btn">
+    <button class="btn" id="btnCsvExport">CSV 내보내기</button>
+    <button class="btn primary" id="btnJsonZip">JSON ZIP 다운로드</button>
+  </div>
+
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th style="width:160px">이름</th>
+        <th style="width:220px">이메일(아이디만)</th>
+        <th style="width:200px">비고</th>
+        <th>강의 입력<br><span class="sub">한 줄당 1개: <b>제목 | URL/ID</b> (전체 URL 붙여넣기 가능)</span></th>
+        <th style="width:70px">삭제</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="btnAdd">학생 추가</button>
+  </div>
+
+  <pre id="preview" class="mono"></pre>
 </div>
 
-<!-- GitHub 업로드 설정 -->
-<div class="gh">
-  <strong>🔗 GitHub Upload 설정</strong>
-  <p class="muted">이 설정으로 <b>members/plans/</b> 경로에 학생별 JSON을 곧바로 커밋합니다(덮어쓰기 자동).</p>
-  <div class="row">
-    <label>Owner: <input id="ghOwner" placeholder="gritedu" style="width:160px" type="text"></label>
-    <label>Repo: <input id="ghRepo" placeholder="gritedu.github.io" style="width:220px" type="text"></label>
-    <label>Branch: <input id="ghBranch" value="main" style="width:120px" type="text"></label>
-    <label>Base Path: <input id="ghBase" value="members/plans" style="width:200px" type="text"></label>
-  </div>
-  <div class="row">
-    <label>Personal Access Token: <input id="ghToken" placeholder="ghp_xxx…" style="width:420px" type="password"></label>
-    <button id="saveGh" class="primary">저장</button>
-    <button id="pushGh" class="primary">GitHub에 바로 푸시</button>
-    <button id="clearGh" class="danger">토큰/설정 삭제</button>
-  </div>
-  <p class="muted">⚠️ 토큰은 로컬 저장소(LocalStorage)에만 저장됩니다. GitHub에서 <b>repo 권한</b>으로 발급하세요.</p>
-</div>
+<script>
+const LS_KEY = 'grit_admin_state_v2';
 
-<div class="row" style="margin-top:12px">
-  <button id="addStudent">학생 추가</button>
-  <button id="importCSV">CSV 가져오기</button>
-  <button id="exportCSV">CSV 내보내기</button>
-  <button id="saveAll" class="primary">저장</button>
-  <button id="exportJSON" class="primary">JSON ZIP 다운로드</button>
-  <button id="clearAll" class="danger">전체 초기화</button>
-</div>
-
-<table>
-  <thead>
-    <tr>
-      <th>이름</th>
-      <th>이메일(아이디만)</th>
-      <th>비고</th>
-      <th>강의 입력<br><span class="muted">각 줄에 “제목 | URL/ID” 또는 “URL/ID” (재생목록 URL도 OK)</span></th>
-      <th>삭제</th>
-    </tr>
-  </thead>
-  <tbody id="tbody"></tbody>
-</table>
-
-<pre id="preview"></pre>
-
-<script type="module">
-import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
-
-const LS_KEY = "grit_plan_manager_v5";
-const LS_GH  = "grit_plan_manager_v5_gh";
-let state = JSON.parse(localStorage.getItem(LS_KEY) || '{"domain":"@gmail.com","students":[]}');
-let gh    = JSON.parse(localStorage.getItem(LS_GH)  || '{"owner":"","repo":"","branch":"main","base":"members/plans","token":""}');
-
-/* ---------- YouTube URL 표준화 ---------- */
-function normalizeYouTubeUrl(input) {
-  if (!input) return "";
-  const s = input.trim();
-  if (/^https?:\/\//i.test(s)) return s;
-
-  const vParam = s.match(/(?:\?|&)v=([A-Za-z0-9_\-]{6,})/);
-  if (vParam) return `https://www.youtube.com/watch?v=${vParam[1]}`;
-
-  const short = s.match(/^youtu\.be\/([A-Za-z0-9_\-]{6,})$/i);
-  if (short) return `https://www.youtube.com/watch?v=${short[1]}`;
-
-  const listParam = s.match(/(?:\?|&)list=([A-Za-z0-9_\-]+)/);
-  if (listParam) return `https://www.youtube.com/playlist?list=${listParam[1]}`;
-
-  if (/^[A-Za-z0-9_\-]{6,}$/.test(s)) {
-    return `https://www.youtube.com/watch?v=${s}`;
-  }
-  return s;
-}
-
-/* ---------- 상태 저장/렌더 ---------- */
-function saveState() {
-  localStorage.setItem(LS_KEY, JSON.stringify(state));
-  render();
-}
-function saveGh() {
-  localStorage.setItem(LS_GH, JSON.stringify(gh));
-}
-
-function renderGh() {
-  document.getElementById("ghOwner").value  = gh.owner||"";
-  document.getElementById("ghRepo").value   = gh.repo||"";
-  document.getElementById("ghBranch").value = gh.branch||"main";
-  document.getElementById("ghBase").value   = gh.base||"members/plans";
-  document.getElementById("ghToken").value  = gh.token||"";
-}
-
-function render() {
-  document.getElementById("domain").value = state.domain;
-  const tbody = document.getElementById("tbody");
-  tbody.innerHTML = "";
-  state.students.forEach((s, i) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><input id="name-${i}" value="${s.name||""}" placeholder="홍길동" type="text"></td>
-      <td>
-        <div class="email-wrap">
-          <input id="email-${i}" value="${s.emailId||""}" placeholder="아이디만" type="text">
-          <span class="suffix">${state.domain}</span>
-        </div>
-      </td>
-      <td><input id="note-${i}" value="${s.note||""}" placeholder="비고" type="text"></td>
-      <td>
-        <textarea id="raw-${i}" placeholder="예) 맛보기 | https://youtu.be/6aPYStft9Xo
-수학1강 | dQw4w9WgXcQ
-https://www.youtube.com/playlist?list=PLAyaOmgagQpgVDOd9sT8PO0MFSHr7zaYM">${s.raw||""}</textarea>
-      </td>
-      <td><button data-del="${i}" class="danger">삭제</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  const previewObj = {
-    domain: state.domain,
-    students: state.students.map(s => ({
-      name: s.name, email: (s.emailId||"")+state.domain, note: s.note, raw: s.raw
-    }))
+function stateDefault(){
+  return {
+    domain: '@gmail.com',
+    students: [] // {name,emailId,note,raw}
   };
-  document.getElementById("preview").textContent = JSON.stringify(previewObj, null, 2);
-
-  renderGh();
 }
+let STATE = loadState();
 
-/* ---------- 이벤트: 상태 ---------- */
-document.getElementById("addStudent").onclick = () => {
-  state.students.push({ name:"", emailId:"", note:"", raw:"" });
-  render();
-};
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return stateDefault();
+    const parsed = JSON.parse(raw);
+    return { ...stateDefault(), ...parsed };
+  }catch(e){ return stateDefault(); }
+}
+function saveState(){
+  localStorage.setItem(LS_KEY, JSON.stringify(STATE));
+  paint();
+}
+function paint(){
+  document.getElementById('domain').value = STATE.domain;
+  const tbody = document.querySelector('#tbl tbody');
+  tbody.innerHTML = STATE.students.map((s,idx)=>`
+    <tr>
+      <td><input type="text" value="${escapeHtml(s.name||'')}" data-k="name" data-i="${idx}" style="width:100%"></td>
+      <td><div style="display:flex;align-items:center;gap:4px">
+            <input type="text" value="${escapeHtml(s.emailId||'')}" data-k="emailId" data-i="${idx}" style="width:100%">
+            <span>${escapeHtml(STATE.domain)}</span>
+          </div></td>
+      <td><input type="text" value="${escapeHtml(s.note||'')}" data-k="note" data-i="${idx}" style="width:100%"></td>
+      <td><textarea data-k="raw" data-i="${idx}" placeholder="예) 수학 | https://www.youtube.com/watch?v=VIDEOID&#10;예) 영어 | https://www.youtube.com/playlist?list=PLAYLISTID">${escapeHtml(s.raw||'')}</textarea></td>
+      <td><button class="btn danger" data-del="${idx}">삭제</button></td>
+    </tr>
+  `).join('');
 
-document.getElementById("clearAll").onclick = () => {
-  if (confirm("모든 데이터를 삭제할까요?")) {
-    localStorage.removeItem(LS_KEY);
-    state = { domain:"@gmail.com", students:[] };
-    render();
-  }
-};
-
-document.getElementById("saveAll").onclick = () => {
-  state.domain = document.getElementById("domain").value.trim() || "@gmail.com";
-  state.students.forEach((s, i) => {
-    s.name = document.getElementById(`name-${i}`).value.trim();
-    s.emailId = document.getElementById(`email-${i}`).value.trim();
-    s.note = document.getElementById(`note-${i}`).value.trim();
-    s.raw = document.getElementById(`raw-${i}`).value.trim();
+  // 이벤트: 저장 버튼에서만 저장 (연속 타자 문제 해결)
+  document.querySelectorAll('input[data-k], textarea[data-k]').forEach(el=>{
+    el.addEventListener('input', ()=>{/* 미리보기만 갱신 */ preview() });
   });
-  saveState();
-  alert("✅ 저장 완료!");
-};
 
-document.getElementById("tbody").addEventListener("click", e => {
-  const idx = e.target.dataset.del;
-  if (idx !== undefined) {
-    state.students.splice(idx, 1);
-    render();
-  }
+  document.querySelectorAll('button[data-del]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const i = +btn.dataset.del;
+      STATE.students.splice(i,1);
+      saveState();
+    });
+  });
+
+  preview();
+}
+function preview(){
+  const obj = { domain: STATE.domain, students: STATE.students };
+  document.getElementById('preview').textContent = JSON.stringify(obj,null,2);
+}
+function escapeHtml(s=''){ return String(s).replace(/[&<>"]/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) }
+
+// CSV 템플릿
+document.getElementById('btnCsvTemplate').addEventListener('click', ()=>{
+  const csv = 'name,emailId,note,courses\r\n홍길동,hong,비고 예시,"수학 | https://youtu.be/abc123\r\n영어 | https://www.youtube.com/playlist?list=PLxxxx"\r\n';
+  downloadBlob(csvWithBom(csv), 'grit_template.csv', 'text/csv;charset=utf-8');
 });
 
-/* ---------- CSV: emailId,name,note ---------- */
-document.getElementById("exportCSV").onclick = () => {
-  const rows = [["emailId","name","note"]];
-  for (const s of state.students) rows.push([s.emailId||"", s.name||"", s.note||""]);
-  const csv = rows.map(r=>r.map(v=>`"${(v||"").replace(/"/g,'""')}"`).join(",")).join("\n");
-  const blob = new Blob([csv], { type:"text/csv" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "grit_students_min.csv";
-  a.click();
-  URL.revokeObjectURL(a.href);
-};
-
-document.getElementById("importCSV").onclick = async () => {
-  const inp = document.createElement("input");
-  inp.type = "file"; inp.accept = ".csv,text/csv";
-  inp.onchange = async () => {
-    const text = await inp.files[0].text();
-    const lines = text.split(/\r?\n/).filter(Boolean);
-    const header = lines.shift().split(",").map(h=>h.replace(/^"|"$/g,"").trim());
-    const idxE = header.indexOf("emailId");
-    const idxN = header.indexOf("name");
-    const idxNote = header.indexOf("note");
-    if (idxE<0 || idxN<0 || idxNote<0) { alert("CSV 헤더에 emailId,name,note 가 있어야 합니다."); return; }
-    for (const line of lines) {
-      const cols = line.match(/("([^"]|"")*"|[^,]*)/g).filter((_,i,arr)=>i%2===0||arr[i-1][0]!=='"'); // 안전 분리
-      const emailId = (cols[idxE]||"").replace(/^"|"$/g,"").replace(/""/g,'"').trim();
-      const name    = (cols[idxN]||"").replace(/^"|"$/g,"").replace(/""/g,'"').trim();
-      const note    = (cols[idxNote]||"").replace(/^"|"$/g,"").replace(/""/g,'"').trim();
-      if (!emailId) continue;
-      const exist = state.students.find(s=>s.emailId===emailId);
-      if (exist) { exist.name = name; exist.note = note; }
-      else state.students.push({ emailId, name, note, raw:"" });
+// CSV 가져오기
+document.getElementById('csvFile').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const text = await file.text();
+  importCsv(text);
+  saveState();
+});
+function importCsv(text){
+  // 간단 파서 (따옴표/개행 지원)
+  const rows = [];
+  let cur = '', cell=[], inQuote=false;
+  for (let i=0;i<text.length;i++){
+    const ch = text[i], nxt = text[i+1];
+    if (inQuote){
+      if (ch === '"' && nxt === '"'){ cur += '"'; i++; }
+      else if (ch === '"'){ inQuote = false; }
+      else cur += ch;
+    } else {
+      if (ch === '"'){ inQuote = true; }
+      else if (ch === ','){ cell.push(cur); cur=''; }
+      else if (ch === '\n' || ch === '\r'){
+        if (ch === '\r' && nxt === '\n'){ i++; }
+        cell.push(cur); rows.push(cell); cell=[]; cur='';
+      } else cur += ch;
     }
-    saveState();
-  };
-  inp.click();
-};
-
-/* ---------- ZIP(JSON) 내보내기 ---------- */
-async function sha256Hex(text) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function buildStudentJson(s, emailFull) {
-  const items = (s.raw||"")
-    .split(/\n/)
-    .map(l=>{
-      const line = l.trim(); if (!line) return null;
-      let title="", val=line;
-      const barIdx = line.indexOf("|");
-      if (barIdx !== -1) { title = line.slice(0, barIdx).trim(); val = line.slice(barIdx+1).trim(); }
-      const url = normalizeYouTubeUrl(val);
-      if (!url) return null;
-      if (!title) title = "강의";
-      return { title, url };
-    })
-    .filter(Boolean);
-
-  return {
-    name: s.name,
-    email: emailFull,
-    note: s.note,
-    courses: [{ title: "코스", items }]
-  };
-}
-
-document.getElementById("exportJSON").onclick = async () => {
-  const zip = new JSZip();
-  const manifest = [["name","email","note","hash","filename"]];
-  for (const s of state.students) {
-    const email = (s.emailId||"").toLowerCase() + state.domain;
-    const hash = await sha256Hex(email);
-    const json = buildStudentJson(s, email);
-    zip.file(`${hash}.json`, JSON.stringify(json, null, 2));
-    manifest.push([s.name, email, s.note, hash, `${hash}.json`]);
   }
-  const csv = manifest.map(r=>r.join(",")).join("\n");
-  zip.file("_manifest.csv", csv);
-  const blob = await zip.generateAsync({ type:"blob" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "plans_deploy.zip";
-  a.click();
-  URL.revokeObjectURL(a.href);
-};
-
-/* ---------- GitHub Push (members/plans/…) ---------- */
-function readGhForm() {
-  gh.owner  = document.getElementById("ghOwner").value.trim();
-  gh.repo   = document.getElementById("ghRepo").value.trim();
-  gh.branch = document.getElementById("ghBranch").value.trim() || "main";
-  gh.base   = document.getElementById("ghBase").value.trim() || "members/plans";
-  gh.token  = document.getElementById("ghToken").value.trim();
-}
-
-document.getElementById("saveGh").onclick = () => {
-  readGhForm(); saveGh(); alert("✅ GitHub 설정 저장됨");
-};
-document.getElementById("clearGh").onclick = () => {
-  if (!confirm("GitHub 설정(토큰 포함)을 삭제할까요?")) return;
-  gh = { owner:"", repo:"", branch:"main", base:"members/plans", token:"" };
-  saveGh(); renderGh();
-};
-
-async function getFileShaIfExists(path) {
-  const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${encodeURIComponent(path)}?ref=${gh.branch}`;
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${gh.token}`, Accept: "application/vnd.github+json" }});
-  if (res.status === 200) {
-    const j = await res.json();
-    return j.sha;
-  }
-  return null; // 404 등
-}
-
-async function putFile(path, content, message) {
-  const sha = await getFileShaIfExists(path);
-  const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${encodeURIComponent(path)}`;
-  const body = {
-    message,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch: gh.branch
+  if (cur.length || cell.length) { cell.push(cur); rows.push(cell); }
+  // 헤더
+  const [header, ...data] = rows;
+  const idx = {
+    name: header.indexOf('name'),
+    emailId: header.indexOf('emailId'),
+    note: header.indexOf('note'),
+    courses: header.indexOf('courses'),
   };
-  if (sha) body.sha = sha;
-  const res = await fetch(url, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${gh.token}`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
+  STATE.students = data
+    .filter(r=>r.length>1 && (r[idx.emailId]||'').trim())
+    .map(r=>({
+      name: (r[idx.name]||'').trim(),
+      emailId: (r[idx.emailId]||'').trim(),
+      note: (r[idx.note]||'').trim(),
+      raw: (r[idx.courses]||'').replace(/\r/g,'').trim()
+    }));
+}
+
+// CSV 내보내기 (UTF-8 BOM)
+document.getElementById('btnCsvExport').addEventListener('click', ()=>{
+  const header = 'name,emailId,note,courses';
+  const lines = STATE.students.map(s=>{
+    const esc = v => `"${String(v||'').replace(/"/g,'""')}"`;
+    return [s.name, s.emailId, s.note, s.raw].map(esc).join(',');
   });
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`GitHub PUT 실패 (${res.status}): ${t}`);
-  }
+  const csv = [header, ...lines].join('\r\n');
+  downloadBlob(csvWithBom(csv), 'grit_students.csv', 'text/csv;charset=utf-8');
+});
+
+// JSON ZIP 다운로드
+document.getElementById('btnJsonZip').addEventListener('click', async ()=>{
+  const files = STATE.students.map(s=>{
+    const email = (s.emailId||'').trim() + STATE.domain;
+    const lectures = parseRawToLectures(s.raw||'');
+    const json = {
+      name: s.name||'',
+      email: email,
+      note: s.note||'',
+      lectures
+    };
+    return { name: (s.emailId||'').trim()+'.json', content: JSON.stringify(json,null,2) };
+  });
+  const zipBlob = await makeZip(files);
+  downloadBlob(zipBlob, 'grit_plans.zip', 'application/zip');
+});
+
+// 학생 추가
+document.getElementById('btnAdd').addEventListener('click', ()=>{
+  STATE.students.push({name:'',emailId:'',note:'',raw:''});
+  saveState();
+});
+
+// 저장(한 번 클릭으로만 저장 반영)
+document.getElementById('btnSaveAll').addEventListener('click', ()=>{
+  STATE.domain = document.getElementById('domain').value.trim() || '@gmail.com';
+  // 테이블 입력 읽어오기
+  const rows = Array.from(document.querySelectorAll('#tbl tbody tr'));
+  STATE.students = rows.map(tr=>{
+    const read = (sel)=> tr.querySelector(sel)?.value ?? '';
+    return {
+      name: read('input[data-k="name"]').trim(),
+      emailId: read('input[data-k="emailId"]').trim(),
+      note: read('input[data-k="note"]').trim(),
+      raw: read('textarea[data-k="raw"]').trim()
+    };
+  }).filter(s=>s.emailId);
+  saveState();
+});
+
+// 전체 초기화
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  if (!confirm('모든 입력을 초기화할까요?')) return;
+  STATE = stateDefault();
+  saveState();
+});
+
+// 유틸
+function parseRawToLectures(raw){
+  // 줄단위 또는 | 기준: "제목 | URL/ID"
+  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  return lines.map(line=>{
+    let title='', id='', url=line;
+    // "제목 | 값" 형태면 분리
+    const m = line.split('|');
+    if (m.length>=2){
+      title = m[0].trim();
+      url   = m.slice(1).join('|').trim();
+    }
+    // 전체 URL이면 videoId/playlistId 추출, 아니면 그대로 id로 간주
+    const yt = new URLPattern({pathname:"/:path*"}); // 브라우저 지원
+    let source='youtube', type='video';
+    let videoId='', playlistId='';
+    try{
+      const u = new URL(url);
+      const v = u.searchParams.get('v'); const list = u.searchParams.get('list');
+      if (v) { videoId = v; type='video'; }
+      else if (list){ playlistId = list; type='playlist'; }
+      else {
+        // youtu.be/ID
+        const parts = u.pathname.split('/').filter(Boolean);
+        if (u.hostname.includes('youtu.be') && parts[0]) { videoId = parts[0]; type='video'; }
+      }
+    }catch(e){
+      // URL 아님 → 그냥 ID로 기록
+      if (/^PL/.test(url)) { playlistId = url; type='playlist'; }
+      else { videoId = url; type='video'; }
+    }
+    const obj = { title: title||'(제목 없음)', source, type };
+    if (videoId) obj.videoId = videoId;
+    if (playlistId) obj.playlistId = playlistId;
+    if (!videoId && !playlistId) obj.url = url; // 혹시 모를 외부 링크
+    return obj;
+  });
 }
 
-document.getElementById("pushGh").onclick = async () => {
-  readGhForm();
-  if (!gh.owner || !gh.repo || !gh.token) { alert("Owner/Repo/Token을 입력하세요."); return; }
-
-  // 현재 입력 저장
-  document.getElementById("saveAll").click();
-
-  try {
-    let ok = 0;
-    for (const s of state.students) {
-      const email = (s.emailId||"").toLowerCase() + state.domain;
-      const hash = await sha256Hex(email);
-      const json = buildStudentJson(s, email);
-      const content = JSON.stringify(json, null, 2);
-      const path = `${gh.base.replace(/\/+$/,'')}/${hash}.json`;
-      await putFile(path, content, `chore(plans): update ${s.name || email} (${hash}.json)`);
-      ok++;
+function csvWithBom(s){ return new Blob([new Uint8Array([0xEF,0xBB,0xBF]), s], {type:'text/csv;charset=utf-8'}); }
+function downloadBlob(blob, filename, type){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+async function makeZip(files){
+  // 작은 JS-only zip (Store)
+  // 간단화를 위해 구조적 최소 구현
+  const enc = new TextEncoder();
+  let fileRecords = [], fileData = [], offset = 0;
+  const dosTime = 0, dosDate = 0; // 생략
+  const crc32 = (str) => {
+    let crc = ~0, i, j;
+    for (i = 0; i < str.length; i++) {
+      crc = (crc ^ str.charCodeAt(i)) >>> 0;
+      for (j = 0; j < 8; j++) {
+        const m = -(crc & 1);
+        crc = (crc >>> 1) ^ (0xEDB88320 & m);
+      }
     }
-    alert(`✅ GitHub 푸시 완료: ${ok} 파일`);
-  } catch (e) {
-    console.error(e);
-    alert("푸시 실패: " + e.message);
+    return (~crc) >>> 0;
+  };
+  for (const f of files){
+    const data = enc.encode(f.content);
+    const name = enc.encode(f.name);
+    const cCrc = crc32(f.content);
+    const local =
+      [0x50,0x4b,3,4, 10,0, 0,0, 0,0, 0,0, 0,0, ...u32(cCrc), ...u32(data.length), ...u32(data.length), ...u16(name.length), 0, ...name, ...data];
+    fileData.push(new Uint8Array(local));
+    fileRecords.push({name, crc:cCrc, size:data.length, offset});
+    offset += local.length;
   }
-};
+  let cd=[], cdOffset=offset;
+  for (const r of fileRecords){
+    const rec = [0x50,0x4b,1,2, 20,0,10,0, 0,0, 0,0, 0,0, 0,0, ...u32(r.crc), ...u32(r.size), ...u32(r.size), ...u16(r.name.length), 0,0, 0,0, 0,0, ...u16(0), ...u32(0), ...u32(r.offset), ...r.name];
+    cd.push(new Uint8Array(rec));
+  }
+  const cdSize = cd.reduce((a,b)=>a+b.length,0);
+  const end   = new Uint8Array([0x50,0x4b,5,6, 0,0, 0,0, ...u16(fileRecords.length), ...u16(fileRecords.length), ...u32(cdSize), ...u32(cdOffset), 0,0]);
+  const parts = [...fileData, ...cd, end];
+  const total = new Uint8Array(parts.reduce((a,b)=>a+b.length,0));
+  let pos=0; for (const p of parts){ total.set(p,pos); pos+=p.length; }
+  return new Blob([total], {type:'application/zip'});
+  function u16(n){ return [n&255, n>>8&255]; }
+  function u32(n){ return [n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255]; }
+}
 
-render();
+// 초기 렌더
+paint();
 </script>
 </body>
 </html>
