@@ -3,77 +3,86 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg">
-  <link rel="stylesheet" href="/assets/css/main.css">
   <title>그릿에듀 | 갤러리</title>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
-<header class="grit-header grit-preload"></header>
-<main class="grit-section">
-  <h1>갤러리</h1>
-  <div class="grit-filter" data-for="gallery">
-    <button class="on" data-group="all">전체</button>
-    <button data-group="grit">학원</button>
-    <button data-group="study">공부</button>
-    <button data-group="event">행사</button>
+
+  <!-- 헤더/푸터는 /assets/js/common.js 에서 주입됩니다 -->
+
+  <main class="grit-section">
+    <h1>갤러리</h1>
+    <div class="grit-filter" data-for="gallery">
+      <button class="on" data-group="all">전체</button>
+      <button data-group="grit">학원</button>
+      <button data-group="study">공부</button>
+      <button data-group="event">행사</button>
+    </div>
+    <div id="galleryGrid" class="grit-grid grit-gallery"></div>
+  </main>
+
+  <!-- 라이트박스 -->
+  <div id="lightbox" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__backdrop" data-close="1"></div>
+    <div class="modal__dialog" role="document">
+      <button class="modal__close" aria-label="닫기" data-close="1">×</button>
+      <img id="lightboxImg" alt="그릿에듀 갤러리 원본" style="max-width:90vw;max-height:80vh;display:block;margin:40px auto;">
+    </div>
   </div>
-  <div id="galleryGrid" class="grit-grid grit-gallery"></div>
-</main>
 
-<!-- 라이트박스 -->
-<div id="lightbox" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="modal__backdrop" data-close="1"></div>
-  <div class="modal__dialog" role="document">
-    <button class="modal__close" aria-label="닫기" data-close="1">×</button>
-    <img id="lightboxImg" alt="그릿에듀 갤러리 원본" style="max-width:90vw;max-height:80vh;display:block;margin:40px auto;">
-  </div>
-</div>
+  <!-- 공통 UI -->
+  <script type="module" src="/assets/js/common.js"></script>
 
-<script type="module" src="/assets/js/common.js"></script>
-<script>
-  const LABELS = { grit:'학원', study:'공부', event:'행사' };
+  <!-- 페이지 전용 스크립트 -->
+  <script>
+    const LABELS = { grit:'학원', study:'공부', event:'행사' };
 
-  async function loadGallery(){
-    const grid = document.getElementById('galleryGrid');
-    const bar  = document.querySelector('.grit-filter[data-for="gallery"]');
-    try{
-      const res = await fetch('/data/gallery.json'); const map = await res.json();
+    async function loadGallery(){
+      const grid = document.getElementById('galleryGrid');
+      const bar  = document.querySelector('.grit-filter[data-for="gallery"]');
+      try{
+        const res = await fetch('/data/gallery.json'); 
+        const map = await res.json();
 
-      function paint(group='all'){
-        let items=[];
-        if(group==='all'){
-          items = Object.entries(map).flatMap(([k,arr])=>arr.map(u=>({u, k})));
-        }else{
-          items = (map[group]||[]).map(u=>({u, k:group}));
+        function paint(group='all'){
+          let items=[];
+          if(group==='all'){
+            items = Object.entries(map).flatMap(([k,arr])=>arr.map(u=>({u, k})));
+          }else{
+            items = (map[group]||[]).map(u=>({u, k:group}));
+          }
+          grid.innerHTML = items.map(({u,k})=>`
+            <figure class="gallery-thumb" data-group="${k}">
+              <img src="/${String(u).replace(/^\/+/, '')}" alt="그릿에듀 ${LABELS[k]||''}" loading="lazy">
+            </figure>`).join('');
         }
-        grid.innerHTML = items.map(({u,k})=>`
-          <figure class="gallery-thumb" data-group="${k}">
-            <img src="/${u.replace(/^\/+/,'')}" alt="그릿에듀 ${LABELS[k]||''}" loading="lazy">
-          </figure>`).join('');
+        paint();
+
+        bar.addEventListener('click', e=>{
+          const btn = e.target.closest('button[data-group]');
+          if(!btn) return;
+          bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+          btn.classList.add('on');
+          paint(btn.dataset.group);
+        });
+
+        // 라이트박스
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightboxImg');
+        grid.addEventListener('click', e=>{
+          const img = e.target.closest('img'); if(!img) return;
+          lbImg.src = img.src; 
+          lb.setAttribute('aria-hidden','false');
+        });
+        document.addEventListener('click', e=>{ if(e.target.dataset.close) lb.setAttribute('aria-hidden','true'); });
+        document.addEventListener('keydown', e=>{ if(e.key==='Escape') lb.setAttribute('aria-hidden','true'); });
+      }catch(e){
+        console.error(e);
+        grid.innerHTML = '<p>갤러리를 불러오지 못했습니다.</p>';
       }
-      paint();
-
-      bar.addEventListener('click', e=>{
-        const btn = e.target.closest('button[data-group]');
-        if(!btn) return;
-        bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-        btn.classList.add('on');
-        paint(btn.dataset.group);
-      });
-
-      const lb = document.getElementById('lightbox');
-      const lbImg = document.getElementById('lightboxImg');
-      grid.addEventListener('click', e=>{
-        const img = e.target.closest('img'); if(!img) return;
-        lbImg.src = img.src; lb.setAttribute('aria-hidden','false');
-      });
-      document.addEventListener('click', e=>{ if(e.target.dataset.close) lb.setAttribute('aria-hidden','true'); });
-      document.addEventListener('keydown', e=>{ if(e.key==='Escape') lb.setAttribute('aria-hidden','true'); });
-    }catch(e){
-      grid.innerHTML = '<p>갤러리를 불러오지 못했습니다.</p>';
     }
-  }
-  document.addEventListener('DOMContentLoaded', loadGallery);
-</script>
+    document.addEventListener('DOMContentLoaded', loadGallery);
+  </script>
 </body>
 </html>

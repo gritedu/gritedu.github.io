@@ -4,147 +4,301 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>내 강의실 - GritEdu</title>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.png" />
   <link rel="stylesheet" href="/assets/css/main.css" />
-  <script type="module" src="/assets/js/common.js"></script>
 </head>
 <body style="min-height:100vh;">
+
+  <!-- 헤더/푸터는 /assets/js/common.js 에서 주입 -->
   <main class="container" style="padding:24px; margin-top:64px;">
     <h1 style="margin:0 0 16px; font-size:24px; font-weight:800;">내 강의실</h1>
 
+    <!-- 프로필 -->
     <section class="card" id="profile-card" style="margin-bottom:16px;">
       <h2>내 정보</h2>
       <div id="profile-content">로딩 중…</div>
     </section>
 
-    <section class="card">
-      <h2>수강 중인 강좌</h2>
-      <p style="color:#666; margin-top:0;">
-        체크하면 진행상태가 저장됩니다. (동기화: Firestore / 기기 간 공유)
-      </p>
-      <div id="playlist-courses" class="grid" style="margin-top:12px;"></div>
+    <!-- 강좌 -->
+    <section class="card" id="courses-card">
+      <h2 style="display:flex;justify-content:space-between;align-items:center;">
+        <span>수강 중인 강좌</span>
+        <small id="overall-progress" style="color:#666;">0%</small>
+      </h2>
+      <div class="progress-bar" style="margin:6px 0 10px;"><span id="overall-bar"></span></div>
+      <div id="courses" class="grid" style="margin-top:12px;"></div>
+      <div id="empty-hint" style="display:none; color:#666; margin-top:8px;"></div>
     </section>
   </main>
 
+  <!-- 공통 UI -->
+  <script type="module" src="/assets/js/common.js"></script>
+
+  <!-- YouTube IFrame Player API (시청시간/진행 퍼센트 추적용) -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <!-- 대시보드 스크립트 -->
   <script type="module">
     import { guardPage, auth } from "/assets/js/firebase-init.js";
-    import {
-      getFirestore, doc, getDoc, setDoc, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
     await guardPage("/login.html");
-    const db = getFirestore();
-    const uid = auth.currentUser.uid;
 
+    // ===== 유틸: SHA-256(이메일 해시) =====
+    async function sha256Hex(text) {
+      const enc = new TextEncoder();
+      const data = enc.encode(text);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      const bytes = Array.from(new Uint8Array(digest));
+      return bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // ===== 사용자/프로필 =====
     const user = auth.currentUser;
-    const email = user.email || "";
-    const displayName = (email === "griteducto@gmail.com") ? "관리자" : "학생";
+    const uid = user.uid;
+    const email = (user.email || '').trim().toLowerCase();
     document.getElementById("profile-content").innerHTML = `
       <div style="display:flex;gap:12px;align-items:center;">
         <div style="width:48px;height:48px;border-radius:24px;background:#f1f1f1;display:flex;align-items:center;justify-content:center;font-weight:800;">
-          ${displayName.charAt(0)}
+          ${(email[0] || 'U').toUpperCase()}
         </div>
         <div>
-          <div style="font-weight:800;">${displayName}</div>
-          <div style="color:#666;">${email}</div>
+          <div style="font-weight:800;">${email}</div>
+          <div style="color:#666;">로그인됨</div>
         </div>
       </div>
     `;
 
-    const PLAYLISTS = [
-      { id: "PLAyaOmgagQpgVDOd9sT8PO0MFSHr7zaYM", title: "코스 A" },
-      { id: "PLAyaOmgagQpg-mZl9HSdCdBcgTySbdlub", title: "코스 B" }
-    ];
+    // ===== 개인 계획 파일 경로 규칙 =====
+    // /members/plans/<sha256(email)>.json
+    const emailHash = await sha256Hex(email);
+    const planUrl = `/members/plans/${emailHash}.json`;
 
-    const container = document.getElementById("playlist-courses");
+    // ===== 진행 저장소(localStorage) 키 유틸 =====
+    const keyProgress = (videoKey) => `${uid}::progress::${videoKey}`;        // 체크 완료 여부
+    const keyWatchT  = (videoKey) => `${uid}::watchsec::${videoKey}`;         // 누적 시청(초)
+    const keyDur     = (videoKey) => `${uid}::duration::${videoKey}`;         // 영상 길이(초) 캐시
 
-    async function fetchPlaylistItems(playlistId) {
-      try {
-        const url = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
-        const res = await fetch(url, {
-          method: 'GET',
-          mode: 'cors',
-          headers: { 'Accept': 'application/rss+xml, application/xml, text/xml' }
-        });
-        if (!res.ok) throw new Error(`RSS fetch failed: ${res.status} ${res.statusText}`);
-        const xmlText = await res.text();
-        const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-        const entries = Array.from(xml.getElementsByTagName("entry"));
-        const items = entries.map((entry, idx) => {
-          const title = entry.getElementsByTagName("title")[0]?.textContent || `제목 없음 ${idx + 1}`;
-          const vid = entry.getElementsByTagNameNS("http://www.youtube.com/xml/schemas/2015", "videoId")[0]?.textContent;
-          return { title, videoId: vid };
-        }).filter(v => !!v.videoId);
-        return items;
-      } catch (error) {
-        console.error('Error fetching playlist items:', error);
-        throw error;
-      }
+    const getBool = (k) => localStorage.getItem(k) === '1';
+    const setBool = (k,v) => v ? localStorage.setItem(k,'1') : localStorage.removeItem(k);
+    const getNum  = (k) => Number(localStorage.getItem(k) || '0');
+    const setNum  = (k,v) => localStorage.setItem(k, String(Math.max(0, Math.floor(v))));
+
+    // ===== 전역: YouTube 플레이어 인스턴스 관리 =====
+    // videoKey: 유니크 키 (playlist/course 기준 없이 단일 고유)
+    const players = new Map();    // videoKey -> YT.Player
+    const timers  = new Map();    // videoKey -> intervalId
+
+    // ===== 전체/코스 진행률 계산 =====
+    function calcOverallProgress() {
+      const checks = document.querySelectorAll('[data-vkey] input[type="checkbox"]');
+      const total = checks.length;
+      let done = 0;
+      checks.forEach(chk => { if (chk.checked) done++; });
+      const pct = total ? Math.round(done / total * 100) : 0;
+      document.getElementById('overall-progress').textContent = `${pct}%`;
+      document.getElementById('overall-bar').style.width = pct + '%';
     }
 
-    async function renderPlaylistCard(pl) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <h2>${pl.title}</h2>
-        <div id="list-${pl.id}">로딩 중…</div>
+    // ===== 단일 카드 내 진행률 업데이트 =====
+    function repaintCardProgress(cardEl) {
+      const checks = cardEl.querySelectorAll('input[type="checkbox"]');
+      const total = checks.length;
+      let done = 0;
+      checks.forEach(c => c.checked && done++);
+      const pct = total ? Math.round(done / total * 100) : 0;
+      const text = cardEl.querySelector('.card-progress-text');
+      const bar  = cardEl.querySelector('.card-progress-bar span');
+      if (text) text.textContent = `${pct}%`;
+      if (bar) bar.style.width = pct + '%';
+    }
+
+    // ===== YouTube iframe 생성 및 시청시간 추적 =====
+    // data: { title, videoId, videoUrl?, videoKey }
+    function mountPlayer(container, data) {
+      const vkey = data.videoKey;
+      const iframeId = `yt_${vkey}`;
+      container.innerHTML = `
+        <div class="embed-16x9">
+          <div id="${iframeId}" style="width:100%;height:100%"></div>
+        </div>
+        <div class="muted" id="watch-${vkey}" style="font-size:12px;margin-top:6px;color:#666">
+          시청시간: <span class="t">0</span>s / <span class="d">?</span>s (<span class="p">0</span>%)
+        </div>
       `;
-      container.appendChild(card);
 
-      try {
-        const items = await fetchPlaylistItems(pl.id);
-        const listDiv = card.querySelector(`#list-${pl.id}`);
-        if (!items.length) { listDiv.textContent = "플레이리스트에서 항목을 찾지 못했습니다."; return; }
-        listDiv.innerHTML = "";
-        for (const item of items) {
-          const pid = `${uid}_playlist_${pl.id}_${item.videoId}`;
-          const progRef = doc(db, "progress", pid);
-          const progSnap = await getDoc(progRef);
-          const completed = progSnap.exists() ? !!progSnap.data().completed : false;
+      const srcVideoId = data.videoId; // 우선 videoId 기반
+      // YT.Player: enablejsapi=1은 내부적으로 자동 처리됨
+      const player = new YT.Player(iframeId, {
+        width: '100%',
+        height: '100%',
+        videoId: srcVideoId, // unlisted 가능
+        playerVars: {
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
+          origin: location.origin
+        },
+        events: {
+          onReady: () => {
+            players.set(vkey, player);
+            // duration 캐시
+            const dur = Math.floor(player.getDuration() || 0);
+            if (dur > 0) setNum(keyDur(vkey), dur);
 
-          const row = document.createElement("div");
-          row.className = "lecture-row";
-          const inputId = `chk-${pl.id}-${item.videoId}`;
+            // 폴링(1초)로 시청시간/퍼센트 추적
+            if (!timers.get(vkey)) {
+              const t = setInterval(() => {
+                try {
+                  const cur = Math.floor(player.getCurrentTime() || 0);
+                  const old = getNum(keyWatchT(vkey));
+                  const durNow = Math.floor(player.getDuration() || getNum(keyDur(vkey)) || 0);
+                  if (durNow > 0) setNum(keyDur(vkey), durNow);
+                  // 누적 갱신: 더 큰 값만 반영 (되감기 보정)
+                  if (cur > old) setNum(keyWatchT(vkey), cur);
+
+                  // UI 갱신
+                  const wWrap = document.getElementById(`watch-${vkey}`);
+                  if (wWrap) {
+                    const tEl = wWrap.querySelector('.t');
+                    const dEl = wWrap.querySelector('.d');
+                    const pEl = wWrap.querySelector('.p');
+                    const total = getNum(keyDur(vkey));
+                    const pct = total ? Math.round((cur / total) * 100) : 0;
+                    if (tEl) tEl.textContent = String(cur);
+                    if (dEl) dEl.textContent = String(total || '?');
+                    if (pEl) pEl.textContent = String(pct);
+                  }
+                } catch {}
+              }, 1000);
+              timers.set(vkey, t);
+            }
+          },
+          onStateChange: () => { /* 필요시 추가 */ }
+        }
+      });
+    }
+
+    // ===== 코스 렌더링 =====
+    // plan.json 스키마:
+    // {
+    //   "courses": [
+    //     {
+    //       "title": "강의 A",
+    //       "items": [
+    //         {"title":"수학","videoId":"6aPYStft9Xo"},
+    //         {"title":"영어","videoId":"xxxxxxxxxxx"}
+    //       ]
+    //     }
+    //   ]
+    // }
+    async function renderPlan(plan) {
+      const coursesWrap = document.getElementById('courses');
+      coursesWrap.innerHTML = '';
+
+      const exists = Array.isArray(plan?.courses) && plan.courses.length;
+      if (!exists) {
+        document.getElementById('empty-hint').style.display = 'block';
+        document.getElementById('empty-hint').innerHTML =
+          '담당자가 아직 강좌를 배정하지 않았습니다.<br>관리자에게 문의해 주세요.';
+        return;
+      }
+
+      const cardEls = [];
+
+      for (const course of plan.courses) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h2 style="display:flex;justify-content:space-between;align-items:center;">
+            <span>${course.title || '코스'}</span>
+            <small class="card-progress-text" style="color:#666;">0%</small>
+          </h2>
+          <div class="card-progress-bar progress-bar" style="margin-top:6px;"><span></span></div>
+          <div class="course-items" style="display:grid;gap:12px;margin-top:10px;"></div>
+        `;
+        coursesWrap.appendChild(card);
+        cardEls.push(card);
+
+        const itemsWrap = card.querySelector('.course-items');
+
+        for (const [idx, it] of (course.items || []).entries()) {
+          const videoId = it.videoId || '';
+          if (!videoId) continue;
+
+          // 고유 videoKey: 이메일기반 + 해시 + 인덱스
+          const vkey = `${emailHash.slice(0,8)}_${videoId}`;
+          const checked = getBool(keyProgress(vkey));
+          const watchSec = getNum(keyWatchT(vkey));
+          const durSec = getNum(keyDur(vkey));
+          const pctWatch = durSec ? Math.round((Math.min(watchSec, durSec) / durSec) * 100) : 0;
+
+          const row = document.createElement('div');
+          row.className = 'lecture-row';
+          row.setAttribute('data-vkey', vkey);
+          const inputId = `chk-${vkey}`;
           row.innerHTML = `
-            <input type="checkbox" id="${inputId}" ${completed ? "checked" : ""} />
-            <label for="${inputId}" style="flex:1; cursor:pointer;">
-              ${item.title}
-            </label>
-            <a href="https://www.youtube.com/watch?v=${item.videoId}&list=${pl.id}" 
-               target="_blank" rel="noopener" 
-               style="font-size:12px; color:#ff7a00; text-decoration:none; padding:4px 8px; border:1px solid #ff7a00; border-radius:4px; background:#fff; transition:all 0.2s;">
-              📺 보기
-            </a>
+            <div style="grid-column:1/-1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <input type="checkbox" id="${inputId}" ${checked ? 'checked' : ''} />
+                <label for="${inputId}" style="flex:1;cursor:pointer;">
+                  ${it.title || `강의 ${idx+1}`} 
+                  <small style="color:#999;margin-left:6px;">(시청 ${pctWatch}% 추적)</small>
+                </label>
+                <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" rel="noopener"
+                   style="font-size:12px;color:#ff7a00;text-decoration:none;padding:4px 8px;border:1px solid #ff7a00;border-radius:4px;background:#fff;">
+                  ↗ 유튜브로 열기
+                </a>
+              </div>
+              <div class="player-host"></div>
+            </div>
           `;
-          listDiv.appendChild(row);
+          itemsWrap.appendChild(row);
 
-          row.querySelector("#" + inputId).addEventListener("change", async (e) => {
-            await setDoc(progRef, {
-              uid,
-              courseId: `playlist_${pl.id}`,
-              lectureId: item.videoId,
-              completed: e.target.checked,
-              updatedAt: serverTimestamp()
-            }, { merge: true });
+          // 체크 이벤트
+          row.querySelector('#' + inputId).addEventListener('change', e => {
+            setBool(keyProgress(vkey), e.target.checked);
+            repaintCardProgress(card);
+            calcOverallProgress();
+          });
+
+          // 플레이어 탑재
+          mountWhenAPIReady(() => {
+            const host = row.querySelector('.player-host');
+            mountPlayer(host, { title: it.title, videoId, videoKey: vkey });
           });
         }
-      } catch (err) {
-        console.error(`Error loading playlist ${pl.id}:`, err);
-        const errorDiv = card.querySelector(`#list-${pl.id}`);
-        errorDiv.innerHTML = `
-          <div style="color:#e74c3c; padding:12px; background:#fdf2f2; border:1px solid #fecaca; border-radius:6px;">
-            <strong>⚠️ 플레이리스트 불러오기 실패</strong><br>
-            <small>오류: ${err.message}</small><br>
-            <a href="https://www.youtube.com/playlist?list=${pl.id}" target="_blank" rel="noopener" 
-               style="color:#ff7a00; text-decoration:none; font-weight:600;">
-              → YouTube에서 직접 보기
-            </a>
-          </div>
-        `;
+
+        repaintCardProgress(card);
       }
+
+      calcOverallProgress();
     }
 
-    for (const pl of PLAYLISTS) {
-      await renderPlaylistCard(pl);
+    // ===== YouTube API 로딩 보조 =====
+    let ytReadyResolvers = [];
+    function mountWhenAPIReady(fn) {
+      if (window.YT && window.YT.Player) { fn(); return; }
+      ytReadyResolvers.push(fn);
+    }
+    window.onYouTubeIframeAPIReady = () => {
+      ytReadyResolvers.forEach(fn => { try { fn(); } catch {} });
+      ytReadyResolvers = [];
+    };
+
+    // ===== 계획 파일 로드 =====
+    try {
+      const res = await fetch(planUrl, { cache: 'no-store' });
+      if (!res.ok) throw new Error('Plan not found');
+      const plan = await res.json();
+      await renderPlan(plan);
+    } catch (e) {
+      console.warn('Personal plan missing or invalid:', e);
+      document.getElementById('empty-hint').style.display = 'block';
+      document.getElementById('empty-hint').innerHTML = `
+        개인 학습 계획 파일을 찾지 못했습니다.<br>
+        관리자에게 아래 경로로 JSON 파일 생성을 요청해 주세요.<br><br>
+        <code>/members/plans/${emailHash}.json</code>
+      `;
     }
   </script>
 

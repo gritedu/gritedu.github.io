@@ -3,100 +3,111 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg">
   <title>그릿에듀 | 대한민국 교육의 새로운 표준</title>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.png">
   <link rel="stylesheet" href="/assets/css/main.css" />
   <!-- 대표 URL을 루트로 고정 -->
   <link rel="canonical" href="https://gritedu.github.io/">
 </head>
 <body>
-<header class="grit-header grit-preload"></header>
-<main>
-  <section class="grit-hero">
-    <img src="/assets/banner_main.png" alt="그릿에듀 배너">
-  </section>
 
-  <section class="grit-section">
-    <div class="grit-section__head">
-      <h2>강사진</h2>
-    </div>
-    <div id="gritInstructorsPreview" class="grit-grid"></div>
-  </section>
+  <!-- 헤더/푸터는 common.js가 주입합니다 -->
 
-  <section class="grit-section">
-    <div class="grit-section__head">
-      <h2>갤러리</h2>
-    </div>
-    <div id="gritGalleryPreview" class="grit-grid"></div>
-  </section>
-</main>
+  <main>
+    <section class="grit-hero">
+      <img src="/assets/banner_main.png" alt="그릿에듀 배너">
+    </section>
 
-<script type="module" src="/assets/js/common.js"></script>
-<script>
-  // 강사진 프리뷰 (전체 표시)
-  async function renderInstructorsHome(){
-    const res = await fetch('/data/instructors.json');
-    const data = await res.json();
-    const all = data;   // 컨설팅 포함
-    const grid = document.getElementById('gritInstructorsPreview');
-
-    function gridMarkup(list){
-      return list.map(i=>`
-        <a class="instructor-card" href="/instructor.html?id=${i.id}" data-subject="${i.subject||''}">
-          <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,40)}${(i.bio||'').length>40?'…':''}</span></div></div>
-          <img src="${i.photo}" alt="${i.name}">
-          <h3>${i.name}</h3>
-        </a>`).join('');
-    }
-    grid.innerHTML = gridMarkup(all);
-  }
-
-  // 갤러리 최신 1장씩 (grit/event/study)
-  async function renderLatestGallery(){
-    const grid = document.getElementById('gritGalleryPreview');
-    try{
-      const res = await fetch('/data/gallery.json');
-      const map = await res.json();
-      const pick = k => (map[k] && map[k].length ? map[k][map[k].length - 1] : null);
-      const urls = [pick('grit'), pick('study'), pick('event')].filter(Boolean);
-      grid.innerHTML = urls.map(u =>
-        `<figure class="gallery-thumb"><img src="/${u.replace(/^\/+/,'')}" alt="그릿에듀 갤러리" loading="lazy" onclick="openLightbox('/${u.replace(/^\/+/,'')}')"></figure>`
-      ).join('');
-    }catch(e){
-      grid.innerHTML = '<p>갤러리를 불러오지 못했습니다.</p>';
-    }
-  }
-
-  // 라이트박스
-  function openLightbox(src) {
-    const lightbox = document.createElement('div');
-    lightbox.className = 'lightbox active';
-    lightbox.innerHTML = `
-      <div class="lightbox-content">
-        <img src="${src}" alt="그릿에듀 갤러리">
-        <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <section class="grit-section">
+      <div class="grit-section__head">
+        <h1 class="page-title">그릿에듀</h1>
+        <p class="desc">대한민국 교육의 새로운 표준</p>
       </div>
-    `;
-    document.body.appendChild(lightbox);
-    document.body.style.overflow = 'hidden';
-  }
-  function closeLightbox() {
-    const lightbox = document.querySelector('.lightbox');
-    if (lightbox) {
-      lightbox.remove();
-      document.body.style.overflow = 'auto';
+      <div id="gritInstructorsPreview" class="grit-grid"></div>
+    </section>
+
+    <section class="grit-section">
+      <div class="grit-section__head">
+        <h2>갤러리</h2>
+      </div>
+      <div id="gritGalleryPreview" class="grit-grid"></div>
+    </section>
+  </main>
+
+  <!-- 공통 스크립트: 헤더/푸터 주입 + 메뉴/로그인 상태 제어 -->
+  <script type="module" src="/assets/js/common.js"></script>
+
+  <!-- 페이지 전용 스크립트 -->
+  <script>
+    // 강사진 프리뷰 (전체 표시)
+    async function renderInstructorsHome(){
+      const res = await fetch('/data/instructors.json');
+      const data = await res.json();
+      const all = data;   // 컨설팅 포함
+      const grid = document.getElementById('gritInstructorsPreview');
+
+      function gridMarkup(list){
+        return list.map(i=>`
+          <a class="instructor-card" href="/instructor.html?id=${i.id}" data-subject="${i.subject||''}">
+            <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,40)}${(i.bio||'').length>40?'…':''}</span></div></div>
+            <img src="${i.photo}" alt="${i.name}">
+            <h3>${i.name}</h3>
+          </a>`).join('');
+      }
+      grid.innerHTML = gridMarkup(all);
     }
-  }
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
-  document.addEventListener('click', (e) => { if (e.target.classList.contains('lightbox')) closeLightbox(); });
 
-  window.openLightbox = openLightbox;
-  window.closeLightbox = closeLightbox;
+    // 갤러리 최신 1장씩 (grit/event/study)
+    async function renderLatestGallery(){
+      const grid = document.getElementById('gritGalleryPreview');
+      try{
+        const res = await fetch('/data/gallery.json');
+        const map = await res.json();
+        const pick = k => (map[k] && map[k].length ? map[k][map[k].length - 1] : null);
+        const urls = [pick('grit'), pick('study'), pick('event')].filter(Boolean);
 
-  document.addEventListener('DOMContentLoaded', ()=>{
-    renderInstructorsHome();
-    renderLatestGallery();
-  });
-</script>
+        const toAbs = (u) => '/' + String(u || '').replace(/^\/+/, '');
+        grid.innerHTML = urls.map(u =>
+          `<figure class="gallery-thumb">
+             <img src="${toAbs(u)}" alt="그릿에듀 갤러리" loading="lazy" onclick="openLightbox('${toAbs(u)}')">
+           </figure>`
+        ).join('');
+      }catch(e){
+        console.error(e);
+        grid.innerHTML = '<p>갤러리를 불러오지 못했습니다.</p>';
+      }
+    }
+
+    // 라이트박스
+    function openLightbox(src) {
+      const lightbox = document.createElement('div');
+      lightbox.className = 'lightbox active';
+      lightbox.innerHTML = `
+        <div class="lightbox-content">
+          <img src="${src}" alt="그릿에듀 갤러리">
+          <button class="lightbox-close" onclick="closeLightbox()">×</button>
+        </div>
+      `;
+      document.body.appendChild(lightbox);
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      const lightbox = document.querySelector('.lightbox');
+      if (lightbox) {
+        lightbox.remove();
+        document.body.style.overflow = 'auto';
+      }
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+    document.addEventListener('click', (e) => { if (e.target.classList.contains('lightbox')) closeLightbox(); });
+
+    window.openLightbox = openLightbox;
+    window.closeLightbox = closeLightbox;
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderInstructorsHome();
+      renderLatestGallery();
+    });
+  </script>
 </body>
 </html>

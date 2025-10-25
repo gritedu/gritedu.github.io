@@ -3,28 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
   <title>그릿에듀 | 문의</title>
-  <link rel="stylesheet" href="./assets/css/main.css">
-  <script type="module" src="/assets/js/common.js"></script>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
-<header class="grit-header grit-preload"></header>
+
+  <!-- 헤더/푸터는 /assets/js/common.js 에서 주입됩니다 -->
+
   <main class="grit-section">
-    <h2>상담 예약</h2>
-    <p>전화로 상담 시간 예약 후 방문하여 상담 가능합니다.</p>
-    <p>통화 가능 시간 : 평일 3~10pm / 주말 12~10pm</p>
-    <p class="grit-contact-phone">☏ 02-809-0611</p>
-    <div class="grit-map">
-      <div class="embed-map">
-        <iframe src="https://www.google.com/maps?q=%EC%84%9C%EC%9A%B8%20%EA%B8%88%EC%B2%9C%EA%B5%AC%20%EC%8B%9C%ED%9D%A5%EB%8C%80%EB%A1%9C47%EA%B8%B8%2028-5&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <h1 class="page-title">문의</h1>
+
+    <section>
+      <h2>상담 예약</h2>
+      <p>전화로 상담 시간 예약 후 방문하여 상담 가능합니다.</p>
+      <p>통화 가능 시간 : 평일 3~10pm / 주말 12~10pm</p>
+      <p class="grit-contact-phone">☏ 02-809-0611</p>
+
+      <div class="grit-map">
+        <div class="embed-map">
+          <iframe
+            src="https://www.google.com/maps?q=%EC%84%9C%EC%9A%B8%20%EA%B8%88%EC%B2%9C%EA%B5%AC%20%EC%8B%9C%ED%9D%A5%EB%8C%80%EB%A1%9C47%EA%B8%B8%2028-5&output=embed"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
       </div>
-    </div>
-    <div class="grit-cta-row" style="margin-top:14px">
-      <a class="grit-btn" href="https://map.naver.com/p/entry/place/1775828207?c=15.00,0,0,0,dh" target="_blank" rel="noopener">네이버 지도</a>
-      <a class="grit-btn" href="https://place.map.kakao.com/1537339636" target="_blank" rel="noopener">카카오 지도</a>
-      <a class="grit-btn" href="https://maps.app.goo.gl/s24PTXWa5A27BZ5L8" target="_blank" rel="noopener">구글 지도</a>
-    </div>
+
+      <!-- 지도 아이콘 버튼 3종 -->
+      <div class="grit-contact-links" style="margin-top:16px; gap:16px;">
+        <a href="https://map.naver.com/p/entry/place/1775828207?c=15.00,0,0,0,dh" target="_blank" rel="noopener" aria-label="네이버 지도 열기">
+          <img src="/assets/icons/naver-map.png" alt="네이버 지도" width="44" height="44" style="display:block;">
+        </a>
+        <a href="https://place.map.kakao.com/1537339636" target="_blank" rel="noopener" aria-label="카카오 지도 열기">
+          <img src="/assets/icons/kakao-map.png" alt="카카오 지도" width="44" height="44" style="display:block;">
+        </a>
+        <a href="https://maps.app.goo.gl/s24PTXWa5A27BZ5L8" target="_blank" rel="noopener" aria-label="구글 지도 열기">
+          <img src="/assets/icons/google-map.png" alt="구글 지도" width="44" height="44" style="display:block;">
+        </a>
+      </div>
+    </section>
   </main>
+
+  <!-- 공통 UI -->
+  <script type="module" src="/assets/js/common.js"></script>
 </body>
 </html>

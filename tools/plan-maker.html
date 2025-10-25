@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>그릿에듀 학생별 강의 JSON 생성기 (관리자용)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+h1 { margin-bottom: 8px; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 14px; }
+th { background: #f9f9f9; }
+input, textarea { font: inherit; }
+textarea { width: 100%; height: 60px; resize: vertical; }
+button { font: inherit; padding: 6px 10px; margin: 4px; border-radius: 6px; cursor: pointer; }
+button.primary { background: #ff7a00; color: white; border: 1px solid #ff7a00; }
+button.danger { background: #e74c3c; color: white; border: 1px solid #c0392b; }
+#controls { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+pre { background:#f7f7f7; padding:10px; border-radius:8px; overflow:auto; font-size:13px; }
+.note { color:#666; font-size:13px; }
+</style>
+</head>
+<body>
+
+<h1>📚 GRIT EDU 학생별 강의 JSON 생성기</h1>
+<p class="note">브라우저만으로 학생 명단을 관리하고, 각 학생별 JSON을 자동 생성·다운로드할 수 있습니다.</p>
+
+<div id="controls">
+  <button id="addStudent">학생 추가</button>
+  <button id="exportJSON" class="primary">전체 JSON ZIP 다운로드</button>
+  <button id="exportCSV">CSV(엑셀) 내보내기</button>
+  <button id="clearAll" class="danger">전체 초기화</button>
+</div>
+
+<table id="table">
+  <thead>
+    <tr>
+      <th>이름</th>
+      <th>이메일(아이디)</th>
+      <th>비고</th>
+      <th>강의 목록<br><small>한 줄당 "제목 | videoId"</small></th>
+      <th>삭제</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<pre id="preview"></pre>
+
+<script type="module">
+import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
+const tableBody = document.querySelector("#table tbody");
+const preview = document.getElementById("preview");
+
+function loadData() {
+  return JSON.parse(localStorage.getItem("grit_students") || "[]");
+}
+function saveData(data) {
+  localStorage.setItem("grit_students", JSON.stringify(data));
+  repaint();
+}
+function repaint() {
+  const data = loadData();
+  tableBody.innerHTML = "";
+  data.forEach((s, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input value="${s.name||""}" data-field="name" data-idx="${i}" placeholder="홍길동"></td>
+      <td><input value="${s.email||""}" data-field="email" data-idx="${i}" placeholder="아이디만 입력 (예: student1)">@gmail.com</td>
+      <td><input value="${s.note||""}" data-field="note" data-idx="${i}" placeholder="비고"></td>
+      <td><textarea data-field="courses" data-idx="${i}" placeholder="예) 맛보기 1 | 6aPYStft9Xo"></textarea></td>
+      <td><button data-del="${i}" style="background:#f66;color:white;border:none;border-radius:6px;">X</button></td>
+    `;
+    tableBody.appendChild(tr);
+    tr.querySelector("textarea").value = s.rawCourses || "";
+  });
+  preview.textContent = JSON.stringify(data, null, 2);
+}
+tableBody.addEventListener("input", e => {
+  const f = e.target.dataset.field;
+  const idx = Number(e.target.dataset.idx);
+  const data = loadData();
+  if (!data[idx]) return;
+  data[idx][f] = e.target.value;
+  if (f === "courses") data[idx].rawCourses = e.target.value;
+  saveData(data);
+});
+tableBody.addEventListener("click", e => {
+  const idx = e.target.dataset.del;
+  if (idx !== undefined) {
+    const data = loadData();
+    data.splice(idx, 1);
+    saveData(data);
+  }
+});
+
+document.getElementById("addStudent").onclick = () => {
+  const data = loadData();
+  data.push({ name: "", email: "", note: "", rawCourses: "" });
+  saveData(data);
+};
+
+document.getElementById("clearAll").onclick = () => {
+  if (confirm("모든 학생 데이터를 삭제할까요?")) {
+    localStorage.removeItem("grit_students");
+    repaint();
+  }
+};
+
+// ===== JSON / CSV 생성 =====
+function makeJSON(student) {
+  const emailFull = (student.email||"").trim().toLowerCase() + "@gmail.com";
+  const items = (student.rawCourses||"")
+    .split(/\n+/)
+    .map(line => {
+      const [t, vid] = line.split("|").map(s=>s.trim());
+      return (t && vid) ? { title:t, videoId:vid } : null;
+    })
+    .filter(Boolean);
+  return {
+    name: student.name,
+    email: emailFull,
+    note: student.note,
+    courses: [{ title:"코스", items }]
+  };
+}
+
+// ===== ZIP 다운로드 =====
+document.getElementById("exportJSON").onclick = async () => {
+  const zip = new JSZip();
+  const data = loadData();
+  if (!data.length) return alert("학생 데이터가 없습니다.");
+  for (const s of data) {
+    const json = makeJSON(s);
+    const fname = (s.name||s.email||"student") + ".json";
+    zip.file(fname, JSON.stringify(json, null, 2));
+  }
+  const blob = await zip.generateAsync({ type:"blob" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "grit_students.zip";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// ===== CSV 내보내기 =====
+document.getElementById("exportCSV").onclick = () => {
+  const data = loadData();
+  if (!data.length) return alert("학생 데이터가 없습니다.");
+  const rows = [["이름","이메일(@gmail.com)","비고","강의목록"]];
+  for (const s of data) {
+    rows.push([
+      s.name,
+      (s.email||"")+"@gmail.com",
+      s.note,
+      (s.rawCourses||"").replace(/\n/g," / ")
+    ]);
+  }
+  const csv = rows.map(r => r.map(v=>`"${(v||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "grit_students.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// 초기 렌더
+repaint();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GRIT EDU 관리자 툴 — 학생·강의 JSON 자동화 + GitHub Push</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --brand:#ff7a00; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, sans-serif;
+         max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+  h1 { margin: 0 0 6px; font-weight: 800; }
+  .note { color:#666; font-size:13px; margin: 6px 0 14px; }
+  .cfg, .gh { border:1px solid #eee; border-radius:10px; padding:12px; background:#fafafa; margin-top:10px;}
+  .row { display:flex; gap:8px; flex-wrap:wrap; margin: 10px 0; }
+  label { display:flex; gap:6px; align-items:center; }
+  input[type="text"], input[type="password"] { padding:6px 8px; font:inherit; }
+  button { font: inherit; padding: 8px 12px; border-radius: 8px; cursor: pointer; border:1px solid #ddd; background:#fff; }
+  button.primary { background:var(--brand); border-color:var(--brand); color:#fff; }
+  button.danger { background:#e74c3c; color:#fff; border-color:#c0392b; }
+  table { width:100%; border-collapse: collapse; margin-top:10px; table-layout: fixed; }
+  th, td { border:1px solid #ddd; padding:8px; vertical-align: top; }
+  th { background:#f8f8f8; }
+  th:nth-child(1){ width:120px }
+  th:nth-child(2){ width:260px }
+  th:nth-child(3){ width:180px }
+  th:nth-child(5){ width:80px }
+  input, textarea { width:100%; font:inherit; padding:6px 8px; }
+  textarea { resize: vertical; min-height: 90px; }
+  .muted { color:#777; font-size:12px; }
+  pre { background:#f6f6f8; padding:10px; border-radius:10px; overflow:auto; font-size:12px; }
+  .email-wrap { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .email-wrap input { flex: 1 1 auto; min-width: 120px; }
+  .email-wrap .suffix { color:#666; font-size:13px; }
+  .pill { background:#fff7ee; border:1px solid #ffd7b0; color:#aa5a00; padding:4px 8px; border-radius:999px; font-size:12px; }
+</style>
+</head>
+<body>
+<h1>📚 GRIT EDU 관리자 툴</h1>
+<p class="note">학생 명단 및 강의 정보를 입력하고 <b>저장 버튼</b>을 눌러야 반영됩니다. 자동 저장은 없습니다.</p>
+
+<!-- 기본 도메인 -->
+<div class="cfg">
+  <div class="row">
+    <label>기본 이메일 도메인: <input id="domain" value="@gmail.com" style="width:200px" type="text"></label>
+    <span class="pill">예: ksh + @gmail.com ⇒ ksh@gmail.com</span>
+  </div>
+</div>
+
+<!-- GitHub 업로드 설정 -->
+<div class="gh">
+  <strong>🔗 GitHub Upload 설정</strong>
+  <p class="muted">이 설정으로 <b>members/plans/</b> 경로에 학생별 JSON을 곧바로 커밋합니다(덮어쓰기 자동).</p>
+  <div class="row">
+    <label>Owner: <input id="ghOwner" placeholder="gritedu" style="width:160px" type="text"></label>
+    <label>Repo: <input id="ghRepo" placeholder="gritedu.github.io" style="width:220px" type="text"></label>
+    <label>Branch: <input id="ghBranch" value="main" style="width:120px" type="text"></label>
+    <label>Base Path: <input id="ghBase" value="members/plans" style="width:200px" type="text"></label>
+  </div>
+  <div class="row">
+    <label>Personal Access Token: <input id="ghToken" placeholder="ghp_xxx…" style="width:420px" type="password"></label>
+    <button id="saveGh" class="primary">저장</button>
+    <button id="pushGh" class="primary">GitHub에 바로 푸시</button>
+    <button id="clearGh" class="danger">토큰/설정 삭제</button>
+  </div>
+  <p class="muted">⚠️ 토큰은 로컬 저장소(LocalStorage)에만 저장됩니다. GitHub에서 <b>repo 권한</b>으로 발급하세요.</p>
+</div>
+
+<div class="row" style="margin-top:12px">
+  <button id="addStudent">학생 추가</button>
+  <button id="importCSV">CSV 가져오기</button>
+  <button id="exportCSV">CSV 내보내기</button>
+  <button id="saveAll" class="primary">저장</button>
+  <button id="exportJSON" class="primary">JSON ZIP 다운로드</button>
+  <button id="clearAll" class="danger">전체 초기화</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>이름</th>
+      <th>이메일(아이디만)</th>
+      <th>비고</th>
+      <th>강의 입력<br><span class="muted">각 줄에 “제목 | URL/ID” 또는 “URL/ID” (재생목록 URL도 OK)</span></th>
+      <th>삭제</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<pre id="preview"></pre>
+
+<script type="module">
+import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
+
+const LS_KEY = "grit_plan_manager_v5";
+const LS_GH  = "grit_plan_manager_v5_gh";
+let state = JSON.parse(localStorage.getItem(LS_KEY) || '{"domain":"@gmail.com","students":[]}');
+let gh    = JSON.parse(localStorage.getItem(LS_GH)  || '{"owner":"","repo":"","branch":"main","base":"members/plans","token":""}');
+
+/* ---------- YouTube URL 표준화 ---------- */
+function normalizeYouTubeUrl(input) {
+  if (!input) return "";
+  const s = input.trim();
+  if (/^https?:\/\//i.test(s)) return s;
+
+  const vParam = s.match(/(?:\?|&)v=([A-Za-z0-9_\-]{6,})/);
+  if (vParam) return `https://www.youtube.com/watch?v=${vParam[1]}`;
+
+  const short = s.match(/^youtu\.be\/([A-Za-z0-9_\-]{6,})$/i);
+  if (short) return `https://www.youtube.com/watch?v=${short[1]}`;
+
+  const listParam = s.match(/(?:\?|&)list=([A-Za-z0-9_\-]+)/);
+  if (listParam) return `https://www.youtube.com/playlist?list=${listParam[1]}`;
+
+  if (/^[A-Za-z0-9_\-]{6,}$/.test(s)) {
+    return `https://www.youtube.com/watch?v=${s}`;
+  }
+  return s;
+}
+
+/* ---------- 상태 저장/렌더 ---------- */
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+  render();
+}
+function saveGh() {
+  localStorage.setItem(LS_GH, JSON.stringify(gh));
+}
+
+function renderGh() {
+  document.getElementById("ghOwner").value  = gh.owner||"";
+  document.getElementById("ghRepo").value   = gh.repo||"";
+  document.getElementById("ghBranch").value = gh.branch||"main";
+  document.getElementById("ghBase").value   = gh.base||"members/plans";
+  document.getElementById("ghToken").value  = gh.token||"";
+}
+
+function render() {
+  document.getElementById("domain").value = state.domain;
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+  state.students.forEach((s, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input id="name-${i}" value="${s.name||""}" placeholder="홍길동" type="text"></td>
+      <td>
+        <div class="email-wrap">
+          <input id="email-${i}" value="${s.emailId||""}" placeholder="아이디만" type="text">
+          <span class="suffix">${state.domain}</span>
+        </div>
+      </td>
+      <td><input id="note-${i}" value="${s.note||""}" placeholder="비고" type="text"></td>
+      <td>
+        <textarea id="raw-${i}" placeholder="예) 맛보기 | https://youtu.be/6aPYStft9Xo
+수학1강 | dQw4w9WgXcQ
+https://www.youtube.com/playlist?list=PLAyaOmgagQpgVDOd9sT8PO0MFSHr7zaYM">${s.raw||""}</textarea>
+      </td>
+      <td><button data-del="${i}" class="danger">삭제</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const previewObj = {
+    domain: state.domain,
+    students: state.students.map(s => ({
+      name: s.name, email: (s.emailId||"")+state.domain, note: s.note, raw: s.raw
+    }))
+  };
+  document.getElementById("preview").textContent = JSON.stringify(previewObj, null, 2);
+
+  renderGh();
+}
+
+/* ---------- 이벤트: 상태 ---------- */
+document.getElementById("addStudent").onclick = () => {
+  state.students.push({ name:"", emailId:"", note:"", raw:"" });
+  render();
+};
+
+document.getElementById("clearAll").onclick = () => {
+  if (confirm("모든 데이터를 삭제할까요?")) {
+    localStorage.removeItem(LS_KEY);
+    state = { domain:"@gmail.com", students:[] };
+    render();
+  }
+};
+
+document.getElementById("saveAll").onclick = () => {
+  state.domain = document.getElementById("domain").value.trim() || "@gmail.com";
+  state.students.forEach((s, i) => {
+    s.name = document.getElementById(`name-${i}`).value.trim();
+    s.emailId = document.getElementById(`email-${i}`).value.trim();
+    s.note = document.getElementById(`note-${i}`).value.trim();
+    s.raw = document.getElementById(`raw-${i}`).value.trim();
+  });
+  saveState();
+  alert("✅ 저장 완료!");
+};
+
+document.getElementById("tbody").addEventListener("click", e => {
+  const idx = e.target.dataset.del;
+  if (idx !== undefined) {
+    state.students.splice(idx, 1);
+    render();
+  }
+});
+
+/* ---------- CSV: emailId,name,note ---------- */
+document.getElementById("exportCSV").onclick = () => {
+  const rows = [["emailId","name","note"]];
+  for (const s of state.students) rows.push([s.emailId||"", s.name||"", s.note||""]);
+  const csv = rows.map(r=>r.map(v=>`"${(v||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type:"text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "grit_students_min.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+document.getElementById("importCSV").onclick = async () => {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = ".csv,text/csv";
+  inp.onchange = async () => {
+    const text = await inp.files[0].text();
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    const header = lines.shift().split(",").map(h=>h.replace(/^"|"$/g,"").trim());
+    const idxE = header.indexOf("emailId");
+    const idxN = header.indexOf("name");
+    const idxNote = header.indexOf("note");
+    if (idxE<0 || idxN<0 || idxNote<0) { alert("CSV 헤더에 emailId,name,note 가 있어야 합니다."); return; }
+    for (const line of lines) {
+      const cols = line.match(/("([^"]|"")*"|[^,]*)/g).filter((_,i,arr)=>i%2===0||arr[i-1][0]!=='"'); // 안전 분리
+      const emailId = (cols[idxE]||"").replace(/^"|"$/g,"").replace(/""/g,'"').trim();
+      const name    = (cols[idxN]||"").replace(/^"|"$/g,"").replace(/""/g,'"').trim();
+      const note    = (cols[idxNote]||"").replace(/^"|"$/g,"").replace(/""/g,'"').trim();
+      if (!emailId) continue;
+      const exist = state.students.find(s=>s.emailId===emailId);
+      if (exist) { exist.name = name; exist.note = note; }
+      else state.students.push({ emailId, name, note, raw:"" });
+    }
+    saveState();
+  };
+  inp.click();
+};
+
+/* ---------- ZIP(JSON) 내보내기 ---------- */
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function buildStudentJson(s, emailFull) {
+  const items = (s.raw||"")
+    .split(/\n/)
+    .map(l=>{
+      const line = l.trim(); if (!line) return null;
+      let title="", val=line;
+      const barIdx = line.indexOf("|");
+      if (barIdx !== -1) { title = line.slice(0, barIdx).trim(); val = line.slice(barIdx+1).trim(); }
+      const url = normalizeYouTubeUrl(val);
+      if (!url) return null;
+      if (!title) title = "강의";
+      return { title, url };
+    })
+    .filter(Boolean);
+
+  return {
+    name: s.name,
+    email: emailFull,
+    note: s.note,
+    courses: [{ title: "코스", items }]
+  };
+}
+
+document.getElementById("exportJSON").onclick = async () => {
+  const zip = new JSZip();
+  const manifest = [["name","email","note","hash","filename"]];
+  for (const s of state.students) {
+    const email = (s.emailId||"").toLowerCase() + state.domain;
+    const hash = await sha256Hex(email);
+    const json = buildStudentJson(s, email);
+    zip.file(`${hash}.json`, JSON.stringify(json, null, 2));
+    manifest.push([s.name, email, s.note, hash, `${hash}.json`]);
+  }
+  const csv = manifest.map(r=>r.join(",")).join("\n");
+  zip.file("_manifest.csv", csv);
+  const blob = await zip.generateAsync({ type:"blob" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "plans_deploy.zip";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+/* ---------- GitHub Push (members/plans/…) ---------- */
+function readGhForm() {
+  gh.owner  = document.getElementById("ghOwner").value.trim();
+  gh.repo   = document.getElementById("ghRepo").value.trim();
+  gh.branch = document.getElementById("ghBranch").value.trim() || "main";
+  gh.base   = document.getElementById("ghBase").value.trim() || "members/plans";
+  gh.token  = document.getElementById("ghToken").value.trim();
+}
+
+document.getElementById("saveGh").onclick = () => {
+  readGhForm(); saveGh(); alert("✅ GitHub 설정 저장됨");
+};
+document.getElementById("clearGh").onclick = () => {
+  if (!confirm("GitHub 설정(토큰 포함)을 삭제할까요?")) return;
+  gh = { owner:"", repo:"", branch:"main", base:"members/plans", token:"" };
+  saveGh(); renderGh();
+};
+
+async function getFileShaIfExists(path) {
+  const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${encodeURIComponent(path)}?ref=${gh.branch}`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${gh.token}`, Accept: "application/vnd.github+json" }});
+  if (res.status === 200) {
+    const j = await res.json();
+    return j.sha;
+  }
+  return null; // 404 등
+}
+
+async function putFile(path, content, message) {
+  const sha = await getFileShaIfExists(path);
+  const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${encodeURIComponent(path)}`;
+  const body = {
+    message,
+    content: btoa(unescape(encodeURIComponent(content))),
+    branch: gh.branch
+  };
+  if (sha) body.sha = sha;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${gh.token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`GitHub PUT 실패 (${res.status}): ${t}`);
+  }
+}
+
+document.getElementById("pushGh").onclick = async () => {
+  readGhForm();
+  if (!gh.owner || !gh.repo || !gh.token) { alert("Owner/Repo/Token을 입력하세요."); return; }
+
+  // 현재 입력 저장
+  document.getElementById("saveAll").click();
+
+  try {
+    let ok = 0;
+    for (const s of state.students) {
+      const email = (s.emailId||"").toLowerCase() + state.domain;
+      const hash = await sha256Hex(email);
+      const json = buildStudentJson(s, email);
+      const content = JSON.stringify(json, null, 2);
+      const path = `${gh.base.replace(/\/+$/,'')}/${hash}.json`;
+      await putFile(path, content, `chore(plans): update ${s.name || email} (${hash}.json)`);
+      ok++;
+    }
+    alert(`✅ GitHub 푸시 완료: ${ok} 파일`);
+  } catch (e) {
+    console.error(e);
+    alert("푸시 실패: " + e.message);
+  }
+};
+
+render();
+</script>
+</body>
+</html>

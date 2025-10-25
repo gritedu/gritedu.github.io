@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>로그인 - GritEdu LMS</title>
+  <title>그릿에듀 | 로그인</title>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.png" />
   <link rel="stylesheet" href="/assets/css/main.css" />
-  <script type="module" src="/assets/js/common.js"></script>
 </head>
 <body>
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <h1>로그인</h1>
+
+  <!-- 헤더/푸터는 /assets/js/common.js 에서 주입됩니다 -->
+
+  <main class="auth-wrap">
+    <section class="auth-card" aria-labelledby="login-title">
+      <h1 id="login-title">로그인</h1>
       <p class="desc">그릿에듀 계정으로 로그인하세요.</p>
 
-      <form id="login-form">
+      <form id="login-form" novalidate>
         <label for="email">이메일</label>
         <input type="email" id="email" required placeholder="email@example.com" />
 
@@ -22,21 +25,27 @@
 
         <button type="submit" class="primary">로그인</button>
       </form>
-    </div>
-  </div>
+    </section>
+  </main>
 
+  <!-- 공통 UI -->
+  <script type="module" src="/assets/js/common.js"></script>
+
+  <!-- 로그인 스크립트 -->
   <script type="module">
     import { auth } from "/assets/js/firebase-init.js";
     import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
     const form = document.getElementById("login-form");
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
+
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        // 로그인 후 루트로 이동 (index.html 표시되지만 주소는 / 로 간결)
+        // 로그인 후 루트(index.html)로 이동
         location.href = "/";
       } catch (err) {
         alert("로그인 실패: " + (err?.message || err));

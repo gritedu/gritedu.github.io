@@ -3,55 +3,70 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg">
   <title>그릿에듀 | 강사진</title>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.png">
   <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
-<header class="grit-header grit-preload"></header>
-<main class="container">
-  <h1>그릿에듀 강사진</h1>
-  <div class="grit-filter" role="tablist" aria-label="강사진 필터" data-for="instructors">
-    <button class="on" data-subject="all" role="tab" aria-selected="true">전체</button>
-    <button data-subject="국어" role="tab">국어</button>
-    <button data-subject="수학" role="tab">수학</button>
-    <button data-subject="영어" role="tab">영어</button>
-    <button data-subject="과학" role="tab">과학</button>
-  </div>
-  <div class="grid-instructors" id="instructorGrid"></div>
-</main>
 
-<script type="module" src="/assets/js/common.js"></script>
-<script>
-  async function renderInstructorsPage(){
-    const res = await fetch('/data/instructors.json');
-    const data = await res.json();
-    const all = data;
-    const grid = document.getElementById('instructorGrid');
-    const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
+  <!-- 헤더/푸터는 /assets/js/common.js에서 주입됩니다 -->
 
-    function paint(subject='all'){
-      const arr = subject==='all' ? all : all.filter(x=>x.subject===subject);
-      grid.innerHTML = arr.map(i => `
-        <article class="instructor-card" data-subject="${i.subject||''}" onclick="location.href='/instructor.html?id=${i.id}'" style="cursor:pointer">
-          <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,60)}${(i.bio||'').length>60?'…':''}</span></div></div>
-          <img src="${i.photo}" alt="${i.name}">
-          <h3>${i.name}</h3>
-        </article>`).join('');
+  <main class="container" style="margin-top:64px;">
+    <h1>그릿에듀 강사진</h1>
+
+    <div class="grit-filter" role="tablist" aria-label="강사진 필터" data-for="instructors">
+      <button class="on" data-subject="all" role="tab" aria-selected="true">전체</button>
+      <button data-subject="국어" role="tab">국어</button>
+      <button data-subject="수학" role="tab">수학</button>
+      <button data-subject="영어" role="tab">영어</button>
+      <button data-subject="과학" role="tab">과학</button>
+    </div>
+
+    <div class="grid-instructors" id="instructorGrid"></div>
+  </main>
+
+  <!-- 공통 UI -->
+  <script type="module" src="/assets/js/common.js"></script>
+
+  <!-- 페이지 전용 스크립트 -->
+  <script>
+    async function renderInstructorsPage(){
+      const res = await fetch('/data/instructors.json');
+      const data = await res.json();
+      const all  = data;
+      const grid = document.getElementById('instructorGrid');
+      const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
+
+      function paint(subject='all'){
+        const arr = subject === 'all' ? all : all.filter(x => x.subject === subject);
+        grid.innerHTML = arr.map(i => `
+          <article class="instructor-card" data-subject="${i.subject||''}" onclick="location.href='/instructor.html?id=${i.id}'" style="cursor:pointer">
+            <div class="overlay">
+              <div class="txt">
+                <strong>${i.subject||''}</strong>
+                <span>${(i.bio||'').slice(0,60)}${(i.bio||'').length>60?'…':''}</span>
+              </div>
+            </div>
+            <img src="${i.photo}" alt="${i.name}">
+            <h3>${i.name}</h3>
+          </article>
+        `).join('');
+      }
+
+      paint();
+
+      if (bar) {
+        bar.addEventListener('click', e => {
+          const btn = e.target.closest('button[data-subject]');
+          if (!btn) return;
+          bar.querySelectorAll('button').forEach(b => b.classList.remove('on'));
+          btn.classList.add('on');
+          paint(btn.dataset.subject);
+        });
+      }
     }
-    paint();
 
-    if (bar) {
-      bar.addEventListener('click', e=>{
-        const btn = e.target.closest('button[data-subject]');
-        if(!btn) return;
-        bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-        btn.classList.add('on');
-        paint(btn.dataset.subject);
-      });
-    }
-  }
-  document.addEventListener('DOMContentLoaded', renderInstructorsPage);
-</script>
+    document.addEventListener('DOMContentLoaded', renderInstructorsPage);
+  </script>
 </body>
 </html>
