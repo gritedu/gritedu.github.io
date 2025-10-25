@@ -118,6 +118,12 @@ export function injectCommonUI() {
         location.href = "/index.html";
       });
     }
+  // Top 버튼 추가
+  ensureTopButton();
+  
+  // 모바일 메뉴 초기화
+  initMobileMenu();
+  
   } catch (err) {
     console.error("injectCommonUI error:", err);
   }
@@ -137,6 +143,54 @@ function ensureTopButton() {
   window.addEventListener('scroll', onScroll, { passive: true });
   btn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
   onScroll();
+}
+
+function initMobileMenu() {
+  // 햄버거 메뉴 버튼 생성
+  const nav = document.querySelector('.grit-nav');
+  if (!nav) return;
+  
+  const existingToggle = nav.querySelector('.menu-toggle');
+  if (existingToggle) return; // 이미 있으면 중복 생성 방지
+  
+  const toggle = document.createElement('button');
+  toggle.className = 'menu-toggle';
+  toggle.innerHTML = '<span></span><span></span><span></span>';
+  toggle.setAttribute('aria-label', '메뉴 열기/닫기');
+  
+  // 햄버거 버튼을 네비게이션에 추가
+  nav.appendChild(toggle);
+  
+  const menu = nav.querySelector('ul');
+  if (!menu) return;
+  
+  // 토글 기능
+  toggle.addEventListener('click', () => {
+    const isActive = menu.classList.contains('active');
+    if (isActive) {
+      menu.classList.remove('active');
+      toggle.classList.remove('active');
+    } else {
+      menu.classList.add('active');
+      toggle.classList.add('active');
+    }
+  });
+  
+  // 메뉴 외부 클릭 시 닫기
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && menu.classList.contains('active')) {
+      menu.classList.remove('active');
+      toggle.classList.remove('active');
+    }
+  });
+  
+  // ESC 키로 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu.classList.contains('active')) {
+      menu.classList.remove('active');
+      toggle.classList.remove('active');
+    }
+  });
 }
 
 // 페이지 로드 시 즉시/지연 모두 대응

@@ -349,9 +349,19 @@ html,body{overflow-x:hidden}
     gap: 16px;
     border-left: 1px solid #eee;
     transition: right 0.3s ease;
+    display: none; /* 기본적으로 숨김 */
   }
-  .grit-nav ul.active { right: 0; }
-  .menu-toggle { display: block; cursor: pointer; }
+  .grit-nav ul.active { 
+    right: 0; 
+    display: flex; /* 활성화 시에만 표시 */
+  }
+  .menu-toggle { 
+    display: block; 
+    cursor: pointer; 
+    background: none;
+    border: none;
+    padding: 8px;
+  }
   .menu-toggle span {
     display: block;
     width: 26px;
