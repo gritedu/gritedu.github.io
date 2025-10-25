@@ -1,106 +1,88 @@
 // /assets/js/common.js
 import { auth, signOut } from "/assets/js/firebase-init.js";
 
-const HEADER_HEIGHT = 64;
+// ---- 모바일 메뉴 토글 ----
+(function setupMobileMenu(){
+  const nav = document.querySelector(".grit-nav");
+  const btn = document.getElementById("menuToggle");
+  const list = nav?.querySelector("ul");
+  if (!btn || !list) return;
 
-export function initCommonUI() {
-  try {
-    const headerEl = document.querySelector('.grit-header');
-    const navList  = document.querySelector('.grit-nav ul');
-    let   menuBtn  = document.getElementById('menuToggle');
+  const open = () => {
+    list.classList.add("active");
+    btn.classList.add("active");
+    document.body.style.overflow = "hidden";
+  };
+  const close = () => {
+    list.classList.remove("active");
+    btn.classList.remove("active");
+    document.body.style.overflow = "";
+  };
 
-    // 1) 헤더 높이만큼 spacer (중복 생성 방지)
-    if (headerEl && !document.querySelector('.grit-header-spacer')) {
-      const spacer = document.createElement('div');
-      spacer.className = 'grit-header-spacer';
-      spacer.style.height = HEADER_HEIGHT + 'px';
-      headerEl.insertAdjacentElement('afterend', spacer);
-    }
+  btn.addEventListener("click", () => {
+    const isActive = list.classList.contains("active");
+    isActive ? close() : open();
+  });
 
-    // 2) 모바일 토글 버튼이 없으면 생성
-    if (!menuBtn) {
-      menuBtn = document.createElement('button');
-      menuBtn.className = 'menu-toggle';
-      menuBtn.id = 'menuToggle';
-      menuBtn.setAttribute('aria-label','메뉴 열기/닫기');
-      menuBtn.innerHTML = '<span></span><span></span><span></span>';
-      const wrap = document.querySelector('.grit-header__wrap');
-      if (wrap) wrap.appendChild(menuBtn);
-    }
+  document.addEventListener("click", (e) => {
+    if (!list.contains(e.target) && !btn.contains(e.target)) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+})();
 
-    // 3) 햄버거 토글
-    if (menuBtn && navList) {
-      const closeMenu = () => {
-        navList.classList.remove('active');
-        menuBtn.classList.remove('active');
-        document.body.classList.remove('nav-open');
-      };
-      const openMenu = () => {
-        navList.classList.add('active');
-        menuBtn.classList.add('active');
-        document.body.classList.add('nav-open');
-      };
-      menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navList.classList.contains('active') ? closeMenu() : openMenu();
-      });
-      document.addEventListener('click', (e) => {
-        if (!navList.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
-      });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-    }
+// ---- 현재 페이지 활성 메뉴 ----
+(function activateCurrentNav(){
+  const path = location.pathname;
+  document.querySelectorAll(".grit-nav a").forEach(a => {
+    const href = new URL(a.href, location.origin).pathname;
+    if (href === "/" && (path === "/" || path === "/index.html")) a.classList.add("is-active");
+    else if (href === path) a.classList.add("is-active");
+  });
+})();
 
-    // 4) 활성 메뉴 표시
-    const path = location.pathname;
-    document.querySelectorAll('.grit-nav a').forEach(a => {
-      const href = new URL(a.href, location.origin).pathname;
-      if (href === "/" && (path === "/" || path === "/index.html")) a.classList.add('is-active');
-      else if (href === path) a.classList.add('is-active');
+// ---- 로그인 상태에 따른 메뉴 표시 (레이아웃 흔들림 방지: opacity 전환) ----
+(function setupAuthMenu(){
+  const elMy = document.getElementById("menu-myclass");   // auth-in
+  const elLogin = document.getElementById("menu-login");  // auth-out
+  const elLogout = document.getElementById("menu-logout");// auth-in
+
+  // 초기엔 자리를 유지하되 투명(깜빡임 최소화)
+  [elMy, elLogin, elLogout].forEach(el => {
+    if (el) el.style.opacity = "0";
+  });
+
+  auth.onAuthStateChanged((user) => {
+    const loggedIn = !!user;
+
+    if (elMy)    elMy.style.opacity    = loggedIn ? "1" : "0";
+    if (elLogout)elLogout.style.opacity= loggedIn ? "1" : "0";
+    if (elLogin) elLogin.style.opacity = loggedIn ? "0" : "1";
+  });
+
+  if (elLogout) {
+    elLogout.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await signOut(auth);
+      location.href = "/";
     });
-
-    // 5) 로그인 상태에 따른 메뉴 표시
-    const menuMyClass = document.getElementById("menu-myclass");
-    const menuLogin   = document.getElementById("menu-login");
-    const menuLogout  = document.getElementById("menu-logout");
-    auth.onAuthStateChanged(user => {
-      const loggedIn = !!user;
-      if (menuMyClass) menuMyClass.style.display = loggedIn ? "inline-block" : "none";
-      if (menuLogin)   menuLogin.style.display   = loggedIn ? "none" : "inline-block";
-      if (menuLogout)  menuLogout.style.display  = loggedIn ? "inline-block" : "none";
-    });
-    if (menuLogout) {
-      menuLogout.addEventListener('click', async (e) => {
-        e.preventDefault();
-        await signOut(auth);
-        location.href = "/";
-      });
-    }
-
-    // 6) 맨위로 버튼(한 번만)
-    ensureTopButton();
-  } catch (err) {
-    console.error("initCommonUI error:", err);
   }
-}
+})();
 
-function ensureTopButton() {
-  if (document.getElementById('goTop')) return;
-  document.body.insertAdjacentHTML(
-    'beforeend',
-    '<button id="goTop" class="grit-top" aria-label="맨 위로">▲</button>'
-  );
-  const btn = document.getElementById('goTop');
-  btn.style.display = 'flex';
-  btn.style.zIndex  = '9999';
-  const onScroll = () => { btn.style.opacity = (window.scrollY > 300) ? '1' : '0'; };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  btn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+// ---- 맨 위로 버튼 (중복 생성 방지) ----
+(function ensureTopButton(){
+  if (document.getElementById("goTop")) return;
+  const btn = document.createElement("button");
+  btn.id = "goTop";
+  btn.className = "grit-top";
+  btn.setAttribute("aria-label", "맨 위로");
+  btn.textContent = "▲";
+  btn.style.display = "flex";
+  document.body.appendChild(btn);
+
+  const onScroll = () => { btn.style.opacity = (window.scrollY > 300) ? "1" : "0"; };
+  window.addEventListener("scroll", onScroll, { passive:true });
+  btn.addEventListener("click", () => window.scrollTo({ top:0, behavior:"smooth" }));
   onScroll();
-}
-
-// 로드 훅
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initCommonUI);
-} else {
-  initCommonUI();
-}
+})();

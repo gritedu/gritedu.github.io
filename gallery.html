@@ -94,10 +94,10 @@
         grid.addEventListener('click', e=>{
           const img = e.target.closest('img'); if(!img) return;
           lbImg.src = img.src; 
-          lb.setAttribute('aria-hidden','false');
+          lb.classList.add('active');
         });
-        document.addEventListener('click', e=>{ if(e.target.dataset.close) lb.setAttribute('aria-hidden','true'); });
-        document.addEventListener('keydown', e=>{ if(e.key==='Escape') lb.setAttribute('aria-hidden','true'); });
+        document.addEventListener('click', e=>{ if(e.target.dataset.close) lb.classList.remove('active'); });
+        document.addEventListener('keydown', e=>{ if(e.key==='Escape') lb.classList.remove('active'); });
       }catch(e){
         console.error(e);
         grid.innerHTML = '<p>갤러리를 불러오지 못했습니다.</p>';
