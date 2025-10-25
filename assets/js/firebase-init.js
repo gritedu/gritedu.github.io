@@ -1,4 +1,3 @@
-// assets/js/firebase-init.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
 import {
   getAuth,
@@ -20,27 +19,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 창/탭 닫으면 자동 로그아웃되도록 세션 유지
-await setPersistence(auth, browserSessionPersistence);
+// 탭/창 닫으면 자동 로그아웃(세션 보존만)
+setPersistence(auth, browserSessionPersistence).catch(console.error);
 
-function guardPage(redirectUrl = "/login.html") {
-  return new Promise((resolve, reject) => {
-    onAuthStateChanged(auth, user => {
+// 보호 페이지 가드
+export function guardPage(redirectUrl = "/login.html") {
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
-        reject("UNAUTHENTICATED");
         location.href = redirectUrl;
-      } else {
-        // 추가 권한 체크 가능: custom claims 등
-        resolve(user);
+        return;
       }
+      resolve(user);
     });
   });
 }
 
-function handleLogout() {
-  signOut(auth).then(() => {
-    location.href = "/login.html";
-  });
-}
-
-export { auth, guardPage, signOut };
+export { auth, signOut };

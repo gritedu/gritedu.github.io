@@ -329,3 +329,13 @@ html,body{overflow-x:hidden}
   .grit-cta-row { display:flex; gap:10px; flex-wrap:wrap; }
   .grit-cta-row .grit-btn { flex:1 1 140px; white-space: nowrap; }
 }
+
+/* Header safety */
+.grit-header.fixed { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+.grit-header-spacer { width: 100%; }
+
+/* Optional: nav list on mobile toggle */
+.grit-nav ul.active { display: block; }
+
+/* Go top button basic style (if not already) */
+#goTop { align-items:center; justify-content:center; width:40px; height:40px; border-radius:20px; border:none; cursor:pointer; }

@@ -1,17 +1,16 @@
-// assets/js/common.js
 import { auth, signOut } from "/assets/js/firebase-init.js";
 
 const HEADER_HEIGHT = 64;
 
 function headerTemplate() {
   return `
-  <header class="grit-header fixed" style="height:${HEADER_HEIGHT}px">
-    <div class="grit-header__wrap" style="height:${HEADER_HEIGHT}px">
+  <header class="grit-header fixed" style="height:${HEADER_HEIGHT}px;position:fixed;top:0;left:0;right:0;z-index:1000;">
+    <div class="grit-header__wrap" style="height:${HEADER_HEIGHT}px;display:flex;align-items:center;justify-content:space-between;">
       <a class="grit-logo" href="/index.html" aria-label="그릿에듀 홈">
-        <img src="/assets/logo.png" alt="그릿에듀" class="grit-logo">
+        <img src="/assets/logo.png" alt="그릿에듀" class="grit-logo" style="height:40px">
       </a>
       <nav class="grit-nav" aria-label="주 메뉴">
-        <ul>
+        <ul style="display:flex;gap:16px;align-items:center;margin:0;padding:0;list-style:none;">
           <li><a href="/index.html">그릿에듀</a></li>
           <li><a href="/story.html">이야기</a></li>
           <li><a href="/instructors.html">강사진</a></li>
@@ -29,7 +28,7 @@ function headerTemplate() {
 
 function footerTemplate() {
   return `
-  <footer class="grit-footer">
+  <footer class="grit-footer" style="margin-top:40px">
     <div class="grit-footer-inner">
       <div class="grit-footer-sns">
         <a href="https://www.instagram.com/grit_edu_seoul/" target="_blank" rel="noopener" aria-label="Instagram" class="sns">
@@ -60,65 +59,67 @@ function footerTemplate() {
 }
 
 export function injectCommonUI() {
-  // 1) 헤더/푸터 주입(있으면 교체)
-  const existHeader = document.querySelector('.grit-header');
-  const headerHtml = headerTemplate();
-  if (existHeader) existHeader.outerHTML = headerHtml;
-  else document.body.insertAdjacentHTML('afterbegin', headerHtml);
+  try {
+    // 1) 헤더/푸터 주입(있으면 교체)
+    const existHeader = document.querySelector('.grit-header');
+    const headerHtml = headerTemplate();
+    if (existHeader) existHeader.outerHTML = headerHtml;
+    else document.body.insertAdjacentHTML('afterbegin', headerHtml);
 
-  const existFooter = document.querySelector('.grit-footer');
-  const footerHtml = footerTemplate();
-  if (existFooter) existFooter.outerHTML = footerHtml;
-  else document.body.insertAdjacentHTML('beforeend', footerHtml);
+    const existFooter = document.querySelector('.grit-footer');
+    const footerHtml = footerTemplate();
+    if (existFooter) existFooter.outerHTML = footerHtml;
+    else document.body.insertAdjacentHTML('beforeend', footerHtml);
 
-  // 2) 헤더 스페이서(중복 생성 방지)
-  if (!document.querySelector('.grit-header-spacer')) {
-    const spacer = document.createElement('div');
-    spacer.className = 'grit-header-spacer';
-    spacer.style.height = HEADER_HEIGHT + 'px';
-    const headerEl = document.querySelector('.grit-header');
-    headerEl.insertAdjacentElement('afterend', spacer);
-  }
+    // 2) 헤더 스페이서(중복 생성 방지)
+    if (!document.querySelector('.grit-header-spacer')) {
+      const spacer = document.createElement('div');
+      spacer.className = 'grit-header-spacer';
+      spacer.style.height = HEADER_HEIGHT + 'px';
+      const headerEl = document.querySelector('.grit-header');
+      headerEl.insertAdjacentElement('afterend', spacer);
+    }
 
-  // 3) 햄버거 메뉴 토글
-  const navList = document.querySelector('.grit-nav ul');
-  const menuBtn = document.getElementById('menuToggle');
-  if (menuBtn && navList) {
-    menuBtn.addEventListener('click', () => {
-      navList.classList.toggle('active');
-      menuBtn.classList.toggle('active');
+    // 3) 햄버거 메뉴 토글
+    const navList = document.querySelector('.grit-nav ul');
+    const menuBtn = document.getElementById('menuToggle');
+    if (menuBtn && navList) {
+      menuBtn.addEventListener('click', () => {
+        navList.classList.toggle('active');
+        menuBtn.classList.toggle('active');
+      });
+    }
+
+    // 4) 현재 페이지 활성 메뉴
+    const page = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.grit-nav a').forEach(a => {
+      if (a.getAttribute('href').endsWith(page)) a.classList.add('is-active');
     });
-  }
 
-  // 4) 현재 페이지 활성 메뉴
-  const page = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.grit-nav a').forEach(a => {
-    if (a.getAttribute('href').endsWith(page)) a.classList.add('is-active');
-  });
+    // 5) 맨위로 버튼
+    ensureTopButton();
 
-  // 5) 맨위로 버튼
-  ensureTopButton();
+    // 6) 로그인 상태에 따른 메뉴 표시
+    const menuMyClass = document.getElementById("menu-myclass");
+    const menuLogin = document.getElementById("menu-login");
+    const menuLogout = document.getElementById("menu-logout");
 
-  // 6) === 로그인 상태에 따른 메뉴 표시(주입 직후 DOM에서 엘리먼트 바인딩) ===
-  const menuMyClass = document.getElementById("menu-myclass");
-  const menuLogin = document.getElementById("menu-login");
-  const menuLogout = document.getElementById("menu-logout");
-
-  // 상태 반영
-  auth.onAuthStateChanged(user => {
-    const loggedIn = !!user;
-    if (menuMyClass) menuMyClass.style.display = loggedIn ? "inline-block" : "none";
-    if (menuLogin)   menuLogin.style.display   = loggedIn ? "none" : "inline-block";
-    if (menuLogout)  menuLogout.style.display  = loggedIn ? "inline-block" : "none";
-  });
-
-  // 로그아웃
-  if (menuLogout) {
-    menuLogout.addEventListener('click', async (e) => {
-      e.preventDefault();
-      await signOut(auth);
-      location.href = "/index.html";
+    auth.onAuthStateChanged(user => {
+      const loggedIn = !!user;
+      if (menuMyClass) menuMyClass.style.display = loggedIn ? "inline-block" : "none";
+      if (menuLogin)   menuLogin.style.display   = loggedIn ? "none" : "inline-block";
+      if (menuLogout)  menuLogout.style.display  = loggedIn ? "inline-block" : "none";
     });
+
+    if (menuLogout) {
+      menuLogout.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await signOut(auth);
+        location.href = "/index.html";
+      });
+    }
+  } catch (err) {
+    console.error("injectCommonUI error:", err);
   }
 }
 
@@ -126,7 +127,7 @@ function ensureTopButton() {
   let btn = document.getElementById('goTop');
   if (!btn) {
     document.body.insertAdjacentHTML('beforeend',
-      '<button id="goTop" class="grit-top" aria-label="맨 위로" style="opacity:0">▲</button>'
+      '<button id="goTop" class="grit-top" aria-label="맨 위로" style="opacity:0;position:fixed;right:16px;bottom:16px;">▲</button>'
     );
     btn = document.getElementById('goTop');
   }
@@ -138,5 +139,9 @@ function ensureTopButton() {
   onScroll();
 }
 
-// 페이지 로드 시 주입
-document.addEventListener('DOMContentLoaded', injectCommonUI);
+// 페이지 로드 시 즉시/지연 모두 대응
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', injectCommonUI);
+} else {
+  injectCommonUI();
+}
