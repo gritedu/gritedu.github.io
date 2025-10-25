@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인 - GritEdu LMS</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <h1>로그인</h1>
+  <form id="login-form">
+    <input type="email" id="email" placeholder="이메일" required>
+    <input type="password" id="password" placeholder="비밀번호" required>
+    <button type="submit">로그인</button>
+  </form>
+  <script type="module">
+    import { auth } from "./assets/js/firebase-init.js";
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        location.href = "/members/dashboard.html";
+      } catch (error) {
+        alert("로그인 실패: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>

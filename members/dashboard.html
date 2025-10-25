@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>대시보드 - 나의 강좌</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body style="display:none;" id="app">
+  <h1>내 강좌</h1>
+  <div id="course-list">로딩 중...</div>
+  <button id="logout-btn">로그아웃</button>
+
+  <script type="module">
+    import { guardPage, handleLogout } from "../assets/js/firebase-init.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+    import { auth } from "../assets/js/firebase-init.js";
+
+    try {
+      await guardPage();
+      document.getElementById("app").style.display = "block";
+
+      const db = getFirestore();
+      const uid = auth.currentUser.uid;
+      const q = query(collection(db, "enrollments"), where("uid", "==", uid));
+      const snap = await getDocs(q);
+      const container = document.getElementById("course-list");
+      container.innerHTML = "";
+      if (snap.empty) {
+        container.innerText = "수강중인 강좌가 없습니다.";
+      } else {
+        snap.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.innerHTML = `<a href="../course.html?id=${data.courseId}">${data.courseId} 강좌 보기</a>`;
+          container.appendChild(div);
+        });
+      }
+
+      document.getElementById("logout-btn").addEventListener("click", handleLogout);
+    } catch (e) {
+      console.error("접근 불가:", e);
+      // 리디렉션은 guardPage 내부에서 처리됨
+    }
+  </script>
+</body>
+</html>
