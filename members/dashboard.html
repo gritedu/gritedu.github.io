@@ -60,17 +60,48 @@
 
     // RSS 피드에서 항목 파싱
     async function fetchPlaylistItems(playlistId) {
-      const url = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("RSS fetch failed");
-      const xml = new DOMParser().parseFromString(await res.text(), "text/xml");
-      const entries = Array.from(xml.getElementsByTagName("entry"));
-      // 최신→오래된 순으로 되어 있을 수 있음. 필요시 reverse()
-      return entries.map(entry => {
-        const title = entry.getElementsByTagName("title")[0]?.textContent || "제목 없음";
-        const vid = entry.getElementsByTagNameNS("http://www.youtube.com/xml/schemas/2015", "videoId")[0]?.textContent;
-        return { title, videoId: vid };
-      }).filter(v => !!v.videoId);
+      try {
+        const url = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
+        console.log(`Fetching playlist: ${playlistId}`);
+        
+        const res = await fetch(url, {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Accept': 'application/rss+xml, application/xml, text/xml'
+          }
+        });
+        
+        if (!res.ok) {
+          throw new Error(`RSS fetch failed: ${res.status} ${res.statusText}`);
+        }
+        
+        const xmlText = await res.text();
+        console.log('RSS XML received:', xmlText.substring(0, 200) + '...');
+        
+        const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+        const entries = Array.from(xml.getElementsByTagName("entry"));
+        console.log(`Found ${entries.length} entries`);
+        
+        const items = entries.map((entry, index) => {
+          const title = entry.getElementsByTagName("title")[0]?.textContent || `제목 없음 ${index + 1}`;
+          const vid = entry.getElementsByTagNameNS("http://www.youtube.com/xml/schemas/2015", "videoId")[0]?.textContent;
+          console.log(`Entry ${index + 1}: ${title} - ${vid}`);
+          return { title, videoId: vid };
+        }).filter(v => {
+          const hasVideoId = !!v.videoId;
+          if (!hasVideoId) {
+            console.log(`Filtered out item without videoId: ${v.title}`);
+          }
+          return hasVideoId;
+        });
+        
+        console.log(`Final items count: ${items.length}`);
+        return items;
+      } catch (error) {
+        console.error('Error fetching playlist items:', error);
+        throw error;
+      }
     }
 
     async function renderPlaylistCard(pl) {
@@ -101,10 +132,17 @@
           const inputId = `chk-${pl.id}-${item.videoId}`;
           row.innerHTML = `
             <input type="checkbox" id="${inputId}" ${completed ? "checked" : ""} />
-            <label for="${inputId}" style="flex:1;">
+            <label for="${inputId}" style="flex:1; cursor:pointer;">
               ${item.title}
             </label>
-            <a href="https://www.youtube.com/watch?v=${item.videoId}&list=${pl.id}" target="_blank" rel="noopener" style="font-size:12px;color:#ff7a00;">보기</a>
+            <a href="https://www.youtube.com/watch?v=${item.videoId}&list=${pl.id}" 
+               target="_blank" 
+               rel="noopener" 
+               style="font-size:12px; color:#ff7a00; text-decoration:none; padding:4px 8px; border:1px solid #ff7a00; border-radius:4px; background:#fff; transition:all 0.2s;"
+               onmouseover="this.style.background='#ff7a00'; this.style.color='#fff'"
+               onmouseout="this.style.background='#fff'; this.style.color='#ff7a00'">
+              📺 보기
+            </a>
           `;
           listDiv.appendChild(row);
 
@@ -119,8 +157,18 @@
           });
         }
       } catch (err) {
-        card.querySelector(`#list-${pl.id}`).textContent = "불러오기 오류: RSS 차단 또는 네트워크 문제";
-        console.error(err);
+        console.error(`Error loading playlist ${pl.id}:`, err);
+        const errorDiv = card.querySelector(`#list-${pl.id}`);
+        errorDiv.innerHTML = `
+          <div style="color:#e74c3c; padding:12px; background:#fdf2f2; border:1px solid #fecaca; border-radius:6px;">
+            <strong>⚠️ 플레이리스트 불러오기 실패</strong><br>
+            <small>오류: ${err.message}</small><br>
+            <a href="https://www.youtube.com/playlist?list=${pl.id}" target="_blank" rel="noopener" 
+               style="color:#ff7a00; text-decoration:none; font-weight:600;">
+              → YouTube에서 직접 보기
+            </a>
+          </div>
+        `;
       }
     }
 
