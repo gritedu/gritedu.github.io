@@ -97,4 +97,29 @@ function ensureTopButton(){
   onScroll();
 }
 
+// 로그인 상태에 따른 메뉴 표시 제어
+import { auth } from "./firebase-init.js";
+
+const menuMyClass = document.getElementById("menu-myclass");
+const menuLogin = document.getElementById("menu-login");
+const menuLogout = document.getElementById("menu-logout");
+
+// 로그인 상태 감시
+auth.onAuthStateChanged(user => {
+  const loggedIn = !!user;
+  if (menuMyClass) menuMyClass.style.display = loggedIn ? "inline-block" : "none";
+  if (menuLogin) menuLogin.style.display = loggedIn ? "none" : "inline-block";
+  if (menuLogout) menuLogout.style.display = loggedIn ? "inline-block" : "none";
+});
+
+// 로그아웃 버튼 클릭 시 처리
+if (menuLogout) {
+  menuLogout.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const { signOut } = await import("https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js");
+    await signOut(auth);
+    location.href = "./index.html"; // 로그아웃 후 메인으로 이동
+  });
+}
+
 document.addEventListener('DOMContentLoaded', injectCommonUI);

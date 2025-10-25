@@ -6,26 +6,175 @@
   <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
   <title>그릿에듀 | 이야기</title>
   <link rel="stylesheet" href="./assets/css/main.css">
+  <style>
+    :root {
+      --brand:#f68b1f; --text:#333333; --muted:#6b7280; --bg:#ffffff;
+      --border:#e6e8ee; --hover:#fff6ec; --shadow:0 4px 16px rgba(0,0,0,.05);
+      --footerdark:#3d3d45; --grit-main:#ff7a00;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans KR', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.9;
+      letter-spacing: 0.2px;
+    }
+
+    main.grit-section {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 80px 24px 120px;
+    }
+
+    /* 상단 제목 */
+    .page-title {
+      text-align: center;
+      font-size: 1.9rem;
+      color: var(--grit-main);
+      font-weight: 800;
+      margin: 0 0 60px;
+      letter-spacing: -0.5px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      color: var(--brand);
+      margin: 50px 0 25px;
+      border-left: 5px solid var(--grit-main);
+      padding-left: 10px;
+      font-weight: 700;
+    }
+
+    p {
+      font-size: 1.05rem;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    ul {
+      margin: 16px 0 16px 20px;
+      font-size: 1.05rem;
+    }
+
+    li { margin-bottom: 8px; }
+
+    mark {
+      background: var(--hover);
+      color: var(--grit-main);
+      font-weight: 600;
+      padding: 0 4px;
+      border-radius: 3px;
+    }
+
+    .quote {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 1rem;
+      margin: 16px 0;
+      border-left: 4px solid var(--grit-main);
+      padding-left: 12px;
+    }
+
+    section {
+      margin-top: 70px;
+      border-top: 1px solid var(--border);
+      padding-top: 40px;
+    }
+
+    .cta {
+      text-align: center;
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 2px solid var(--border);
+    }
+
+    .cta a {
+      display: inline-block;
+      background: var(--grit-main);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 14px 32px;
+      border-radius: 6px;
+      margin: 10px 8px;
+      box-shadow: var(--shadow);
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .cta a:hover { background: #ff9833; }
+  </style>
 </head>
+
 <body>
+<nav class="navbar">
+  <a href="./index.html">그릿에듀</a>
+  <a href="./story.html">이야기</a>
+  <a href="./instructors.html">강사진</a>
+  <a href="./gallery.html">갤러리</a>
+  <a href="./contact.html">문의</a>
+  <a href="./members/dashboard.html" id="menu-myclass" style="display:none;">내 강의실</a>
+  <a href="./login.html" id="menu-login">로그인</a>
+  <a href="#" id="menu-logout" style="display:none;">로그아웃</a>
+</nav>
+
   <main class="grit-section">
-    <h1>그릿에듀 이야기</h1>
-    <p>그릿에듀는 <b>교육의 새로운 표준</b>을 만들어가는 학원형 EdTech 브랜드입니다.</p>
-    <p>2025년, "도전과 끈기(GRIT)"를 모토로, 과목별 전문 강사진과 함께 학생 개개인에게 최적화된 학습 경험을 제공합니다.</p>
 
-    <section class="grit-story-highlight" style="text-align:center;margin:64px 0;">
-      <img src="./assets/story/story2.png" alt="그릿에듀 소개" style="max-width:900px;width:100%;border-radius:12px;margin-bottom:20px;">
-      <div style="font-weight:600;font-size:1.1rem;line-height:1.8">
-        공부는 단순한 지식의 싸움이 아닙니다.<br>
-        노력과 꾸준함, 멘탈과 태도, 정서와 습관까지 함께 자라야<br>
-        <mark style="background:yellow;color:#000">진짜 성적, 그리고 진짜 성장이 따라옵니다.</mark><br><br>
-        <span style="color:#ff6655;font-weight:700;">그릿에듀는 단순한 학원이 아닙니다.</span><br>
-        국내 최고 수준의 강사진과 함께<br>
-        학생의 '심리적 성장'과 '학습 지속력'을 동시에 키워내는 전문 교육 시스템을 운영합니다.
-      </div>
+    <!-- 상단 가운데 정렬 제목 -->
+    <h1 class="page-title">그릿에듀 이야기</h1>
+
+    <section>
+      <h2>💡 끝까지 해내는 힘, GRIT</h2>
+      <p>공부를 열심히 해도 성적이 오르지 않을 때, 아이도 부모님도 지치기 마련입니다. 같은 수업을 듣고도 결과가 달라지는 이유는 무엇일까요?</p>
+      <p>공부의 핵심은 단순한 ‘지식’이 아닙니다. 바로 <mark>GRIT</mark>, 즉 <b>끝까지 해내는 힘</b>입니다.</p>
+      <p>‘그릿(GRIT)’은 꾸준함과 태도, 그리고 회복력을 의미합니다. GRIT EDU는 아이들에게 이 힘을 길러주는 <b>진짜 공부 시스템</b>을 만들어 갑니다.</p>
     </section>
-  </main>
 
+    <section>
+      <h2>📌 왜 GRIT EDU인가</h2>
+      <p>국내 최고 수준의 대치동·목동 강사진과 함께 국·영·수·과 전문 단과 교육을 제공하며, 단순한 성적 향상이 아닌 <b>심리적 성장과 학습 지속력</b>을 함께 키워나갑니다.</p>
+      <p>공부의 목적은 점수가 아니라 <mark>삶을 살아가는 힘</mark>입니다. GRIT EDU는 아이가 스스로 배우고 성장하는 힘을 기를 수 있도록 돕습니다.</p>
+      <ul>
+        <li>스스로 공부하는 <b>습관</b></li>
+        <li>실패를 딛고 일어서는 <b>멘탈</b></li>
+        <li>성장을 즐기는 <b>태도</b></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>💎 GRIT EDU의 교육 철학</h2>
+      <p class="quote">“어떻게 공부해야 하는지를 가르쳐주는 학원.”<br>
+      “잘하는 아이보다, 끝까지 해내는 아이로 성장시킵니다.”</p>
+      <p>GRIT EDU의 교육은 단순한 ‘문제풀이’나 ‘성적 향상’을 넘어섭니다. 각 과목 전문 강사진이 개념부터 심화까지 철저히 지도하며, 아이들이 실패를 두려워하지 않고 <b>성장을 즐길 수 있는 환경</b>을 제공합니다.</p>
+      <p>또한 체계적인 루틴 관리와 주간 MCT 테스트를 통해 ‘지속 가능한 학습 습관’을 설계하고, <b>심리적 회복력</b>까지 함께 길러줍니다.</p>
+    </section>
+
+    <section>
+      <h2>💬 학부모와 학생이 말하는 변화</h2>
+      <p class="quote">“그릿에듀에 다니고 나서 처음으로 아이가 ‘공부가 재밌다’고 말했습니다.”<br>– 동일여고 고2 학부모</p>
+      <p class="quote">“예전엔 한 번 틀리면 포기했는데, 지금은 ‘한 번 더 해볼까?’라고 말해요.”<br>– 금천고 고1 학생</p>
+      <p class="quote">“시험이 끝나면 무너졌던 아이가 이제는 결과보다 과정을 보며 다시 도전합니다.”<br>– 문일고 고3 학부모</p>
+      <p>이 작은 변화들이 쌓여, 아이는 점점 더 단단해지고 있습니다.</p>
+    </section>
+
+    <section>
+      <h2>🌱 진정성을 잃지 않는 교육</h2>
+      <p>많은 학원들이 단기간 성적 향상만을 목표로 하지만, GRIT EDU는 아이들의 <b>10년, 20년 뒤</b>를 함께 바라봅니다.</p>
+      <p>우리는 학생을 단순한 성과의 수단으로 보지 않습니다. 당장의 성적보다, 아이가 <mark>자신의 힘으로 성장할 수 있는 경험</mark>을 중시합니다.</p>
+      <p>최선을 다한 경험과 꾸준한 성장은 아이에게 자신감과 성취감을, 그리고 더 넓은 꿈을 선택할 수 있는 용기를 줍니다.</p>
+      <p>GRIT EDU는 오늘도 아이들의 미래를 함께 고민합니다. 단단하고 올바른 마음을 기르는 교육, 그 철학을 지켜나가겠습니다.</p>
+    </section>
+
+    <section class="cta">
+      <p>아이들의 꿈과 성장을 응원하는 강사진, 그리고 끝까지 해내는 힘을 길러주는 GRIT EDU가 함께합니다.</p>
+      <a href="./contact.html">상담 신청하기</a>
+      <a href="./instructors.html">강사진 보러가기</a>
+    </section>
+
+  </main>
   <script type="module" src="./assets/js/common.js"></script>
 </body>
 </html>
