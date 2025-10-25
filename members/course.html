@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>강좌 상세 – GritEdu LMS</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body style="display:none;" id="app">
+  <h1 id="course-title">강좌 제목 로딩중…</h1>
+  <div id="course-desc">설명 로딩중…</div>
+
+  <h2>강의 영상</h2>
+  <video id="course-video" width="640" controls>
+    <source src="" type="video/mp4">
+    당신의 브라우저는 video 태그를 지원하지 않습니다.
+  </video>
+
+  <h2>관련 자료</h2>
+  <ul id="course-resources">
+    <li>자료 로딩중…</li>
+  </ul>
+
+  <button id="logout-btn">로그아웃</button>
+
+  <script type="module">
+    import { guardPage, handleLogout } from "../assets/js/firebase-init.js";
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+    import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
+    import { auth } from "../assets/js/firebase-init.js";
+
+    async function loadCourse() {
+      await guardPage();
+
+      document.getElementById("app").style.display = "block";
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get("id");
+      if (!courseId) {
+        document.getElementById("course-title").innerText = "Invalid course ID";
+        return;
+      }
+
+      const db = getFirestore();
+      const courseRef = doc(db, "courses", courseId);
+      const courseSnap = await getDoc(courseRef);
+
+      if (!courseSnap.exists()) {
+        document.getElementById("course-title").innerText = "강좌를 찾을 수 없습니다.";
+        return;
+      }
+      const courseData = courseSnap.data();
+      document.getElementById("course-title").innerText = courseData.title;
+      document.getElementById("course-desc").innerText = courseData.description;
+
+      // 영상 로딩
+      const storage = getStorage();
+      const videoRef = ref(storage, `videos/${courseId}/lecture1.mp4`);
+      try {
+        const videoUrl = await getDownloadURL(videoRef);
+        document.getElementById("course-video").src = videoUrl;
+      } catch (err) {
+        console.error("영상 불러오기 오류:", err);
+        document.getElementById("course-video").style.display = "none";
+      }
+
+      // 자료 목록 로딩
+      const resourcesContainer = document.getElementById("course-resources");
+      resourcesContainer.innerHTML = "";
+      const resColl = collection(db, "courses", courseId, "resources");
+      const resSnap = await getDocs(resColl);
+      if (resSnap.empty) {
+        resourcesContainer.innerHTML = "<li>자료가 없습니다.</li>";
+      } else {
+        resSnap.forEach(async (docRes) => {
+          const r = docRes.data();
+          const li = document.createElement("li");
+
+          try {
+            const fileRef = ref(storage, `resources/${courseId}/${r.filename}`);
+            const fileUrl = await getDownloadURL(fileRef);
+            li.innerHTML = `<a href="${fileUrl}" target="_blank">${r.title}</a>`;
+          } catch (err) {
+            li.innerText = `${r.title} (다운로드 불가)`;
+          }
+
+          resourcesContainer.appendChild(li);
+        });
+      }
+
+      document.getElementById("logout-btn").addEventListener("click", handleLogout);
+    }
+
+    loadCourse();
+  </script>
+</body>
+</html>
