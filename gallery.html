@@ -88,16 +88,6 @@
           paint(btn.dataset.group);
         });
 
-        // 라이트박스
-        const lb = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightboxImg');
-        grid.addEventListener('click', e=>{
-          const img = e.target.closest('img'); if(!img) return;
-          lbImg.src = img.src; 
-          lb.classList.add('active');
-        });
-        document.addEventListener('click', e=>{ if(e.target.dataset.close) lb.classList.remove('active'); });
-        document.addEventListener('keydown', e=>{ if(e.key==='Escape') lb.classList.remove('active'); });
       }catch(e){
         console.error(e);
         grid.innerHTML = '<p>갤러리를 불러오지 못했습니다.</p>';
@@ -134,6 +124,34 @@
       <p style="margin:4px 0;color:#333;">Tel : 02-809-0611</p>
     </div>
   </footer>
+
+  <!-- 라이트박스 -->
+  <div id="lightbox">
+    <img id="lightboxImg" src="" alt="확대 이미지" />
+    <button id="lightboxClose" aria-label="닫기">×</button>
+  </div>
+
+  <script>
+    const thumbs = document.querySelectorAll('.grit-gallery img');
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightboxImg');
+    const lbClose = document.getElementById('lightboxClose');
+
+    thumbs.forEach(img => {
+      img.addEventListener('click', () => {
+        lbImg.src = img.src;
+        lb.classList.add('active');
+      });
+    });
+
+    lbClose.addEventListener('click', () => lb.classList.remove('active'));
+    lb.addEventListener('click', (e) => {
+      if (e.target === lb) lb.classList.remove('active');
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') lb.classList.remove('active');
+    });
+  </script>
 
   <!-- 공통 UI -->
   <script type="module" src="/assets/js/common.js"></script>
