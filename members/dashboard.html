@@ -36,8 +36,8 @@
     // 프로필 카드
     const profileBox = document.getElementById("profile-content");
     const user = auth.currentUser;
-    const name = user.displayName || "이름 미설정";
     const email = user.email || "";
+    const name = (email === "griteducto@gmail.com") ? "관리자" : "학생";
     profileBox.innerHTML = `
       <div style="display:flex;gap:12px;align-items:center;">
         <div style="width:48px;height:48px;border-radius:24px;background:#f1f1f1;display:flex;align-items:center;justify-content:center;font-weight:800;">

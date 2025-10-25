@@ -334,16 +334,59 @@ html,body{overflow-x:hidden}
 .grit-header.fixed { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
 .grit-header-spacer { width: 100%; }
 
-/* Optional: nav list on mobile toggle */
-.grit-nav ul.active { display: block; }
+/* Mobile nav sidebar */
+@media (max-width: 768px) {
+  .grit-nav ul {
+    position: fixed;
+    top: 64px;
+    right: -100%;
+    width: 240px;
+    height: calc(100vh - 64px);
+    background: #fff;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 16px;
+    border-left: 1px solid #eee;
+    transition: right 0.3s ease;
+  }
+  .grit-nav ul.active { right: 0; }
+  .menu-toggle { display: block; cursor: pointer; }
+  .menu-toggle span {
+    display: block;
+    width: 26px;
+    height: 3px;
+    margin: 5px;
+    background: #333;
+    transition: 0.3s;
+  }
+  .menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  .menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+  }
+}
 
 /* Go top button basic style (if not already) */
 #goTop { align-items:center; justify-content:center; width:40px; height:40px; border-radius:20px; border:none; cursor:pointer; }
 
 /* nav: all bold, active = underline or color only */
-.grit-nav a { font-weight: 700; text-decoration: none; }
-.grit-nav a.is-active { text-decoration: underline; }
-.grit-nav a:hover { text-decoration: underline; }
+.grit-nav a {
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  color: #222;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.grit-nav a.is-active,
+.grit-nav a:hover {
+  color: #ff7a00;
+  text-decoration: none;
+}
 
 /* header preload skeleton to avoid flash */
 .grit-header.grit-preload {
@@ -369,3 +412,13 @@ html,body{overflow-x:hidden}
 
 /* go top button */
 #goTop { align-items:center; justify-content:center; width:44px; height:44px; border-radius:22px; border:none; cursor:pointer; background:#ff7a00; color:#fff; }
+
+/* Mobile responsive dashboard */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+  .card {
+    padding: 12px;
+  }
+}

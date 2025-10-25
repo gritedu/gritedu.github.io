@@ -18,13 +18,6 @@
     <div class="grit-section__head">
       <h2>강사진</h2>
     </div>
-    <div class="grit-filter" role="tablist" aria-label="강사진 필터" data-for="instructors">
-      <button class="on" data-subject="all" role="tab" aria-selected="true">전체</button>
-      <button data-subject="국어" role="tab">국어</button>
-      <button data-subject="수학" role="tab">수학</button>
-      <button data-subject="영어" role="tab">영어</button>
-      <button data-subject="과학" role="tab">과학</button>
-    </div>
     <div id="gritInstructorsPreview" class="grit-grid"></div>
   </section>
 
@@ -38,49 +31,24 @@
 
   <script type="module" src="/assets/js/common.js"></script>
 <script>
-  // 강사진 프리뷰 (8명) + 필터
+  // 강사진 프리뷰 (전체 표시)
   async function renderInstructorsHome(){
     const res = await fetch('./data/instructors.json');
     const data = await res.json();
     const all = data;   // 컨설팅 포함
     const grid = document.getElementById('gritInstructorsPreview');
-    const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
 
     function gridMarkup(list){
       return list.map(i=>`
-        <a class="instructor-card grit-row-item" href="./instructor.html?id=${i.id}" data-subject="${i.subject||''}">
+        <a class="instructor-card" href="./instructor.html?id=${i.id}" data-subject="${i.subject||''}">
           <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,40)}${(i.bio||'').length>40?'…':''}</span></div></div>
           <img src="${i.photo}" alt="${i.name}">
           <h3>${i.name}</h3>
         </a>`).join('');
     }
 
-    function paint(subject='all'){
-      if(subject==='all'){
-        grid.classList.remove('grit-row-scroll');
-        grid.style.overflowX=''; grid.innerHTML = gridMarkup(all); // 전부 표시
-      }else{
-        const list = all.filter(x=>x.subject===subject);
-        grid.classList.add('grit-row-scroll'); // 1행 가로 스크롤
-        grid.innerHTML = gridMarkup(list);
-      }
-    }
-
-    // 마우스 드래그 스크롤 UX
-    let isDown=false,startX,scrollLeft;
-    grid.addEventListener('mousedown',e=>{ if(!grid.classList.contains('grit-row-scroll')) return; isDown=true; grid.classList.add('drag'); startX=e.pageX-grid.offsetLeft; scrollLeft=grid.scrollLeft; });
-    grid.addEventListener('mouseleave',()=>{ isDown=false; grid.classList.remove('drag'); });
-    grid.addEventListener('mouseup',()=>{ isDown=false; grid.classList.remove('drag'); });
-    grid.addEventListener('mousemove',e=>{ if(!isDown) return; e.preventDefault(); const x=e.pageX-grid.offsetLeft; const walk=(x-startX)*1.2; grid.scrollLeft=scrollLeft-walk; });
-
-    paint();
-    if (bar) bar.addEventListener('click', e=>{
-      const btn = e.target.closest('button[data-subject]');
-      if(!btn) return;
-      bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on');
-      paint(btn.dataset.subject);
-    });
+    // 모든 강사진 표시
+    grid.innerHTML = gridMarkup(all);
   }
 
   // 갤러리 최신 1장씩 (grit/event/study) - 매니페스트 기반
