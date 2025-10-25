@@ -4,55 +4,55 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>강사 상세 | 그릿에듀</title>
-  <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
-  <link rel="stylesheet" href="./assets/css/main.css">
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg">
+  <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
 <header class="grit-header grit-preload"></header>
-  <main class="grit-section" style="max-width:1080px;margin:0 auto;padding:16px">
-    <div id="profile"></div>
-  </main>
-  <script type="module" src="/assets/js/common.js"></script>
-  <script>
-    async function loadProfile(){
-      const p = new URLSearchParams(location.search).get('id');
-      const res = await fetch('./data/instructors.json'); const data = await res.json();
-      const me = data.find(x=>x.id===p);
-      const wrap = document.getElementById('profile');
-      if(!me){ wrap.innerHTML='<p>강사 정보를 찾을 수 없습니다.</p>'; return; }
+<main class="grit-section" style="max-width:1080px;margin:0 auto;padding:16px">
+  <div id="profile"></div>
+</main>
+<script type="module" src="/assets/js/common.js"></script>
+<script>
+  async function loadProfile(){
+    const p = new URLSearchParams(location.search).get('id');
+    const res = await fetch('/data/instructors.json');
+    const data = await res.json();
+    const me = data.find(x=>x.id===p);
+    const wrap = document.getElementById('profile');
+    if(!me){ wrap.innerHTML='<p>강사 정보를 찾을 수 없습니다.</p>'; return; }
 
-      // 유홍석 선생님 맛보기(없다면 지정)
-      if(me.id==='math_yhs' && !me.youtube_id){ me.youtube_id = '6aPYStft9Xo'; }
+    if(me.id==='math_yhs' && !me.youtube_id){ me.youtube_id = '6aPYStft9Xo'; }
 
-      wrap.innerHTML = `
-      <section class="grit-profile" style="display:grid;grid-template-columns:320px 1fr;gap:32px;align-items:start;border-top:2px solid #ff7a00;padding-top:24px;">
-        <div>
-          <img class="profile-photo" src="${me.photo}" alt="${me.name}">
-        </div>
-        <div>
-          <h1 style="margin:0 0 8px;font-size:1.8rem">${me.name}</h1>
-          <p style="margin:0 0 16px;color:#ff7a00;font-weight:500">${me.subject||''}</p>
-          <hr style="border:none;border-top:1px solid #eee;margin:16px 0">
-          <div style="line-height:1.7;color:#444">${(me.bio||'').replace(/\n/g,'<br>')}</div>
+    wrap.innerHTML = `
+    <section class="grit-profile" style="display:grid;grid-template-columns:320px 1fr;gap:32px;align-items:start;border-top:2px solid #ff7a00;padding-top:24px;">
+      <div>
+        <img class="profile-photo" src="${me.photo}" alt="${me.name}">
+      </div>
+      <div>
+        <h1 style="margin:0 0 8px;font-size:1.8rem">${me.name}</h1>
+        <p style="margin:0 0 16px;color:#ff7a00;font-weight:500">${me.subject||''}</p>
+        <hr style="border:none;border-top:1px solid #eee;margin:16px 0">
+        <div style="line-height:1.7;color:#444">${(me.bio||'').replace(/\n/g,'<br>')}</div>
 
-          ${me.books ? `<h3 style="margin:24px 0 8px;color:#333;border-left:4px solid #ff7a00;padding-left:8px;">교재</h3><div>${me.books.replace(/\n/g,'<br>')}</div>` : ''}
+        ${me.books ? `<h3 style="margin:24px 0 8px;color:#333;border-left:4px solid #ff7a00;padding-left:8px;">교재</h3><div>${me.books.replace(/\n/g,'<br>')}</div>` : ''}
 
-          ${me.youtube_id ? `
-            <h3 style="margin:24px 0 8px;color:#333;border-left:4px solid #ff7a00;padding-left:8px;">맛보기 강좌</h3>
-            <div class="embed-16x9">
-              <iframe src="https://www.youtube.com/embed/${me.youtube_id}" title="YouTube video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-            </div>` : ''}
+        ${me.youtube_id ? `
+          <h3 style="margin:24px 0 8px;color:#333;border-left:4px solid #ff7a00;padding-left:8px;">맛보기 강좌</h3>
+          <div class="embed-16x9">
+            <iframe src="https://www.youtube.com/embed/${me.youtube_id}" title="YouTube video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+          </div>` : ''}
 
-          ${me.poster?`
-            <h3 style="margin:24px 0 8px;color:#333;border-left:4px solid #ff7a00;padding-left:8px;">포스터</h3>
-            <img src="${me.poster}" alt="포스터" style="max-width:480px;width:100%;border-radius:12px;border:1px solid #eee;box-shadow:0 6px 20px rgba(0,0,0,.08)">
-          `:''}
-        </div>
-      </section>`;
-    }
-    document.addEventListener('DOMContentLoaded', loadProfile);
-  </script>
+        ${me.poster?`
+          <h3 style="margin:24px 0 8px;color:#333;border-left:4px solid #ff7a00;padding-left:8px;">포스터</h3>
+          <img src="${me.poster}" alt="포스터" style="max-width:480px;width:100%;border-radius:12px;border:1px solid #eee;box-shadow:0 6px 20px rgba(0,0,0,.08)">
+        `:''}
+      </div>
+    </section>`;
+  }
+  document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
 </body>
 </html>

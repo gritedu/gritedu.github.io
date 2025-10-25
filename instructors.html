@@ -3,78 +3,55 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg">
   <title>그릿에듀 | 강사진</title>
-  <link rel="stylesheet" href="./assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
 <header class="grit-header grit-preload"></header>
-  <main class="container">
-    <h1>그릿에듀 강사진</h1>
-    <div class="grit-filter" role="tablist" aria-label="강사진 필터" data-for="instructors">
-      <button class="on" data-subject="all" role="tab" aria-selected="true">전체</button>
-      <button data-subject="국어" role="tab">국어</button>
-      <button data-subject="수학" role="tab">수학</button>
-      <button data-subject="영어" role="tab">영어</button>
-      <button data-subject="과학" role="tab">과학</button>
-    </div>
-    <div class="grid-instructors" id="instructorGrid"></div>
-  </main>
-
-  <!-- 강사 상세 모달 -->
-  <div id="insModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modal__backdrop" data-close="1"></div>
-    <div class="modal__dialog" role="document" aria-labelledby="insModalTitle">
-      <button class="modal__close" aria-label="닫기" data-close="1">×</button>
-      <div class="modal__body">
-        <div class="modal__left">
-          <img id="insPoster" alt="강사 포스터" />
-        </div>
-        <div class="modal__right">
-          <h2 id="insModalTitle"></h2>
-          <p id="insSubject" class="muted"></p>
-          <p id="insBio"></p>
-          <ul id="insHighlights" class="bullets"></ul>
-          <div class="video">
-            <iframe id="insYoutube"
-              width="560" height="315" frameborder="0"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
+<main class="container">
+  <h1>그릿에듀 강사진</h1>
+  <div class="grit-filter" role="tablist" aria-label="강사진 필터" data-for="instructors">
+    <button class="on" data-subject="all" role="tab" aria-selected="true">전체</button>
+    <button data-subject="국어" role="tab">국어</button>
+    <button data-subject="수학" role="tab">수학</button>
+    <button data-subject="영어" role="tab">영어</button>
+    <button data-subject="과학" role="tab">과학</button>
   </div>
+  <div class="grid-instructors" id="instructorGrid"></div>
+</main>
 
-  <script type="module" src="/assets/js/common.js"></script>
-  <script>
-    async function renderInstructorsPage(){
-      const res = await fetch('./data/instructors.json');
-      const data = await res.json();
-      const all = data;   // 컨설팅 포함
-      const grid = document.getElementById('instructorGrid');
-      const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
-      function paint(subject='all'){
-        const arr = subject==='all' ? all : all.filter(x=>x.subject===subject);
-        grid.innerHTML = arr.map(i => `
-          <article class="instructor-card" data-subject="${i.subject||''}" onclick="location.href='./instructor.html?id=${i.id}'" style="cursor:pointer">
-            <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,60)}${(i.bio||'').length>60?'…':''}</span></div></div>
-            <img src="${i.photo}" alt="${i.name}">
-            <h3>${i.name}</h3>
-          </article>`).join('');
-      }
-      paint();
-      if (bar) {
-        bar.addEventListener('click', e=>{
-          const btn = e.target.closest('button[data-subject]');
-          if(!btn) return;
-          bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
-          btn.classList.add('on');
-          paint(btn.dataset.subject);
-        });
-      }
+<script type="module" src="/assets/js/common.js"></script>
+<script>
+  async function renderInstructorsPage(){
+    const res = await fetch('/data/instructors.json');
+    const data = await res.json();
+    const all = data;
+    const grid = document.getElementById('instructorGrid');
+    const bar  = document.querySelector('.grit-filter[data-for="instructors"]');
+
+    function paint(subject='all'){
+      const arr = subject==='all' ? all : all.filter(x=>x.subject===subject);
+      grid.innerHTML = arr.map(i => `
+        <article class="instructor-card" data-subject="${i.subject||''}" onclick="location.href='/instructor.html?id=${i.id}'" style="cursor:pointer">
+          <div class="overlay"><div class="txt"><strong>${i.subject||''}</strong><span>${(i.bio||'').slice(0,60)}${(i.bio||'').length>60?'…':''}</span></div></div>
+          <img src="${i.photo}" alt="${i.name}">
+          <h3>${i.name}</h3>
+        </article>`).join('');
     }
-    document.addEventListener('DOMContentLoaded', renderInstructorsPage);
-  </script>
+    paint();
+
+    if (bar) {
+      bar.addEventListener('click', e=>{
+        const btn = e.target.closest('button[data-subject]');
+        if(!btn) return;
+        bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+        btn.classList.add('on');
+        paint(btn.dataset.subject);
+      });
+    }
+  }
+  document.addEventListener('DOMContentLoaded', renderInstructorsPage);
+</script>
 </body>
 </html>

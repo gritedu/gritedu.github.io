@@ -6,12 +6,12 @@ function headerTemplate() {
   return `
   <header class="grit-header fixed" style="height:${HEADER_HEIGHT}px;position:fixed;top:0;left:0;right:0;z-index:1000;">
     <div class="grit-header__wrap" style="height:${HEADER_HEIGHT}px;display:flex;align-items:center;justify-content:space-between;">
-      <a class="grit-logo" href="/index.html" aria-label="그릿에듀 홈">
+      <a class="grit-logo" href="/" aria-label="그릿에듀 홈">
         <img src="/assets/logo.png" alt="그릿에듀" class="grit-logo" style="height:40px">
       </a>
       <nav class="grit-nav" aria-label="주 메뉴">
         <ul style="display:flex;gap:16px;align-items:center;margin:0;padding:0;list-style:none;">
-          <li><a href="/index.html">그릿에듀</a></li>
+          <li><a href="/">그릿에듀</a></li>
           <li><a href="/story.html">이야기</a></li>
           <li><a href="/instructors.html">강사진</a></li>
           <li><a href="/gallery.html">갤러리</a></li>
@@ -22,7 +22,8 @@ function headerTemplate() {
         </ul>
       </nav>
     </div>
-    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+    <!-- 토글 버튼은 여기 것만 사용 -->
+    <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
   </header>`;
 }
 
@@ -80,7 +81,7 @@ export function injectCommonUI() {
       headerEl.insertAdjacentElement('afterend', spacer);
     }
 
-    // 3) 햄버거 메뉴 토글
+    // 3) 햄버거 메뉴 토글 (이 버튼만 사용)
     const navList = document.querySelector('.grit-nav ul');
     const menuBtn = document.getElementById('menuToggle');
     if (menuBtn && navList) {
@@ -88,12 +89,27 @@ export function injectCommonUI() {
         navList.classList.toggle('active');
         menuBtn.classList.toggle('active');
       });
+      // 외부 클릭/ESC 닫기
+      document.addEventListener('click', (e) => {
+        if (!menuBtn.contains(e.target) && !navList.contains(e.target)) {
+          navList.classList.remove('active');
+          menuBtn.classList.remove('active');
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          navList.classList.remove('active');
+          menuBtn.classList.remove('active');
+        }
+      });
     }
 
     // 4) 현재 페이지 활성 메뉴
-    const page = location.pathname.split('/').pop() || 'index.html';
+    const path = location.pathname;
     document.querySelectorAll('.grit-nav a').forEach(a => {
-      if (a.getAttribute('href').endsWith(page)) a.classList.add('is-active');
+      const href = new URL(a.href, location.origin).pathname;
+      if (href === "/" && (path === "/" || path === "/index.html")) a.classList.add('is-active');
+      else if (href === path) a.classList.add('is-active');
     });
 
     // 5) 맨위로 버튼
@@ -115,15 +131,9 @@ export function injectCommonUI() {
       menuLogout.addEventListener('click', async (e) => {
         e.preventDefault();
         await signOut(auth);
-        location.href = "/index.html";
+        location.href = "/";
       });
     }
-  // Top 버튼 추가
-  ensureTopButton();
-  
-  // 모바일 메뉴 초기화
-  initMobileMenu();
-  
   } catch (err) {
     console.error("injectCommonUI error:", err);
   }
@@ -145,55 +155,7 @@ function ensureTopButton() {
   onScroll();
 }
 
-function initMobileMenu() {
-  // 햄버거 메뉴 버튼 생성
-  const nav = document.querySelector('.grit-nav');
-  if (!nav) return;
-  
-  const existingToggle = nav.querySelector('.menu-toggle');
-  if (existingToggle) return; // 이미 있으면 중복 생성 방지
-  
-  const toggle = document.createElement('button');
-  toggle.className = 'menu-toggle';
-  toggle.innerHTML = '<span></span><span></span><span></span>';
-  toggle.setAttribute('aria-label', '메뉴 열기/닫기');
-  
-  // 햄버거 버튼을 네비게이션에 추가
-  nav.appendChild(toggle);
-  
-  const menu = nav.querySelector('ul');
-  if (!menu) return;
-  
-  // 토글 기능
-  toggle.addEventListener('click', () => {
-    const isActive = menu.classList.contains('active');
-    if (isActive) {
-      menu.classList.remove('active');
-      toggle.classList.remove('active');
-    } else {
-      menu.classList.add('active');
-      toggle.classList.add('active');
-    }
-  });
-  
-  // 메뉴 외부 클릭 시 닫기
-  document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target) && menu.classList.contains('active')) {
-      menu.classList.remove('active');
-      toggle.classList.remove('active');
-    }
-  });
-  
-  // ESC 키로 닫기
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && menu.classList.contains('active')) {
-      menu.classList.remove('active');
-      toggle.classList.remove('active');
-    }
-  });
-}
-
-// 페이지 로드 시 즉시/지연 모두 대응
+// 로드 훅
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', injectCommonUI);
 } else {
