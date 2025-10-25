@@ -622,6 +622,13 @@ body{scroll-behavior:smooth; margin:0; font-family:'Noto Sans KR','Pretendard','
 .grit-header__wrap{max-width:1080px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; justify-content:space-between;}
 body{ padding-top:64px; } /* 헤더 높이만큼 여백 고정 */
 
+/* 통일된 페이지 컨테이너 */
+.grit-page-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
 /* 네비 */
 .grit-nav ul{display:flex; gap:20px; list-style:none; margin:0; padding:0;}
 .grit-nav a{font-weight:700; font-size:16px; color:#222; text-decoration:none; transition:color .2s;}
@@ -634,10 +641,10 @@ body{ padding-top:64px; } /* 헤더 높이만큼 여백 고정 */
 /* 모바일 네비 */
 @media (max-width: 768px){
   .grit-nav ul{
-    position: fixed; top:64px; right:-100%; width:240px;
+    position: fixed; top:64px; right:-100%; width:280px;
     height: calc(100vh - 64px); background:#fff; flex-direction:column;
-    align-items:flex-start; padding:20px; gap:16px; border-left:1px solid #eee;
-    transition:right .3s ease; display:flex;
+    align-items:center; justify-content:flex-start; padding:40px 20px; gap:24px; border-left:1px solid #eee;
+    transition:right .3s ease; display:flex; box-shadow: -4px 0 12px rgba(0,0,0,0.1);
   }
   .grit-nav ul.active{ right:0; }
   .menu-toggle{ display:block; }
@@ -674,7 +681,7 @@ body{ padding-top:64px; } /* 헤더 높이만큼 여백 고정 */
 #lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.9);
   display: none;
   align-items: center;
   justify-content: center;
@@ -682,23 +689,31 @@ body{ padding-top:64px; } /* 헤더 높이만큼 여백 고정 */
 }
 #lightbox.active { display: flex; }
 #lightbox img {
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 85vw;
+  max-height: 85vh;
   border-radius: 8px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  object-fit: contain;
 }
 #lightbox button {
   position: absolute;
-  top: 24px;
-  right: 24px;
-  background: #fff;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.9);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 20px;
   color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+#lightbox button:hover {
+  background: rgba(255,255,255,1);
 }
 
 /* 톱 버튼 */

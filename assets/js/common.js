@@ -46,13 +46,24 @@ function setupAuthMenu() {
   const login = document.getElementById("menu-login");
   const logout = document.getElementById("menu-logout");
 
-  [my, login, logout].forEach(el => el && (el.style.visibility = "hidden"));
+  // 초기 상태 설정
+  if (my) my.style.display = "none";
+  if (login) login.style.display = "inline-block";
+  if (logout) logout.style.display = "none";
 
   auth.onAuthStateChanged((user) => {
     const loggedIn = !!user;
-    if (my) { my.style.visibility = loggedIn ? "visible" : "hidden"; }
-    if (login) { login.style.visibility = loggedIn ? "hidden" : "visible"; }
-    if (logout) { logout.style.visibility = loggedIn ? "visible" : "hidden"; }
+    console.log("Auth state changed:", loggedIn, user?.email); // 디버깅용
+    
+    if (my) { 
+      my.style.display = loggedIn ? "inline-block" : "none"; 
+    }
+    if (login) { 
+      login.style.display = loggedIn ? "none" : "inline-block"; 
+    }
+    if (logout) { 
+      logout.style.display = loggedIn ? "inline-block" : "none"; 
+    }
   });
 
   if (logout) {
